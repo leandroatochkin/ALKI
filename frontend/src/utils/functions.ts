@@ -25,3 +25,24 @@ export const PropertyIconMapper = (propertyType: number) => {
             
     }
 }
+
+export const PropertyTitleMapper = (propertyType: number) => {
+    switch (propertyType) {
+        case 0:
+            return 'Casa'; //house
+        case 1:
+            return 'Departamento'; //apartment
+        case 2:
+            return 'Local'; //store/commercial
+        case 3:
+            return 'Terreno/Campo'; //land
+        case 4:
+            return 'Oficina'; //office
+        case 5:
+            return 'Fábrica/Galpón'; //industrial
+        case 6:
+            return 'Otro'; //other
+            
+    }
+}
+

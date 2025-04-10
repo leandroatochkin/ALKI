@@ -16,7 +16,7 @@ export interface Payment {
     date: string;
     method: string;
     period: string;
-    status: string;
+    status: number;
 }
 
 export interface Tenant {
@@ -83,7 +83,7 @@ export const mockProperties: PropertyDTO[] = [
             date: "2024-01-05",
             method: "bank transfer",
             period: "2024-01",
-            status: "paid"
+            status: 0
           },
           {
             id: "pay-002",
@@ -91,7 +91,7 @@ export const mockProperties: PropertyDTO[] = [
             date: "2024-02-05",
             method: "bank transfer",
             period: "2024-02",
-            status: "paid"
+            status: 0
           }
         ],
         pets: 1,
@@ -128,7 +128,7 @@ export const mockProperties: PropertyDTO[] = [
             date: "2024-03-01",
             method: "cash",
             period: "2024-03",
-            status: "paid"
+            status: 0
           }
         ],
         pets: 0,
@@ -166,7 +166,7 @@ export const mockProperties: PropertyDTO[] = [
             date: "2024-04-01",
             method: "credit card",
             period: "Q2 2024",
-            status: "pending"
+            status: 1
           }
         ],
         pets: 1,

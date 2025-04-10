@@ -1,31 +1,28 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
     Box, 
     Button, 
-    TextField, 
     Typography, 
-    FormControl, 
     FormLabel, 
-    Checkbox, 
-    InputAdornment, 
-    IconButton, Input, 
-    Select, 
-    MenuItem,
     Paper,
     Divider,
 } from "@mui/material"
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import { PropertyIconMapper } from '../../utils/functions'
+import PropertyInfoDialog from '../Dialogs/PropertyInfoDialog'
 
 interface PropertyCardProps {
     property: PropertyDTO
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+    const [openDialog, setOpenDialog] = useState<boolean>(false)
     const IconComponent = PropertyIconMapper(property.type)
 
     
   return (
+    <>
+    {openDialog && <PropertyInfoDialog property={property} open={openDialog} onClose={() => setOpenDialog(false)} />}
     <Paper
     sx={{
         borderRadius: 2
@@ -119,6 +116,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <Button
             variant='outlined'
             color='warning'
+            onClick={() => setOpenDialog(true)}
             >
                 informacion
             </Button>
@@ -127,6 +125,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           </Box>
         </Box>
     </Paper>
+    </>
   )
 }
 
