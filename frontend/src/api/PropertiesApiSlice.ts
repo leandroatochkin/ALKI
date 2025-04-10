@@ -1,3 +1,15 @@
+export interface Service {
+    id: string;
+    type: string; // e.g., "cleaning", "maintenance", "security"
+    payer: string; // e.g., "tenant", "owner"
+}
+
+export interface InventaryItem {
+    id: string;
+    name: string;
+    quantity: number;
+}
+
 export interface Payment {
     id: string;
     amount: number;
@@ -36,6 +48,9 @@ export interface PropertyDTO {
     description: string;
     address: string;
     tenantData?: Tenant
+    type: number; // 0: house, 1: apartment, 2: store/commercial, 3: Land, 4: office, 5: industrial, 6: other
+    inventary?: InventaryItem[];
+    services?: Service[];
 }
 
 export const mockProperties: PropertyDTO[] = [
@@ -82,7 +97,8 @@ export const mockProperties: PropertyDTO[] = [
         pets: 1,
         children: 0,
         smoking: false
-      }
+      },
+        type: 0 // Residential
     },
     {
       id: "prop-002",
@@ -118,7 +134,8 @@ export const mockProperties: PropertyDTO[] = [
         pets: 0,
         children: 2,
         smoking: true
-      }
+      },
+      type: 1 // Residential
     },
     {
       id: "prop-003",
@@ -155,7 +172,8 @@ export const mockProperties: PropertyDTO[] = [
         pets: 1,
         children: 1,
         smoking: false
-      }
+      },
+      type: 2 // Residential
     }
   ];
   

@@ -94,16 +94,13 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh", // Full viewport height  
-        backgroundImage: 'url("/dots-bg-2.png")', // Background image
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundBlendMode: "multiply",
+        background: 'linear-gradient(135deg, #1d1d1d, #2c2c2c)', // slate-50 to slate-100
       }}
     >
       <CssBaseline />
 
       {/* App Bar for Messages */}
-      <AppBar position="static" sx={{ backgroundColor: "#f8fafd" }}>
+      <AppBar position="sticky" sx={{ backgroundColor: "#f8fafd" }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
           </Typography>

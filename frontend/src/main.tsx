@@ -4,6 +4,7 @@ import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { NotFound, LoginPage, SignUpPage } from './views/index.ts'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
+import Properties from './views/Properties/Properties.tsx'
 
 
 const router = createBrowserRouter([
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
     path: "/home",
     element: (
       <Dashboard>
-        <h1>Home</h1>
+        <Properties />
       </Dashboard>
     ),
     errorElement: <NotFound />,
