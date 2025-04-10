@@ -4,6 +4,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Logo from "../../assets/Logo";
+import { useNavigate } from "react-router-dom"
 
 
 export default function LoginPage() {
@@ -12,18 +13,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const navigate = useNavigate()
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // Handle login logic here
-      console.log("Login attempt with:", { email, password })
-    }, 1500)
+    navigate("/home")
   }
-
+ 
   return (
     <Box 
     sx={{
@@ -170,7 +165,11 @@ export default function LoginPage() {
             </FormLabel>
           </Box>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button 
+          className="w-full" 
+          disabled={isLoading}
+          onClick={handleSubmit}
+          >
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
 
@@ -201,8 +200,8 @@ export default function LoginPage() {
           <Typography 
           sx={{
             color: '#333',
-
           }}
+          onClick={() => navigate('/signup')}
           >
             Sign up
           </Typography>
