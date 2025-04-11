@@ -22,7 +22,11 @@ import {
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
 
 const AddProperty = () => {
+        const [properties, setProperties] = useState<PropertyDTO[] | []>(mockProperties ?? [])
         const [openDialog, setOpenDialog] = useState<boolean>(false)
+        const [propertyToModify, setPropertyToModify] = useState<string | null>(null)
+
+        const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
     const navigate = useNavigate()
 
@@ -114,7 +118,7 @@ const AddProperty = () => {
                 <Button
                   color="primary"
                   onClick={() => {
-                    console.log("Modificar propiedad", params.row.propertyId)
+                     setPropertyToModify(params.row.propertyId)
                   }}
                 >
                   Modificar
@@ -146,7 +150,7 @@ const AddProperty = () => {
 
       const rows = useMemo(
         () =>
-          (mockProperties ?? []).map((property: PropertyDTO, index: number) => ({
+          (properties ?? []).map((property: PropertyDTO, index: number) => ({
             id: index,
             propertyId: property.id,
             title: property.title,
@@ -164,6 +168,7 @@ const AddProperty = () => {
   return (
     <>
     {openDialog && <AddPropertyDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false}/>}
+    {propertyToModify && <AddPropertyDialog open={!!propertyToModify} onClose={()=>setPropertyToModify(null)} modify={true} property={propertyFiltered}/>}
     <Paper
     sx={{
         p: 2,

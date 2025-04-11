@@ -259,3 +259,25 @@ export const propertyTypeList = {
     '5': 'Fábrica/Galpón',
     '6': 'Otro',
 }
+
+export const contractStatusList = {
+    '0': 'Activo',
+    '1': 'Suspendido',
+    '2': 'Cancelado',
+    '3': 'Finalizado',
+    '4': 'Renovación',
+}
+
+export const contractCurrencyList = {
+    '0': 'ARS',
+    '1': 'USD',
+}
+
+export const contractPaymentMethodList = {
+    '0': 'Transferencia',
+    '1': 'Efectivo',
+    '2': 'Crédito',
+    '3': 'Débito',
+    '4': 'Otro',
+}
+

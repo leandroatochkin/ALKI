@@ -16,13 +16,14 @@ import {
     GridOverlay,
     GridPaginationModel,
   } from "@mui/x-data-grid"
-import { Payment, Tenant } from '../../api/PropertiesApiSlice'
+import { Payment } from '../../api/PropertiesApiSlice'
+import { TenantDTO } from '../../api/TenantsApiSlice'
 import dayjs, { Dayjs } from "dayjs"
 import { paymentMethodMapper } from '../../utils/functions'
 import { useNavigate } from 'react-router-dom'
 
 interface TenantPaymentsProps {
-    tenant: Tenant
+    tenant: TenantDTO
 }
 
 const TenantPayments: React.FC<TenantPaymentsProps> = ({tenant}) => {

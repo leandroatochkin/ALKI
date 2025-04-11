@@ -12,6 +12,7 @@
 
  export const propertyNameRegex = /^[A-Za-zÁÉÍÓÚÑáéíóúñ0-9\s'-]{2,80}$/
 
+ export const observationsRegex = /^[\p{L}\d\s.,°º#\-]{2,}$/u
 
 
 

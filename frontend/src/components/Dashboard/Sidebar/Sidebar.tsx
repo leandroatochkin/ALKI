@@ -26,6 +26,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
 //import "./sidebar.css"
 import AddCardIcon from "@mui/icons-material/AddCard"
 import HouseIcon from '@mui/icons-material/House';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 
 // import {
@@ -70,8 +71,12 @@ function Sidebar() {
 
   const sidebarItems = [
     {
-        text: 'Agregar/modificar prop.',
+        text: 'Agregar/modificar propiedad',
         path: '/properties',
+    },
+    {
+      text: 'Agregar/modificar inquilino',
+      path: '/tenants',
     }
 ]
 
@@ -169,7 +174,8 @@ function Sidebar() {
               <ListItemButton onClick={onSelect(item.path)}>
                 <ListItemIcon>
                   <Box component="span">
-                    {item.text === "Agregar/modificar prop." && <HouseIcon />}
+                    {item.text === "Agregar/modificar propiedad" && <HouseIcon />}
+                    {item.text === "Agregar/modificar inquilino" && <PersonAddIcon />}
                   </Box>
                 </ListItemIcon>
                 <ListItemText>{item.text}</ListItemText>

@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { NotFound, LoginPage, SignUpPage, AddProperty } from './views/index.ts'
+import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant } from './views/index.ts'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
@@ -86,6 +86,15 @@ const router = createBrowserRouter([
     element: (
       <Dashboard>
         <AddProperty />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/tenants",
+    element: (
+      <Dashboard>
+        <AddTenant />
       </Dashboard>
     ),
     errorElement: <NotFound />,

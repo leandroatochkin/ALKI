@@ -1,10 +1,12 @@
+import { TenantDTO } from "./TenantsApiSlice";
+
 export interface Service {
     id: string;
     type: string; // e.g., "cleaning", "maintenance", "security"
     payer: string; // e.g., "tenant", "owner"
 }
 
-export interface InventaryItem {
+export interface InventoryItem {
     id: string;
     name: string;
     quantity: number;
@@ -19,27 +21,6 @@ export interface Payment {
     status: number; // 0: paid, 1: pending, 2: debt
 }
 
-export interface Tenant {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    observations?: string;
-    contractStartDate: string;
-    contractEndDate: string;
-    contractStatus: string;
-    contractId: string;
-    contractType: string;
-    contractValue: number;
-    contractCurrency: string;
-    contractPaymentMethod: string;
-    contractPaymentFrequency: string;
-    payments: Payment[];
-    pets: number;
-    children: number;
-    smoking: boolean;
-}
 
 export interface PropertyDTO {
     id: string;
@@ -51,9 +32,9 @@ export interface PropertyDTO {
     state: string;
     country: string;
     occupied?: boolean;
-    tenantData?: Tenant
+    tenantData?: TenantDTO
     type: number; // 0: house, 1: apartment, 2: store/commercial, 3: Land, 4: office, 5: industrial, 6: other
-    inventary?: InventaryItem[];
+    inventory?: InventoryItem[];
     services?: Service[];
 }
 
@@ -70,6 +51,7 @@ export const mockProperties: PropertyDTO[] = [
       country: 'Argentina',
       tenantData: {
         id: "tenant-001",
+        propietorId: "user-abc",
         firstName: "Lucas",
         lastName: "Gómez",
         email: "lucas.gomez@example.com",
@@ -82,8 +64,9 @@ export const mockProperties: PropertyDTO[] = [
         contractType: "residential",
         contractValue: 120000,
         contractCurrency: "ARS",
-        contractPaymentMethod: "bank transfer",
+        contractPaymentMethod: 0,
         contractPaymentFrequency: "monthly",
+        propertyId: "prop-001",
         payments: [
           {
             id: "pay-001",
@@ -120,6 +103,8 @@ export const mockProperties: PropertyDTO[] = [
       occupied: true,
       tenantData: {
         id: "tenant-002",
+        propietorId: "user-abc",
+
         firstName: "Valentina",
         lastName: "Ruiz",
         email: "valen.ruiz@example.com",
@@ -131,8 +116,9 @@ export const mockProperties: PropertyDTO[] = [
         contractType: "residential",
         contractValue: 150000,
         contractCurrency: "ARS",
-        contractPaymentMethod: "cash",
+        contractPaymentMethod: 1,
         contractPaymentFrequency: "monthly",
+        propertyId: "prop-002",
         payments: [
           {
             id: "pay-003",
@@ -161,6 +147,8 @@ export const mockProperties: PropertyDTO[] = [
       occupied: true,
       tenantData: {
         id: "tenant-003",
+        propietorId: "user-abc",
+
         firstName: "Joaquín",
         lastName: "Pérez",
         email: "joaquin.perez@example.com",
@@ -173,8 +161,9 @@ export const mockProperties: PropertyDTO[] = [
         contractType: "residential",
         contractValue: 180000,
         contractCurrency: "USD",
-        contractPaymentMethod: "credit card",
+        contractPaymentMethod: 2,
         contractPaymentFrequency: "quarterly",
+        propertyId: "prop-003",
         payments: [
           {
             id: "pay-004",

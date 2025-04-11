@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import { 
     Dialog, 
@@ -35,6 +35,20 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
             getValues,
             formState: { errors }, 
               } = useForm<PropertyDTO>()
+
+              useEffect(() => {
+                if (modify && property) {
+                  // Set basic fields
+                  setValue('title', property.title)
+                  setValue('description', property.description)
+                  setValue('address', property.address)
+                  setValue('city', property.city)
+                  setValue('state', property.state)
+                  setValue('country', property.country)
+                  setValue('occupied', property.occupied)
+                  setValue('type', property.type)
+                }
+              }, [modify, property, setValue])
 
     const navigate = useNavigate()
 
@@ -146,7 +160,7 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
                     fullWidth
                     id="state"
                     variant="standard"
-                    placeholder="Ciudad"
+                    placeholder="Provincia"
                     {...register(`state`, 
                         { required: 'Campo obligatorio', 
                             pattern: { 
