@@ -126,7 +126,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
 
       {/* Main Content with Sidebar */}
       <Box sx={{ display: "flex", flex: 1 }}>
-        {/* <Sidebar userData={userData} /> */}
+        <Sidebar />
         <Box
           sx={{
             padding: "30px",

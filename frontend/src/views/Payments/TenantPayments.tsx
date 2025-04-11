@@ -5,7 +5,8 @@ import {
     Typography,
     Skeleton,
     Chip,
-    CircularProgress
+    CircularProgress,
+    Button
 } from '@mui/material'
 import {
     DataGrid,
@@ -17,12 +18,16 @@ import {
   } from "@mui/x-data-grid"
 import { Payment, Tenant } from '../../api/PropertiesApiSlice'
 import dayjs, { Dayjs } from "dayjs"
+import { paymentMethodMapper } from '../../utils/functions'
+import { useNavigate } from 'react-router-dom'
 
 interface TenantPaymentsProps {
     tenant: Tenant
 }
 
 const TenantPayments: React.FC<TenantPaymentsProps> = ({tenant}) => {
+
+const navigate = useNavigate()    
 
 const statusColor = useCallback((status: number) => {
         switch (status) {
@@ -87,8 +92,8 @@ const statusMapper = useCallback((status: number) => {
       const columns = useMemo<GridColDef<(typeof rows)[number]>[]>(
         () => [
           {
-            field: "período",
-            headerName: "periodo",
+            field: "period",
+            headerName: "período",
             width: 130,
             editable: false,
           },
@@ -116,7 +121,7 @@ const statusMapper = useCallback((status: number) => {
             width: 120,
             editable: false,
             renderCell: (params: GridCellParams) => {
-              const status = params.row.claimStatus
+              const status = params.row.status
               return (
                 <Chip
                   label={statusMapper(status)}
@@ -140,7 +145,7 @@ const statusMapper = useCallback((status: number) => {
             paymentId: payment.id,
             amount: `$${payment.amount.toFixed(2)}`,
             date: dayjs(payment.date).format("DD/MM/YYYY"),
-            method: payment.method,
+            method: paymentMethodMapper(payment.method),
             period: payment.period,
             status: payment.status,
           })),
@@ -152,7 +157,11 @@ const statusMapper = useCallback((status: number) => {
 
   return (
     <>
-    <Paper>
+    <Paper
+    sx={{
+        p: 2
+    }}
+    >
     <Typography variant="h6" sx={{ padding: 2 }}>
     Pagos de {tenant?.firstName} {tenant?.lastName}
     </Typography>
@@ -193,6 +202,21 @@ const statusMapper = useCallback((status: number) => {
                 loadingOverlay: CustomLoadingOverlay,
               }}
             />
+            <Box
+            sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+            }}
+            >
+                <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => {navigate('/home')}}
+                >
+                    volver
+                </Button>
+            </Box>
     </Paper>
     </>
   )

@@ -249,3 +249,13 @@ export const countryListAlpha2 = {
     "ZW": "Zimbabwe",
     "AX": "Åland Islands"
 };
+
+export const propertyTypeList = {
+    '0': 'Casa',
+    '1': 'Departamento',
+    '2': 'Local',
+    '3': 'Terreno/Campo',
+    '4': 'Oficina',
+    '5': 'Fábrica/Galpón',
+    '6': 'Otro',
+}

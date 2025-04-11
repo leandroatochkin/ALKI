@@ -6,8 +6,11 @@ import {
   IconButton,
   Typography,
   Tooltip,
+  Drawer,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material"
-import Drawer from "@mui/material/Drawer"
 import MenuIcon from "@mui/icons-material/Menu"
 // import { useAppSelector } from "../../../../app/hooks"
 // import {
@@ -20,8 +23,10 @@ import { useNavigate } from "react-router-dom"
 import SettingsIcon from "@mui/icons-material/Settings"
 import LogoutIcon from "@mui/icons-material/Logout"
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
-import "./sidebar.css"
+//import "./sidebar.css"
 import AddCardIcon from "@mui/icons-material/AddCard"
+import HouseIcon from '@mui/icons-material/House';
+
 
 // import {
 //   BadgeIcon,
@@ -48,7 +53,7 @@ interface UserSidebarAttributes {
   tenantId?: string
 }
 
-function Sidebar({ userData }: Props) {
+function Sidebar() {
   //const menuItems = useAppSelector(state => state.dashboard.menuItems)
   //const role = useAppSelector(state => state.dashboard.role)
   const navigate = useNavigate()
@@ -62,6 +67,13 @@ function Sidebar({ userData }: Props) {
   })
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
   //const { data: myUserData } = useGetMyUserQuery(undefined)
+
+  const sidebarItems = [
+    {
+        text: 'Agregar/modificar prop.',
+        path: '/properties',
+    }
+]
 
   const [menuItemsFiltered, setMenuItemsFiltered] = useState<
     { [key: string]: any }[]
@@ -152,24 +164,16 @@ function Sidebar({ userData }: Props) {
         </Box>
 
         <List component="nav">
-          {menuItemsFiltered.map((item: any) => (
+          {sidebarItems.map((item: any) => (
             <ListItem key={item.id}>
-              {/* <ListItemButton onClick={onSelect(item.path)}>
-                <ListItemDecorator>
+              <ListItemButton onClick={onSelect(item.path)}>
+                <ListItemIcon>
                   <Box component="span">
-                    {item.text === "Calendar" && <CalendarMonthIcon />}
-                    {item.text === "Patients" && <PeopleIcon />}
-                    {item.text === "Staff" && <BadgeIcon />}
-                    {item.text === "Telehealth" && <VideoCallIcon />}
-                    {item.text === "Payers" && <MedicalServicesIcon />}
-                    {item.text === "Sessions" && <AccountBalanceIcon />}
-                    {item.text === "My Balance" && <AddCardIcon />}
-                    {item.text === "Resources" && <ResourcesIcon />}
-                    {item.text === "Billing" && <ReconciliationsIcon />}
+                    {item.text === "Agregar/modificar prop." && <HouseIcon />}
                   </Box>
-                </ListItemDecorator>
-                <ListItemContent>{item.text}</ListItemContent>
-              </ListItemButton> */}
+                </ListItemIcon>
+                <ListItemText>{item.text}</ListItemText>
+              </ListItemButton>
             </ListItem>
           ))}
         </List>

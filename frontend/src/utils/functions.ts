@@ -6,7 +6,7 @@ import FactoryIcon from '@mui/icons-material/Factory';
 import ForestIcon from '@mui/icons-material/Forest';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
-export const PropertyIconMapper = (propertyType: number) => {
+export const propertyIconMapper = (propertyType: number) => {
     switch (propertyType) {
         case 0:
             return HouseIcon; //house
@@ -21,12 +21,11 @@ export const PropertyIconMapper = (propertyType: number) => {
         case 5:
             return FactoryIcon; //industrial
         case 6:
-            return QuestionMarkIcon; //other
-            
+            return QuestionMarkIcon; //other      
     }
 }
 
-export const PropertyTitleMapper = (propertyType: number) => {
+export const propertyTitleMapper = (propertyType: number) => {
     switch (propertyType) {
         case 0:
             return 'Casa'; //house
@@ -42,6 +41,22 @@ export const PropertyTitleMapper = (propertyType: number) => {
             return 'Fábrica/Galpón'; //industrial
         case 6:
             return 'Otro'; //other
+            
+    }
+}
+
+export const paymentMethodMapper = (paymentMethod: number) => {
+    switch (paymentMethod) {
+        case 0:
+            return 'Transferencia'; 
+        case 1:
+            return 'Efectivo'; 
+        case 2:
+            return 'Crédito'; 
+        case 3:
+            return 'Débito'; 
+        case 4:
+            return 'Otro'; 
             
     }
 }

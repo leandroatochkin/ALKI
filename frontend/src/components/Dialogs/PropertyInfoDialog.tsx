@@ -2,7 +2,7 @@ import React from 'react'
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import { Dialog, DialogTitle, DialogContent, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { PropertyTitleMapper } from '../../utils/functions'
+import { propertyTitleMapper } from '../../utils/functions'
 import { useNavigate } from 'react-router-dom';
 
 interface PropertyInfoDialogProps {
@@ -26,7 +26,7 @@ const PropertyInfoDialog: React.FC<PropertyInfoDialogProps> = ({property, open, 
                 <Typography>Dirección: {property.address}</Typography>
                 <Typography>Título: {property.title}</Typography>
                 <Typography>Descripción: {property.description}</Typography>
-                <Typography>Tipo: {PropertyTitleMapper(property.type)}</Typography>
+                <Typography>Tipo: {propertyTitleMapper(property.type)}</Typography>
                 <Accordion>
                     <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}

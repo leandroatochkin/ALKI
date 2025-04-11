@@ -8,7 +8,7 @@ import {
     Divider,
 } from "@mui/material"
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
-import { PropertyIconMapper } from '../../utils/functions'
+import { propertyIconMapper } from '../../utils/functions'
 import PropertyInfoDialog from '../Dialogs/PropertyInfoDialog'
 
 interface PropertyCardProps {
@@ -17,7 +17,7 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     const [openDialog, setOpenDialog] = useState<boolean>(false)
-    const IconComponent = PropertyIconMapper(property.type)
+    const IconComponent = propertyIconMapper(property.type)
 
     
   return (
@@ -118,7 +118,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             color='warning'
             onClick={() => setOpenDialog(true)}
             >
-                informacion
+                información
             </Button>
 
           </Box>

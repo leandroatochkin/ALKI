@@ -14,9 +14,9 @@ export interface Payment {
     id: string;
     amount: number;
     date: string;
-    method: string;
+    method: number; // 0: bank transfer, 1: cash, 2: credit card, 3: debit card, 4: other
     period: string;
-    status: number;
+    status: number; // 0: paid, 1: pending, 2: debt
 }
 
 export interface Tenant {
@@ -47,6 +47,10 @@ export interface PropertyDTO {
     title: string;
     description: string;
     address: string;
+    city: string;
+    state: string;
+    country: string;
+    occupied?: boolean;
     tenantData?: Tenant
     type: number; // 0: house, 1: apartment, 2: store/commercial, 3: Land, 4: office, 5: industrial, 6: other
     inventary?: InventaryItem[];
@@ -60,6 +64,10 @@ export const mockProperties: PropertyDTO[] = [
       title: "Downtown Loft",
       description: "Cozy modern loft in the heart of the city.",
       address: "123 Main St, Capital City",
+      occupied: true,
+      city: 'ciudad',
+      state: 'provincia',
+      country: 'Argentina',
       tenantData: {
         id: "tenant-001",
         firstName: "Lucas",
@@ -81,7 +89,7 @@ export const mockProperties: PropertyDTO[] = [
             id: "pay-001",
             amount: 10000,
             date: "2024-01-05",
-            method: "bank transfer",
+            method: 0,
             period: "2024-01",
             status: 0
           },
@@ -89,7 +97,7 @@ export const mockProperties: PropertyDTO[] = [
             id: "pay-002",
             amount: 10000,
             date: "2024-02-05",
-            method: "bank transfer",
+            method: 0,
             period: "2024-02",
             status: 0
           }
@@ -106,6 +114,10 @@ export const mockProperties: PropertyDTO[] = [
       title: "Seaside Apartment",
       description: "Ocean view, 2BR apartment with balcony.",
       address: "456 Beach Ave, Mar del Plata",
+      city: 'ciudad',
+      state: 'provincia',
+      country: 'Argentina',
+      occupied: true,
       tenantData: {
         id: "tenant-002",
         firstName: "Valentina",
@@ -126,7 +138,7 @@ export const mockProperties: PropertyDTO[] = [
             id: "pay-003",
             amount: 12500,
             date: "2024-03-01",
-            method: "cash",
+            method: 1,
             period: "2024-03",
             status: 0
           }
@@ -143,6 +155,10 @@ export const mockProperties: PropertyDTO[] = [
       title: "Country House",
       description: "Quiet retreat with large garden space.",
       address: "789 Campo Rd, Córdoba",
+      city: 'ciudad',
+      state: 'provincia',
+      country: 'Argentina',
+      occupied: true,
       tenantData: {
         id: "tenant-003",
         firstName: "Joaquín",
@@ -164,7 +180,7 @@ export const mockProperties: PropertyDTO[] = [
             id: "pay-004",
             amount: 45000,
             date: "2024-04-01",
-            method: "credit card",
+            method: 2,
             period: "Q2 2024",
             status: 1
           }

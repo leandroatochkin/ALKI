@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { NotFound, LoginPage, SignUpPage } from './views/index.ts'
+import { NotFound, LoginPage, SignUpPage, AddProperty } from './views/index.ts'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
@@ -29,7 +29,7 @@ const mockTenant = {
       id: "pay-001",
       amount: 10000,
       date: "2024-01-05",
-      method: "bank transfer",
+      method: 0,
       period: "2024-01",
       status: 0
     },
@@ -37,7 +37,7 @@ const mockTenant = {
       id: "pay-002",
       amount: 10000,
       date: "2024-02-05",
-      method: "bank transfer",
+      method: 0,
       period: "2024-02",
       status: 0
     }
@@ -77,6 +77,15 @@ const router = createBrowserRouter([
     element: (
       <Dashboard>
         <TenantPayments tenant={mockTenant} />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/properties",
+    element: (
+      <Dashboard>
+        <AddProperty />
       </Dashboard>
     ),
     errorElement: <NotFound />,
