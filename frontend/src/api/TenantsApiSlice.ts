@@ -1,7 +1,7 @@
 import { Payment } from "./PropertiesApiSlice";
 
 export interface TenantDTO {
-    id: string;
+    tenantId: string;
     propietorId: string;
     firstName: string;
     lastName: string;

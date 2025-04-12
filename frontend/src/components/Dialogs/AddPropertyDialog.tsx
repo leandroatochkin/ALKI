@@ -234,8 +234,15 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
                 display: 'flex',
                 justifyContent: 'flex-end',
                 mt: 2,
+                gap: 2
             }}
-            >
+            >       <Button
+                     variant="contained"
+                     color="secondary"
+                     onClick={onClose}
+                        >
+                        volver
+                    </Button>
                     <Button
                     type="submit"
                     variant="contained"

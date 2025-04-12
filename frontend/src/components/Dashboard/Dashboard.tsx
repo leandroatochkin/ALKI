@@ -28,6 +28,7 @@ import SettingsIcon from "@mui/icons-material/Settings"
 import NotificationsIcon from '@mui/icons-material/Notifications';
 //import { useGetNotificationsQuery } from "../../app/api/notificationsSlice"
 //import { skipToken } from "@reduxjs/toolkit/query"
+import Logo from "../../assets/Logo"
 
 
 
@@ -102,15 +103,16 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
       {/* App Bar for Messages */}
       <AppBar position="sticky" sx={{ backgroundColor: "#f8fafd" }}>
         <Toolbar>
+          <Logo darkMode={true} size={1}/>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
           </Typography>
           <IconButton>
               <Tooltip title="Show notifications">
               <Badge badgeContent={userNotifications?.filter(notification=>notification.status === 0).length} color="error">
-              {/* <NotificationsIcon 
-               onClick={() => navigate(`/notifications/${userData?.userId}`)}
+              <NotificationsIcon 
+//               onClick={() => navigate(`/notifications/${userData?.userId}`)}
                sx={{ color: "black" }}
-              /> */}
+              />
               </Badge>
               </Tooltip>
           </IconButton>

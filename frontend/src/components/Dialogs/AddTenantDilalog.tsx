@@ -90,7 +90,7 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
     onClose={onClose}
     fullWidth
     >
-        <DialogTitle>{modify? 'Modificar propiedad' : 'Agregar propiedad'}</DialogTitle>
+        <DialogTitle>{modify? 'Modificar inquilino' : 'Agregar inquilino'}</DialogTitle>
         <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)}>
             {/*TENANT FIRST NAME*/}
@@ -375,8 +375,16 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
                 display: 'flex',
                 justifyContent: 'flex-end',
                 mt: 2,
+                gap: 2
             }}
-            >
+            >       
+                    <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={onClose}
+                    >
+                        volver
+                    </Button>
                     <Button
                     type="submit"
                     variant="contained"

@@ -1,4 +1,5 @@
 import { TenantDTO } from "./TenantsApiSlice";
+import { Inventory } from "./InventoriesApiSlice";
 
 export interface Service {
     id: string;
@@ -6,11 +7,6 @@ export interface Service {
     payer: string; // e.g., "tenant", "owner"
 }
 
-export interface InventoryItem {
-    id: string;
-    name: string;
-    quantity: number;
-}
 
 export interface Payment {
     id: string;
@@ -34,7 +30,7 @@ export interface PropertyDTO {
     occupied?: boolean;
     tenantData?: TenantDTO
     type: number; // 0: house, 1: apartment, 2: store/commercial, 3: Land, 4: office, 5: industrial, 6: other
-    inventory?: InventoryItem[];
+    inventory?: Inventory;
     services?: Service[];
 }
 
@@ -50,7 +46,7 @@ export const mockProperties: PropertyDTO[] = [
       state: 'provincia',
       country: 'Argentina',
       tenantData: {
-        id: "tenant-001",
+        tenantId: "tenant-001",
         propietorId: "user-abc",
         firstName: "Lucas",
         lastName: "Gómez",
@@ -102,7 +98,7 @@ export const mockProperties: PropertyDTO[] = [
       country: 'Argentina',
       occupied: true,
       tenantData: {
-        id: "tenant-002",
+        tenantId: "tenant-002",
         propietorId: "user-abc",
 
         firstName: "Valentina",
@@ -146,7 +142,7 @@ export const mockProperties: PropertyDTO[] = [
       country: 'Argentina',
       occupied: true,
       tenantData: {
-        id: "tenant-003",
+        tenantId: "tenant-003",
         propietorId: "user-abc",
 
         firstName: "Joaquín",
@@ -182,3 +178,8 @@ export const mockProperties: PropertyDTO[] = [
     }
   ];
   
+export const propertiesList = {
+  'prop-001': 'Downtown Loft',
+  'prop-002': 'Seaside Apartment',
+  'prop-003': 'Country House'
+}

@@ -2,14 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant } from './views/index.ts'
+import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant, AddInventory } from './views/index.ts'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
 import { mockProperties } from './api/PropertiesApiSlice.ts'
 
 const mockTenant = {
-  id: "tenant-001",
+  tenantId: "tenant-001",
+  propietorId: "propietor-001",
   firstName: "Lucas",
   lastName: "Gómez",
   email: "lucas.gomez@example.com",
@@ -22,7 +23,7 @@ const mockTenant = {
   contractType: "residential",
   contractValue: 120000,
   contractCurrency: "ARS",
-  contractPaymentMethod: "bank transfer",
+  contractPaymentMethod: 0,
   contractPaymentFrequency: "monthly",
   payments: [
     {
@@ -95,6 +96,15 @@ const router = createBrowserRouter([
     element: (
       <Dashboard>
         <AddTenant />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/inventories",
+    element: (
+      <Dashboard>
+        <AddInventory />
       </Dashboard>
     ),
     errorElement: <NotFound />,

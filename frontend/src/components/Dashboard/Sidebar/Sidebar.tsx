@@ -27,6 +27,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
 import AddCardIcon from "@mui/icons-material/AddCard"
 import HouseIcon from '@mui/icons-material/House';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 
 // import {
@@ -77,6 +78,10 @@ function Sidebar() {
     {
       text: 'Agregar/modificar inquilino',
       path: '/tenants',
+    },
+    {
+      text: 'Crear/modificar inventario',
+      path: '/inventories',
     }
 ]
 
@@ -176,6 +181,7 @@ function Sidebar() {
                   <Box component="span">
                     {item.text === "Agregar/modificar propiedad" && <HouseIcon />}
                     {item.text === "Agregar/modificar inquilino" && <PersonAddIcon />}
+                    {item.text === "Crear/modificar inventario" && <InventoryIcon />}
                   </Box>
                 </ListItemIcon>
                 <ListItemText>{item.text}</ListItemText>

@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
@@ -42,8 +42,10 @@ const AddTenant = () => {
         mockProperties.map(property => property.tenantData).filter((tenant): tenant is TenantDTO => tenant !== undefined) ?? []
     )
     const [openDialog, setOpenDialog] = useState<boolean>(false)
-    const [tenantToModify, setTenantToModify] = useState<TenantDTO | null>(null)
+    const [tenantToModify, setTenantToModify] = useState<string | null>(null)
     const [observations, setObservations] = useState<Observations | null>(null)
+
+    const tenantFiltered = tenants.filter((tenant) => tenant.tenantId === tenantToModify)[0] ?? null
 
     const navigate = useNavigate()
 
@@ -222,6 +224,7 @@ const AddTenant = () => {
               () =>
                 (tenants ?? []).map((tenant: TenantDTO, index: number) => ({
                   id: index,
+                  tenantId: tenant.tenantId,
                   propietorId: tenant.propietorId,
                   name: `${tenant.lastName}, ${tenant.firstName}`,
                   fistName: tenant.firstName,
@@ -275,6 +278,8 @@ const AddTenant = () => {
     <>
     {observations && <ObservationsDialog />}
     {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false} />}
+    {tenantToModify && <AddTenantDialog open={!!tenantToModify} onClose={()=>setTenantToModify(null)} modify={true} tenant={tenantFiltered}/>}
+
       <Paper
         sx={{
             p: 2,
