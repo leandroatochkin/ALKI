@@ -1,3 +1,4 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TenantDTO } from "./TenantsApiSlice";
 import { Inventory } from "./InventoriesApiSlice";
 
@@ -33,6 +34,68 @@ export interface PropertyDTO {
     inventory?: Inventory;
     services?: Service[];
 }
+
+export const propertiesApiSlice = createApi({
+    reducerPath: "propertiesApiSlice",
+    baseQuery: fetchBaseQuery({
+      baseUrl: import.meta.env.VITE_BASEAPIURL,
+    //   prepareHeaders: async headers => {
+    //     const session = await fetchAuthSession()
+    //     const idToken = session.tokens?.idToken?.toString()
+    //     if (idToken) {
+    //       headers.set("authorization", `Bearer ${idToken}`)
+    //       headers.set("Access-Control-Allow-Origin", "*")
+    //       headers.set(
+    //         "Access-Control-Allow-Headers",
+    //         "Origin, X-Requested-With, Content-Type, Accept",
+    //       )
+    //     }
+    //     return headers
+    //   },
+    }),
+    endpoints: builder => ({
+      getPropertyById: builder.query<PropertyDTO, string>({
+        query: id => ({
+          url: `api/inventories/get-property-by-id/${id}`,
+          method: "GET",
+        }),
+      }),
+      getPropertiesByUserId: builder.query<PropertyDTO[], string>({
+        query: userId => ({
+          url: `api/inventories/get-properties-by-userid/${userId}`,
+          method: "GET",
+        }),
+      }),
+      postProperty: builder.mutation<void, PropertyDTO>({
+        query: payload => ({
+          url: `api/properties`,
+          method: "POST",
+          body: payload,
+        }),
+      }),
+      updateProperty: builder.mutation<void, PropertyDTO>({
+        query: payload => ({
+          url: `api/properties`,
+          method: "PUT",
+          body: payload,
+        }),
+      }),
+      deleteProperty: builder.mutation<void, string>({
+        query: id => ({
+          url: `api/properties/${id}`,
+          method: "DELETE",
+        }),
+      }),
+    })
+})
+
+export const {
+  useGetPropertyByIdQuery,
+  useGetPropertiesByUserIdQuery,
+  usePostPropertyMutation,
+  useUpdatePropertyMutation,
+  useDeletePropertyMutation,
+ } = propertiesApiSlice
 
 export const mockProperties: PropertyDTO[] = [
     {

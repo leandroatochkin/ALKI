@@ -1,19 +1,10 @@
 import React, {useState, useMemo, useEffect} from 'react'
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import {
     Paper,
     Typography,
-    TextField,
-    Button,
     Box,
     Skeleton,
     CircularProgress,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    Link,
     Select,
     MenuItem,
     FormLabel,
@@ -21,24 +12,29 @@ import {
 import {
     DataGrid,
     GridColDef,
-    GridCellParams,
-    GridRowSelectionModel,
     GridOverlay,
-    GridPaginationModel,
     
   } from "@mui/x-data-grid"
-  import { mockProperties } from '../../api/PropertiesApiSlice'
-  import { useNavigate } from 'react-router-dom'
-import { TenantDTO } from '../../api/TenantsApiSlice'
-import { paymentMethodMapper } from '../../utils/functions'
-import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
 import { propertiesList } from '../../api/PropertiesApiSlice'
 import { Inventory, InventoryItem } from '../../api/InventoriesApiSlice'
 import { mockInventories } from '../../api/InventoriesApiSlice'
+import { useGetInventoryByPropertyQuery } from '../../api/InventoriesApiSlice'
 
 const AddInventory = () => {
 const [inventory, setInventory] = useState<Inventory | null>(null)
-useEffect(() => {console.log(inventory)},[inventory])
+const [selectedProperty, setSelectedProperty] = useState<string>('prop-001')
+
+
+const { data, isLoading, isError } = useGetInventoryByPropertyQuery(selectedProperty)
+
+useEffect(() => {
+    const filteredInventory = mockInventories.find(inventory => inventory.propertyId === selectedProperty)
+    if (data) {
+        setInventory(data)
+    } else {
+        setInventory(filteredInventory ?? null)
+    }
+},[data, selectedProperty])
 
     const TableSkeleton = () => (// for later use
         <Box
@@ -119,12 +115,8 @@ useEffect(() => {console.log(inventory)},[inventory])
             sx={{ mb: 2 }}
             onChange={(e) => {
                 const selectedProperty = e.target.value
-                const filteredInventory = mockInventories.find(inventory => inventory.propertyId === selectedProperty)
-                if (filteredInventory) {
-                    setInventory(filteredInventory)
-                } else {
-                    setInventory(null)
-                }
+                setSelectedProperty(selectedProperty)
+
             }
             }
         >
@@ -135,7 +127,11 @@ useEffect(() => {console.log(inventory)},[inventory])
             ))}
         </Select>
         <FormLabel htmlFor='inventario'>Inventario</FormLabel>
-        <DataGrid
+        {
+            !isLoading
+            ?
+            (
+                <DataGrid
             rows={rows}
             columns={columns}
             pagination
@@ -157,6 +153,12 @@ useEffect(() => {console.log(inventory)},[inventory])
                 loadingOverlay: CustomLoadingOverlay,
                     }}
                 />
+            )
+            :
+            (
+                <TableSkeleton/>
+            )
+        }
     </Paper>
   )
 }

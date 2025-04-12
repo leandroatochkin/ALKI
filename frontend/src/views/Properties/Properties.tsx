@@ -1,11 +1,31 @@
-import React from 'react'
-import { mockProperties } from '../../api/PropertiesApiSlice'
+import React, {useState, useEffect} from 'react'
+import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
 import PropertyCard from '../../components/Cards/PropertyCard'
-import { Box } from '@mui/material'
+import { Box, CircularProgress, Paper, Typography } from '@mui/material'
+import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 
 const Properties = () => {
+const [properties, setProperties] = useState<PropertyDTO[] | []>([])
+
+const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('') 
+
+useEffect(() => {
+    if (data) {
+        setProperties(data)
+    } else {
+        setProperties(mockProperties)
+    }
+},[data])
+
   return (
-        <Box
+  <>
+  {isError && (
+    <Paper sx={{ padding: 2, backgroundColor: 'error.main', color: 'white' }}>
+        <Typography variant="h6">Hubo un error cargando sus propiedades</Typography>
+        <Typography variant="body2">Por favor intente más tarde</Typography>
+    </Paper>
+  )}
+          <Box
             sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -13,10 +33,19 @@ const Properties = () => {
             padding: 2,
             }}
         >
-            {mockProperties.map((property) => (
+            { 
+            !isLoading
+            ?
+            properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
-            ))}
+            ))
+            :
+            (
+            <CircularProgress size={40} color='primary'/>
+            )
+            }
         </Box>
+  </>
   )
 }
 

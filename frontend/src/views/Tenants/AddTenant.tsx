@@ -14,6 +14,8 @@ import {
     DialogTitle,
     DialogContent,
     Link,
+    Select,
+    MenuItem,
 } from '@mui/material'
 import {
     DataGrid,
@@ -28,6 +30,9 @@ import {
 import { TenantDTO } from '../../api/TenantsApiSlice'
 import { paymentMethodMapper } from '../../utils/functions'
 import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
+import { useGetTenantsByUserIdQuery, useAssignTenantToPropertyMutation } from '../../api/TenantsApiSlice'
+import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
+import { propertiesList } from '../../api/PropertiesApiSlice'
 
 
 interface Observations {
@@ -38,16 +43,62 @@ interface Observations {
 }
 
 const AddTenant = () => {
-    const [tenants, setTenants] = useState<TenantDTO[] | []>(
-        mockProperties.map(property => property.tenantData).filter((tenant): tenant is TenantDTO => tenant !== undefined) ?? []
-    )
+    const [tenants, setTenants] = useState<TenantDTO[] | []>([])
     const [openDialog, setOpenDialog] = useState<boolean>(false)
     const [tenantToModify, setTenantToModify] = useState<string | null>(null)
     const [observations, setObservations] = useState<Observations | null>(null)
+    const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
+    const [openAssignToPropertyDialog, setOpenAssignToPropertyDialog] = useState<boolean>(false)
+
+    useEffect(() => {console.log(selectedTenant)}, [selectedTenant])
+
+    const { data, isLoading, isError } = useGetTenantsByUserIdQuery('')
+    const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery('')
+
+    const [assignTenantToProperty, {isLoading: isAssigning, isSuccess: isAssigned, isError: isErrorAssigning, status}] = useAssignTenantToPropertyMutation()
+
+    const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, string> => {
+      return properties.reduce((acc, prop) => {
+        acc[prop.id] = prop.title
+        return acc
+      }, {} as Record<string, string>)
+    }
+
+    const mappedProps = mapPropertiesToIdTitle(properties ?? [])
+    const propertiesMap = Object.keys(mappedProps).length > 0 ? mappedProps : propertiesList
+    console.log(propertiesMap)
+    
+
+    const handleRowSelection = (selection: GridRowSelectionModel) => {
+      const selectedData = selection.map(
+        selectedRowId => rows[Number(selectedRowId)],
+      )
+  
+      const selectedTenantsIds = selectedData.flatMap(row =>
+        row?.tenantId ? [row.tenantId] : [],
+      )
+  
+      setSelectedTenant(selectedTenantsIds[0] ?? null)
+    }
+    
+
+    useEffect(() => {
+      if (!isLoading && !isError && data) {
+          setTenants(data)
+      } else if (!isLoading && isError) {
+          const fallbackTenants = mockProperties
+              .map(property => property.tenantData)
+              .filter((tenant): tenant is TenantDTO => tenant !== undefined)
+          setTenants(fallbackTenants)
+      }
+  }, [data])
+  
 
     const tenantFiltered = tenants.filter((tenant) => tenant.tenantId === tenantToModify)[0] ?? null
 
     const navigate = useNavigate()
+
+ 
 
     const TableSkeleton = () => (// for later use
         <Box
@@ -274,11 +325,72 @@ const AddTenant = () => {
     )
   }
 
+  const AssignToPropertyDialog = () => {
+  const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
+  useEffect(() => {console.log(selectedProperty)},[selectedProperty])
+
+
+  const handleAssignTenantToProperty = async () => {}
+
+    return(
+        <Dialog
+        open={openAssignToPropertyDialog}
+        onClose={() => setOpenAssignToPropertyDialog(false)}
+        fullWidth
+        sx={{
+          p: 2
+        }}
+        >
+            <DialogTitle>Seleccione la propiedad</DialogTitle>
+            <DialogContent>
+            <Select
+                fullWidth
+                defaultValue={Object.keys(propertiesMap)[0]}
+                >
+                {Object.entries(propertiesMap).map(([code, type]) => (
+                    <MenuItem key={code} value={code}> 
+                    {`${type}`}
+                    </MenuItem>
+                ))}
+                </Select>
+
+            <Box
+            sx={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                md: "row",
+              },
+            }}
+            >
+            <Button
+            onClick={handleAssignTenantToProperty}
+            variant='outlined'
+            color='primary'
+            disabled={isAssigning || !selectedTenant || !selectedProperty}
+            >
+                asignar inquilino
+            </Button>         
+                <Button
+            onClick={() => setOpenAssignToPropertyDialog(false)}
+            variant='outlined'
+            color='warning'
+            >
+                cerrar
+            </Button>  
+            </Box>    
+            </DialogContent>
+            
+        </Dialog>
+    )
+  }
+
   return (
     <>
     {observations && <ObservationsDialog />}
     {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false} />}
     {tenantToModify && <AddTenantDialog open={!!tenantToModify} onClose={()=>setTenantToModify(null)} modify={true} tenant={tenantFiltered}/>}
+    {openAssignToPropertyDialog && <AssignToPropertyDialog />}
 
       <Paper
         sx={{
@@ -288,31 +400,44 @@ const AddTenant = () => {
         <Typography variant="h4" gutterBottom>
             Agregar o modificar inquilinos
         </Typography>
-             <DataGrid
-                          rows={rows}
-                          columns={columns}
-                          pagination
-                          pageSizeOptions={[10, 25, 50, 100]}
-                          paginationMode="client"
-                          rowCount={rows.length}
-                          disableColumnFilter
-                          disableColumnSelector
-                          sx={{
-                            //opacity: isUnpaidNotesLoading || refreshLoading ? 0.7 : 1,
-                            opacity: 1,
-                            transition: "opacity 0.3s ease",
-                            minHeight: "400px",
-                            height: "calc(100vh - 300px)",
-                            maxHeight: "600px",
-                          }}
-                          slots={{
-                            loadingOverlay: CustomLoadingOverlay,
-                          }}
-                        />
+        {
+          !isLoading
+          ?
+          (
+            <DataGrid
+            rows={rows}
+            columns={columns}
+            pagination
+            pageSizeOptions={[10, 25, 50, 100]}
+            paginationMode="client"
+            rowCount={rows.length}
+            disableColumnFilter
+            disableColumnSelector
+            checkboxSelection
+            disableMultipleRowSelection
+            onRowSelectionModelChange={handleRowSelection}
+            sx={{
+              opacity: isLoading  ? 0.7 : 1,
+              transition: "opacity 0.3s ease",
+              minHeight: "400px",
+              height: "calc(100vh - 300px)",
+              maxHeight: "600px",
+            }}
+            slots={{
+              loadingOverlay: CustomLoadingOverlay,
+            }}
+          />
+          )
+          :
+        (
+            <TableSkeleton/>
+        )
+        }
                         <Box
                             sx={{
                                 width: "100%",
                                 display: "flex",
+                                flexDirection: { xs: "column", md: "row" },
                                 justifyContent: "flex-end",
                                 gap: 2,
                                 }}
@@ -323,6 +448,14 @@ const AddTenant = () => {
                                 onClick={() => setOpenDialog(true)}
                                 >
                                     agregar inquilino
+                                </Button>
+                                <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => setOpenAssignToPropertyDialog(true)}
+                                disabled={isAssigning || !selectedTenant }
+                                >
+                                    + asignar a propiedad
                                 </Button>
                                 <Button
                                 variant="outlined"

@@ -1,3 +1,5 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+//import { fetchAuthSession } from "aws-amplify/auth"
 
 export interface InventoryItem {
     id: string;
@@ -11,6 +13,65 @@ export interface Inventory {
     date: string;
     items: InventoryItem[];
 }
+
+export const inventoriesApiSlice = createApi({
+    reducerPath: "inventoriesApiSlice",
+    baseQuery: fetchBaseQuery({
+      baseUrl: import.meta.env.VITE_BASEAPIURL,
+    //   prepareHeaders: async headers => {
+    //     const session = await fetchAuthSession()
+    //     const idToken = session.tokens?.idToken?.toString()
+    //     if (idToken) {
+    //       headers.set("authorization", `Bearer ${idToken}`)
+    //       headers.set("Access-Control-Allow-Origin", "*")
+    //       headers.set(
+    //         "Access-Control-Allow-Headers",
+    //         "Origin, X-Requested-With, Content-Type, Accept",
+    //       )
+    //     }
+    //     return headers
+    //   },
+    }),
+    endpoints: builder => ({
+      getInventoryById: builder.query<Inventory, string>({
+        query: id => ({
+          url: `api/inventories/get-inventory-by-id/${id}`,
+          method: "GET",
+        }),
+      }),
+      getInventoryByProperty: builder.query<Inventory, string>({
+        query: propertyId => ({
+          url: `api/inventories/get-inventory-by-property/${propertyId}`,
+          method: "GET",
+        }),
+      }),
+      postInventory: builder.mutation<void, Inventory>({
+        query: payload => ({
+          url: `api/inventories`,
+          method: "POST",
+          body: payload,
+        }),
+      }),
+      updateInventory: builder.mutation<void, Inventory>({
+        query: payload => ({
+          url: `api/inventories`,
+          method: "PUT",
+          body: payload,
+        }),
+      }),
+      deleteInventory: builder.mutation<void, string>({
+        query: id => ({
+          url: `api/inventories/${id}`,
+          method: "DELETE",
+        }),
+      }),
+    })
+})
+
+export const { 
+    useGetInventoryByIdQuery, 
+    useGetInventoryByPropertyQuery 
+} = inventoriesApiSlice
 
 export const mockInventories: Inventory[] = [
     {

@@ -1,4 +1,4 @@
-import React,{useMemo, useState} from 'react'
+import React,{useMemo, useState, useEffect} from 'react'
 import {
     Paper,
     Typography,
@@ -20,13 +20,24 @@ import {
   import { propertyTitleMapper } from '../../utils/functions'
   import { useNavigate } from 'react-router-dom'
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
+  import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 
 const AddProperty = () => {
-        const [properties, setProperties] = useState<PropertyDTO[] | []>(mockProperties ?? [])
+        const [properties, setProperties] = useState<PropertyDTO[] | []>([])
         const [openDialog, setOpenDialog] = useState<boolean>(false)
         const [propertyToModify, setPropertyToModify] = useState<string | null>(null)
 
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
+
+        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('')
+
+        useEffect(() => {
+          if (!isLoading && !isError && data) {
+              setProperties(data)
+          } else if (!isLoading && isError) {
+              setProperties(mockProperties)
+          }
+      }, [data, isLoading, isError])
 
     const navigate = useNavigate()
 
@@ -177,65 +188,62 @@ const AddProperty = () => {
     <Typography variant="h4" gutterBottom>
         Agregar o modificar propiedades
     </Typography>
-         <DataGrid
-                      rows={rows}
-                      columns={columns}
-                    //   initialState={{
-                    //     pagination: {
-                    //       paginationModel: {
-                    //         page,
-                    //         pageSize,
-                    //       },
-                    //     },
-                    //   }}
-                      pagination
-                      pageSizeOptions={[10, 25, 50, 100]}
-                      paginationMode="client"
-                      rowCount={rows.length}
-                      //paginationModel={{ page, pageSize }}
-                     // onPaginationModelChange={handlePaginationModelChange}
-                      disableColumnFilter
-                      disableColumnSelector
-                      //rowSelectionModel={selectedId}
-                      //onRowSelectionModelChange={setSelectedId}
-                    //   loading={
-                    //     isUnpaidNotesLoading || isLoadingRatesById || refreshLoading
-                    //   }
-                      sx={{
-                        //opacity: isUnpaidNotesLoading || refreshLoading ? 0.7 : 1,
-                        opacity: 1,
-                        transition: "opacity 0.3s ease",
-                        minHeight: "400px",
-                        height: "calc(100vh - 300px)",
-                        maxHeight: "600px",
-                      }}
-                      slots={{
-                        loadingOverlay: CustomLoadingOverlay,
-                      }}
-                    />
-                    <Box
-                                sx={{
-                                    width: "100%",
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                    gap: 2,
-                                }}
-                                >   
-                                    <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={() => setOpenDialog(true)}
-                                    >
-                                        agregar propiedad
-                                    </Button>
-                                    <Button
-                                    variant="outlined"
-                                    color="secondary"
-                                    onClick={() => {navigate('/home')}}
-                                    >
-                                        volver
-                                    </Button>
-                                </Box>
+         {
+          !isLoading
+          ?
+          (
+            <DataGrid
+            rows={rows}
+            columns={columns}
+            pagination
+            pageSizeOptions={[10, 25, 50, 100]}
+            paginationMode="client"
+            rowCount={rows.length}
+            disableColumnFilter
+            disableColumnSelector
+            loading={
+              isLoading
+            }
+            sx={{
+              opacity: isLoading ? 0.7 : 1,
+              transition: "opacity 0.3s ease",
+              minHeight: "400px",
+              height: "calc(100vh - 300px)",
+              maxHeight: "600px",
+            }}
+            slots={{
+              loadingOverlay: CustomLoadingOverlay,
+            }}
+          />
+          )
+          :
+          (
+            <TableSkeleton/>
+          )
+         }
+    <Box
+      sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 2,
+      }}
+      >   
+          <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => setOpenDialog(true)}
+          >
+              agregar propiedad
+          </Button>
+          <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => {navigate('/home')}}
+          >
+              volver
+          </Button>
+      </Box>
     </Paper>
     </>
   )
