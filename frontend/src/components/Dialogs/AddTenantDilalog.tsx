@@ -10,7 +10,8 @@ import {
     Select, 
     MenuItem,
     ButtonGroup,
-    Typography, 
+    Typography,
+    CircularProgress 
 } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -28,8 +29,13 @@ import {
     contractCurrencyList,
     contractPaymentMethodList 
 } from '../../utils/dataLists';
-import { TenantDTO } from '../../api/TenantsApiSlice';
+import { 
+    TenantDTO,
+    usePostTenantMutation,
+    useUpdateTenantMutation
+ } from '../../api/TenantsApiSlice';
 import dayjs from 'dayjs';
+
 
 
 interface TenantInfoDialogProps {
@@ -72,12 +78,22 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
 
     const navigate = useNavigate()
 
+    const [postTenant, {isLoading: isPosting, isSuccess: isPosted,isError: isPostingError, status: isPostingStatus}] = usePostTenantMutation()
+    const [updateTenant, {isLoading: isUpdating, isSuccess: isUpdated,isError: isUpdatingError, status: isUpdatingStatus}] = useUpdateTenantMutation()
+
     const onSubmit = async (data: TenantDTO) => {
         try {
-            // Call the API to add the property
-            console.log(data)
-            // If successful, close the dialog and refresh the properties list
-            onClose()
+            if (modify && tenant) {
+                await updateTenant({
+                    ...tenant,
+                    ...data,
+                }).unwrap()
+            } else {
+                await postTenant(data).unwrap()
+            }
+            if (isPosted || isUpdated) {
+                onClose()
+            }
         } catch (error) {
             console.error('Error adding property:', error)
         }
@@ -338,7 +354,7 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
                             {...register("contractPaymentFrequency", {
                                 required: 'Este campo es obligatorio',
                             })}
-                            defaultValue={0}
+                            defaultValue={'mensual'}
                             >
                             {['semanal', 'bisemanal', 'mensual', 'bimestral', 'trimestral'].map((option, index) => (
                                 <MenuItem key={index} value={option}>
@@ -373,25 +389,42 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
             sx={{
                 width: '100%',
                 display: 'flex',
+                flexDirection: {
+                    xs: 'column',
+                    sm: 'row'
+                },
                 justifyContent: 'flex-end',
                 mt: 2,
                 gap: 2
             }}
             >       
                     <Button
-                    variant="contained"
+                    type="submit"
+                    variant="outlined"
+                    color="primary"
+                    disabled={isPosting || isUpdating}
+                    >
+                        {
+                            isPosting || isUpdating
+                            ?
+                            (
+                                <CircularProgress size={20} color='primary'/>
+                            ) 
+                            :
+                            (
+                                modify ? 'Modificar' : 'Agregar'
+                            )
+                        }
+                    </Button>
+                    <Button
+                    variant="outlined"
                     color="secondary"
                     onClick={onClose}
+                    disabled={isPosting || isUpdating}
                     >
                         volver
                     </Button>
-                    <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    >
-                        {modify ? 'Modificar' : 'Agregar'}
-                    </Button>
+                    
             </Box>
             </form>
         </DialogContent>

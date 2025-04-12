@@ -5,7 +5,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import {
     Paper,
     Typography,
-    TextField,
     Button,
     Box,
     Skeleton,
@@ -18,19 +17,23 @@ import {
     MenuItem,
 } from '@mui/material'
 import {
-    DataGrid,
+    DataGrid, 
     GridColDef,
     GridCellParams,
     GridRowSelectionModel,
     GridOverlay,
-    GridPaginationModel,
   } from "@mui/x-data-grid"
   import { mockProperties } from '../../api/PropertiesApiSlice'
   import { useNavigate } from 'react-router-dom'
 import { TenantDTO } from '../../api/TenantsApiSlice'
 import { paymentMethodMapper } from '../../utils/functions'
 import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
-import { useGetTenantsByUserIdQuery, useAssignTenantToPropertyMutation } from '../../api/TenantsApiSlice'
+import { 
+  useGetTenantsByUserIdQuery, 
+  useAssignTenantToPropertyMutation, 
+  useDeleteTenantMutation,
+  useUpdateTenantMutation
+} from '../../api/TenantsApiSlice'
 import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
 import { propertiesList } from '../../api/PropertiesApiSlice'
 
@@ -52,10 +55,13 @@ const AddTenant = () => {
 
     useEffect(() => {console.log(selectedTenant)}, [selectedTenant])
 
-    const { data, isLoading, isError } = useGetTenantsByUserIdQuery('')
+    const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery('')
     const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery('')
 
     const [assignTenantToProperty, {isLoading: isAssigning, isSuccess: isAssigned, isError: isErrorAssigning, status}] = useAssignTenantToPropertyMutation()
+    const [deleteTenant, {isLoading: isDeleting, isSuccess: isDeleted, isError: isErrorDeleting, status: deletingStatus}] = useDeleteTenantMutation()
+
+    const disabledCondition = isLoading || isLoadingProperties || isAssigning || isDeleting
 
     const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, string> => {
       return properties.reduce((acc, prop) => {
@@ -71,7 +77,7 @@ const AddTenant = () => {
 
     const handleRowSelection = (selection: GridRowSelectionModel) => {
       const selectedData = selection.map(
-        selectedRowId => rows[Number(selectedRowId)],
+        selectedRowId => rows[Number(selectedRowId)]
       )
   
       const selectedTenantsIds = selectedData.flatMap(row =>
@@ -83,20 +89,36 @@ const AddTenant = () => {
     
 
     useEffect(() => {
-      if (!isLoading && !isError && data) {
-          setTenants(data)
-      } else if (!isLoading && isError) {
-          const fallbackTenants = mockProperties
-              .map(property => property.tenantData)
-              .filter((tenant): tenant is TenantDTO => tenant !== undefined)
-          setTenants(fallbackTenants)
+      if (isLoading) return; // Don't do anything while loading
+    
+      if (!isError && data && Array.isArray(data)) {
+        setTenants(data);
+      } else {
+        // fallback only if there's an error or no valid data
+        const fallbackTenants = mockProperties
+          .map((property) => property.tenantData)
+          .filter((tenant): tenant is TenantDTO => tenant !== undefined);
+        setTenants(fallbackTenants);
       }
-  }, [data])
+    }, [data, isLoading, isError, refetch]);
+    
+    
   
 
     const tenantFiltered = tenants.filter((tenant) => tenant.tenantId === tenantToModify)[0] ?? null
 
     const navigate = useNavigate()
+
+    const handleDeleteTenant = async (tenantId: string) => {
+        if(confirm("¿Está seguro de que desea eliminar este inquilino?")) {
+          try {
+            await deleteTenant(tenantId).unwrap()
+            setTenants(prev => prev.filter(tenant => tenant.tenantId !== tenantId))
+        } catch (error) {
+            console.error('Error deleting tenant:', error)
+        }
+        }
+    }
 
  
 
@@ -249,24 +271,6 @@ const AddTenant = () => {
                     )
                   },
                 },
-                {
-                  field: "delete",
-                  headerName: "eliminar",
-                  width: 120,
-                  editable: false,
-                  renderCell: (params: GridCellParams) => {
-                    return (
-                      <Button
-                        color="primary"
-                        onClick={() => {
-                          console.log("Modificar propiedad", params.row.propertyId)
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    )
-                  },
-                },
               ],
               [],
             )
@@ -330,7 +334,19 @@ const AddTenant = () => {
   useEffect(() => {console.log(selectedProperty)},[selectedProperty])
 
 
-  const handleAssignTenantToProperty = async () => {}
+  const handleAssignTenantToProperty = async () => {
+    if (selectedTenant && selectedProperty) {
+        const data = {
+            tenantId: selectedTenant,
+            propertyId: selectedProperty,
+        }
+        console.log(data)
+        await assignTenantToProperty(data).unwrap()
+        setOpenAssignToPropertyDialog(false)
+    } else {
+        console.error("No se seleccionó inquilino o propiedad")
+    }
+  }
 
     return(
         <Dialog
@@ -346,6 +362,7 @@ const AddTenant = () => {
             <Select
                 fullWidth
                 defaultValue={Object.keys(propertiesMap)[0]}
+                onChange={(e) => setSelectedProperty(e.target.value)}
                 >
                 {Object.entries(propertiesMap).map(([code, type]) => (
                     <MenuItem key={code} value={code}> 
@@ -361,8 +378,11 @@ const AddTenant = () => {
                 xs: "column",
                 md: "row",
               },
+              mt: 2,
+              gap: 2,
             }}
             >
+            
             <Button
             onClick={handleAssignTenantToProperty}
             variant='outlined'
@@ -395,6 +415,7 @@ const AddTenant = () => {
       <Paper
         sx={{
             p: 2,
+            mt: 2,
         }}
         >
         <Typography variant="h4" gutterBottom>
@@ -440,8 +461,10 @@ const AddTenant = () => {
                                 flexDirection: { xs: "column", md: "row" },
                                 justifyContent: "flex-end",
                                 gap: 2,
+                                mt: 2,
                                 }}
-                                >   
+                                >
+                                    
                                 <Button
                                 variant="outlined"
                                 color="primary"
@@ -453,9 +476,17 @@ const AddTenant = () => {
                                 variant="outlined"
                                 color="primary"
                                 onClick={() => setOpenAssignToPropertyDialog(true)}
-                                disabled={isAssigning || !selectedTenant }
+                                disabled={disabledCondition || !selectedTenant }
                                 >
                                     + asignar a propiedad
+                                </Button>
+                                <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => selectedTenant && handleDeleteTenant(selectedTenant)}
+                                disabled={disabledCondition || !selectedTenant }
+                                >
+                                    - dar de baja
                                 </Button>
                                 <Button
                                 variant="outlined"
