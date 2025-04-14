@@ -20,16 +20,19 @@ import {
   import { propertyTitleMapper } from '../../utils/functions'
   import { useNavigate } from 'react-router-dom'
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
-  import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
+  import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
 
 const AddProperty = () => {
         const [properties, setProperties] = useState<PropertyDTO[] | []>([])
         const [openDialog, setOpenDialog] = useState<boolean>(false)
         const [propertyToModify, setPropertyToModify] = useState<string | null>(null)
+        const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
 
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
         const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('')
+
+        const [deleteProperty,{isLoading: isDeleting, isError: isErrorDeleting, status: isStatusDeleting}] = useDeletePropertyMutation()
 
         useEffect(() => {
           if (!isLoading && !isError && data) {
@@ -175,6 +178,34 @@ const AddProperty = () => {
         [],
       )
 
+        const handleRowSelection = (selection: GridRowSelectionModel) => {
+            const selectedData = selection.map(
+              selectedRowId => rows[Number(selectedRowId)]
+            )
+        
+            const selectedPropertyId = selectedData.flatMap(row =>
+              row?.propertyId ? [row.propertyId] : [],
+            )
+        
+            setSelectedProperty(selectedPropertyId[0] ?? null)
+          }
+
+          const handleDeleteProperty = () => {
+            if(confirm("¿Está seguro de que desea eliminar esta propiedad?")) {
+              try{
+                if (selectedProperty) {
+                  deleteProperty(selectedProperty).unwrap()
+                  setSelectedProperty(null)
+                }
+              } catch (error) {
+                console.error("Error deleting property:", error)
+              }
+            } return
+
+          }
+
+          
+
 
   return (
     <>
@@ -201,6 +232,9 @@ const AddProperty = () => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
+            checkboxSelection
+            disableMultipleRowSelection
+            onRowSelectionModelChange={handleRowSelection}
             loading={
               isLoading
             }
@@ -225,6 +259,10 @@ const AddProperty = () => {
       sx={{
           width: "100%",
           display: "flex",
+          flexDirection: {
+              xs: "column",
+              md: "row",
+          },
           justifyContent: "flex-end",
           gap: 2,
       }}
@@ -235,6 +273,14 @@ const AddProperty = () => {
           onClick={() => setOpenDialog(true)}
           >
               agregar propiedad
+          </Button>
+          <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleDeleteProperty}
+          disabled={!selectedProperty || isDeleting}
+          >
+              eliminar propiedad
           </Button>
           <Button
           variant="outlined"

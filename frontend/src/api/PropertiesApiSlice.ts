@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TenantDTO } from "./TenantsApiSlice";
 import { Inventory } from "./InventoriesApiSlice";
+import { Payment } from "./PaymentsApiSlice";
 
 export interface Service {
     id: string;
@@ -9,14 +10,6 @@ export interface Service {
 }
 
 
-export interface Payment {
-    id: string;
-    amount: number;
-    date: string;
-    method: number; // 0: bank transfer, 1: cash, 2: credit card, 3: debit card, 4: other
-    period: string;
-    status: number; // 0: paid, 1: pending, 2: debt
-}
 
 
 export interface PropertyDTO {
@@ -129,6 +122,7 @@ export const mockProperties: PropertyDTO[] = [
         payments: [
           {
             id: "pay-001",
+            tenantId: "tenant-001",
             amount: 10000,
             date: "2024-01-05",
             method: 0,
@@ -137,6 +131,7 @@ export const mockProperties: PropertyDTO[] = [
           },
           {
             id: "pay-002",
+            tenantId: "tenant-001",
             amount: 10000,
             date: "2024-02-05",
             method: 0,
@@ -181,6 +176,7 @@ export const mockProperties: PropertyDTO[] = [
         payments: [
           {
             id: "pay-003",
+            tenantId: "tenant-002",
             amount: 12500,
             date: "2024-03-01",
             method: 1,
@@ -226,6 +222,7 @@ export const mockProperties: PropertyDTO[] = [
         payments: [
           {
             id: "pay-004",
+            tenantId: "tenant-003",
             amount: 45000,
             date: "2024-04-01",
             method: 2,

@@ -30,6 +30,7 @@ const mockTenant = {
   payments: [
     {
       id: "pay-001",
+      tenantId: "tenant-001",
       amount: 10000,
       date: "2024-01-05",
       method: 0,
@@ -38,6 +39,7 @@ const mockTenant = {
     },
     {
       id: "pay-002",
+      tenantId: "tenant-001",
       amount: 10000,
       date: "2024-02-05",
       method: 0,

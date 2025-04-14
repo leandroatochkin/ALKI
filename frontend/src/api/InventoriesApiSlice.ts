@@ -65,12 +65,23 @@ export const inventoriesApiSlice = createApi({
           method: "DELETE",
         }),
       }),
+      deleteInventoryItems: builder.mutation<void, string[]>({
+        query: payload => ({
+          url: `api/inventories`,
+          method: "DELETE",
+          body: payload
+        }),
+      }),
     })
 })
 
 export const { 
     useGetInventoryByIdQuery, 
-    useGetInventoryByPropertyQuery 
+    useGetInventoryByPropertyQuery,
+    usePostInventoryMutation,
+    useUpdateInventoryMutation,
+    useDeleteInventoryMutation,
+    useDeleteInventoryItemsMutation 
 } = inventoriesApiSlice
 
 export const mockInventories: Inventory[] = [
