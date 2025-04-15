@@ -10,19 +10,22 @@ import {
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import { propertyIconMapper } from '../../utils/functions'
 import PropertyInfoDialog from '../Dialogs/PropertyInfoDialog'
+import InformPaymentDialog from '../Dialogs/InformPaymentDialog'
 
 interface PropertyCardProps {
     property: PropertyDTO
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
-    const [openDialog, setOpenDialog] = useState<boolean>(false)
+    const [openPropertyInfoDialog, setOpenPropertyInfoDialog] = useState<boolean>(false)
+    const [openInformPaymentInfoDialog, setOpenInformPaymentDialog] = useState<boolean>(false)
     const IconComponent = propertyIconMapper(property.type)
 
     
   return (
     <>
-    {openDialog && <PropertyInfoDialog property={property} open={openDialog} onClose={() => setOpenDialog(false)} />}
+    {openPropertyInfoDialog && <PropertyInfoDialog property={property} open={openPropertyInfoDialog} onClose={() => setOpenPropertyInfoDialog(false)} />}
+    {openInformPaymentInfoDialog && <InformPaymentDialog property={property} open={openInformPaymentInfoDialog} onClose={() => setOpenInformPaymentDialog(false)} />}
     <Paper
     sx={{
         borderRadius: 2
@@ -110,13 +113,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <Button
             variant='outlined'
             color='primary'
+            onClick={()=>setOpenInformPaymentDialog(true)}
             >
                 marcar pago
             </Button>
             <Button
             variant='outlined'
             color='warning'
-            onClick={() => setOpenDialog(true)}
+            onClick={() => setOpenPropertyInfoDialog(true)}
             >
                 información
             </Button>

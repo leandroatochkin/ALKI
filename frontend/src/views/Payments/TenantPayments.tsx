@@ -1,4 +1,4 @@
-import React, {useMemo, useCallback} from 'react'
+import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import {
     Paper,
     Box,
@@ -16,17 +16,34 @@ import {
     GridOverlay,
     GridPaginationModel,
   } from "@mui/x-data-grid"
-import { Payment } from '../../api/PropertiesApiSlice'
+import { Payment } from '../../api/PaymentsApiSlice'
 import { TenantDTO } from '../../api/TenantsApiSlice'
 import dayjs, { Dayjs } from "dayjs"
 import { paymentMethodMapper } from '../../utils/functions'
 import { useNavigate } from 'react-router-dom'
+import { useGetTenantPaymentsByTenantIdQuery } from '../../api/PaymentsApiSlice'
 
 interface TenantPaymentsProps {
     tenant: TenantDTO
 }
 
 const TenantPayments: React.FC<TenantPaymentsProps> = ({tenant}) => {
+const [payments, setPayments] = useState<Payment[] | []>([])
+
+const {data, isLoading, isError, status, refetch} = useGetTenantPaymentsByTenantIdQuery(tenant.tenantId)
+
+
+    useEffect(() => {
+      if (isLoading) return; // Don't do anything while loading
+    
+      if (!isError && data && Array.isArray(data)) {
+        setPayments(data);
+      } else {
+        // fallback only if there's an error or no valid data
+        const fallbackPayments = tenant.payments
+        setPayments(fallbackPayments);
+      }
+    }, [data, isLoading, isError, refetch]);
 
 const navigate = useNavigate()    
 
@@ -141,7 +158,7 @@ const statusMapper = useCallback((status: number) => {
 
       const rows = useMemo(
         () =>
-          (tenant?.payments ?? []).map((payment: Payment, index: number) => ({
+          (payments ?? []).map((payment: Payment, index: number) => ({
             id: index,
             paymentId: payment.id,
             amount: `$${payment.amount.toFixed(2)}`,
@@ -166,7 +183,13 @@ const statusMapper = useCallback((status: number) => {
     <Typography variant="h6" sx={{ padding: 2 }}>
     Pagos de {tenant?.firstName} {tenant?.lastName}
     </Typography>
-    <DataGrid
+            {
+              isLoading
+              ?
+              <TableSkeleton />
+              :
+              (
+                <DataGrid
               rows={rows}
               columns={columns}
             //   initialState={{
@@ -203,10 +226,16 @@ const statusMapper = useCallback((status: number) => {
                 loadingOverlay: CustomLoadingOverlay,
               }}
             />
+              )
+            }
             <Box
             sx={{
                 width: "100%",
                 display: "flex",
+                flexDirection: {
+                  xs: 'column',
+                  md: 'row'
+                },
                 justifyContent: "flex-end",
             }}
             >

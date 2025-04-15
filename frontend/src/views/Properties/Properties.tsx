@@ -3,9 +3,13 @@ import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
 import PropertyCard from '../../components/Cards/PropertyCard'
 import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
+import {LinearProgress} from '@mui/material'
+import { mockUser } from '../../api/UsersSlice'
 
 const Properties = () => {
 const [properties, setProperties] = useState<PropertyDTO[] | []>([])
+const [progress, setProgress] = useState<number>(0);
+const userData = mockUser
 
 const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('') 
 
@@ -17,10 +21,51 @@ useEffect(() => {
     }
 },[data])
 
+const currentMonthlyTotalRevenue = properties
+.map((property) => property.tenantData?.payments ?? [])
+.map((payments) => payments.map((payment) => payment?.amount ?? 0))
+.flat()
+.reduce((acc, propertyRev) => acc + propertyRev, 0)
+
+
+
+
+const getRevenueProgress = () => {
+
+const targetMonthlyRevenue = userData.monthlyRevenue
+
+const progress = targetMonthlyRevenue > 0 
+    ? Math.min(100, Math.round((currentMonthlyTotalRevenue / targetMonthlyRevenue) * 100))
+    : 0
+
+  return progress
+}
+
+useEffect(()=>{
+  const revenueProgress = getRevenueProgress()
+  setProgress(revenueProgress)
+},[properties])
+
+const LinearProgressWithLabel = (props: any) => {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">
+          {`${Math.round(props.value)}%`}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+
   return (
   <>
   {isError && (
-    <Paper sx={{ padding: 2, backgroundColor: 'error.main', color: 'white' }}>
+    <Paper sx={{ padding: 2, backgroundColor: 'error.main', color: 'white', mt: 2 }}>
         <Typography variant="h6">Hubo un error cargando sus propiedades</Typography>
         <Typography variant="body2">Por favor intente más tarde</Typography>
     </Paper>
@@ -33,6 +78,25 @@ useEffect(() => {
             padding: 2,
             }}
         >
+            <Paper
+            sx={{
+              p: 1,
+              borderRadius: 2
+            }}
+            >
+            <Typography>
+              {`Ingreso mensual (meta: $${userData.monthlyRevenue.toFixed(2)})`}
+            </Typography>
+            <Typography 
+            variant='h4'
+            sx={{
+              textAlign: 'end'
+            }}
+            >
+              {`$${currentMonthlyTotalRevenue.toFixed(2)}`}
+            </Typography>
+            <LinearProgressWithLabel value={progress}/>
+            </Paper>
             { 
             !isLoading
             ?

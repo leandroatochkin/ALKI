@@ -281,3 +281,11 @@ export const contractPaymentMethodList = {
     '4': 'Otro',
 }
 
+export const spanishLocaleText = {
+    toolbarTitle: 'Seleccionar',
+    okButtonLabel: 'Aceptar',
+    cancelButtonLabel: 'Cancelar',
+    clearButtonLabel: 'Limpiar',
+    todayButtonLabel: 'Hoy',
+  }
+

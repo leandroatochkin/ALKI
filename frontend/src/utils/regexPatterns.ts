@@ -6,7 +6,7 @@
 
  export const phoneRegex = /^54\d{8,10}$/;
 
- export const onlyNumbersRegex = /^\d{2,8}$/
+ export const onlyNumbersRegex = /^\d{2,50}$/
  
  export const addressRegex = /^[\p{L}\d\s.,°º#\-]{5,}$/u
 

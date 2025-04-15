@@ -3,6 +3,8 @@ import { configureStore } from "@reduxjs/toolkit"
 import { inventoriesApiSlice } from "../InventoriesApiSlice"
 import { propertiesApiSlice } from "../PropertiesApiSlice"
 import { tenantsApiSlice } from "../TenantsApiSlice"
+import { paymentsApiSlice } from "../PaymentsApiSlice"
+
 
 export const store: Store = configureStore({
     reducer: {
@@ -14,6 +16,7 @@ export const store: Store = configureStore({
       [inventoriesApiSlice.reducerPath]: inventoriesApiSlice.reducer,
       [propertiesApiSlice.reducerPath]: propertiesApiSlice.reducer,
       [tenantsApiSlice.reducerPath]: tenantsApiSlice.reducer,
+      [paymentsApiSlice.reducerPath]: paymentsApiSlice.reducer,
       
     },
     middleware: getDefaultMiddleware =>
@@ -21,6 +24,7 @@ export const store: Store = configureStore({
         inventoriesApiSlice.middleware,
         propertiesApiSlice.middleware,
         tenantsApiSlice.middleware,
+        paymentsApiSlice.middleware
       ),
   })
   
