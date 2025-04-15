@@ -2,11 +2,16 @@ export interface UserPreview {
     id: string;
     firstName: string;
     lastName: string;
+    middleName?: string
     email: string;
     phoneNumber: string;
     countryCode: string;
-    address: string;
+    addressLine1: string;
+    addressLine2?: string;
     monthlyRevenue: number
+    state: string
+    city: string
+    postalCode: string
 }
 
 export const mockUser = {

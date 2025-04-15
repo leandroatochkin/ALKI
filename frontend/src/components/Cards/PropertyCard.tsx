@@ -115,7 +115,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             color='primary'
             onClick={()=>setOpenInformPaymentDialog(true)}
             >
-                marcar pago
+                registrar pago
             </Button>
             <Button
             variant='outlined'

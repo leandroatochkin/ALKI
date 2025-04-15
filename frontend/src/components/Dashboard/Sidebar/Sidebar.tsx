@@ -17,7 +17,6 @@ import MenuIcon from "@mui/icons-material/Menu"
 //   useGetMyUserQuery,
 //   UserPreview,
 // } from "../../../../app/api/usersSliceApi"
-import { UserPreview } from "../../../api/UsersSlice"
 import { useNavigate } from "react-router-dom"
 
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -28,6 +27,8 @@ import AddCardIcon from "@mui/icons-material/AddCard"
 import HouseIcon from '@mui/icons-material/House';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import { mockUser } from "../../../api/UsersSlice"
+import { UserPreview } from "../../../api/UsersSlice"
 
 
 // import {
@@ -46,13 +47,11 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 interface Props {
   userData: UserPreview
 }
+
 interface UserSidebarAttributes {
   email: string
-  username: string
   name: string
   userId: string
-  organizationName: string
-  tenantId?: string
 }
 
 function Sidebar() {
@@ -61,11 +60,8 @@ function Sidebar() {
   const navigate = useNavigate()
   const [userAttributes, setUserAttributes] = useState<UserSidebarAttributes>({
     email: "",
-    username: "",
     name: "",
     userId: "",
-    organizationName: "",
-    tenantId: "",
   })
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
   //const { data: myUserData } = useGetMyUserQuery(undefined)
@@ -93,25 +89,22 @@ function Sidebar() {
     navigate("/sign-in")
   }
 
-//   const setAttributes = async () => {
-//     if (myUserData) {
-//       const payload: UserSidebarAttributes = {
-//         email: myUserData.email,
-//         username: myUserData.username,
-//         name: `${myUserData.firstName} ${myUserData.lastName}`,
-//         userId: myUserData.userId,
-//         organizationName: myUserData.organizationName,
-//         tenantId: myUserData.tenantId,
-//       }
-//       setUserAttributes(payload)
-//     }
-//   }
+  const setAttributes = async () => {
+    if (mockUser) {
+      const payload: UserSidebarAttributes = {
+        email: mockUser.email,
+        name: `${mockUser.firstName} ${mockUser.lastName}`,
+        userId: mockUser.id,
+      }
+      setUserAttributes(payload)
+    }
+  }
 
-//   useEffect(() => {
-//     if (myUserData) {
-//       setAttributes()
-//     }
-//   }, [myUserData])
+  useEffect(() => {
+    if (mockUser) {
+      setAttributes()
+    }
+  }, [mockUser])
   // Handle window resize to toggle drawer based on screen size
   useEffect(() => {
     const handleResize = () => {
@@ -161,18 +154,22 @@ function Sidebar() {
           "--Drawer-horizontalSize: clamp(0px, 80%, 200px);": {
             width: "var(--Drawer-horizontalSize)",
           },
-          // position: window.innerWidth < 768 ? 'static':'fixed',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          //position: window.innerWidth < 768 ? 'static':'fixed',
         }}
         disableScrollLock // Prevent content blurring
       >
         <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          paddingTop={3}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            pt: 3,
+            height: '100%'
+          }}
         >
-        </Box>
-
         <List component="nav">
           {sidebarItems.map((item: any) => (
             <ListItem key={item.id}>
@@ -190,17 +187,16 @@ function Sidebar() {
           ))}
         </List>
         {userAttributes && (
-          <div className="border-t flex p-3 relative">
-            <IconButton
-              onClick={() => navigate(`/settings/${userAttributes?.tenantId}`)}
-              sx={{ color: "black" }}
-            >
-              <SettingsIcon />
-            </IconButton>
-            <div
-              className={`flex justify-between items-center overflow-hidden transition-all`}
-            >
-              <div className="leading-4">
+          <Box
+          sx={{
+            width: '90%',
+            m: 2,
+            p: 1,
+            borderRadius: 2,
+            background: 'lightgray'
+          }}
+          >
+             <div className="leading-4">
                 <Typography
                   variant="body2"
                   fontWeight={"bold"}
@@ -209,31 +205,37 @@ function Sidebar() {
                 >
                   {userAttributes?.name}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  fontWeight={"bold"}
-                  fontFamily="AlbertSans"
-                  color="black"
-                >
-                  {userAttributes?.username}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  fontWeight={"bold"}
-                  fontFamily="AlbertSans"
-                  color="black"
-                >
-                  {userAttributes?.organizationName}
-                </Typography>
+
+               
               </div>
+            <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end'
+            }}
+            >
+            <IconButton
+              onClick={() => navigate(`/settings/${userAttributes?.userId}`)}
+              sx={{ color: "black" }}
+            >
+              <SettingsIcon />
+            </IconButton>
+            <div
+              className={`flex justify-between items-center overflow-hidden transition-all`}
+            >
               <Tooltip title="Logout">
                 <IconButton onClick={signOutHandler} sx={{ color: "black" }}>
                   <LogoutIcon />
                 </IconButton>
               </Tooltip>
             </div>
-          </div>
+            </Box>
+          </Box>
         )}
+        </Box>
+
+
+        
       </Drawer>
     </Box>
   )

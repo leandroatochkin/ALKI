@@ -1,0 +1,79 @@
+import React,{useMemo, useState, useEffect} from 'react'
+import {
+    Paper,
+    Typography,
+    Stack,
+    Button
+} from '@mui/material'
+  import { useNavigate } from 'react-router-dom'
+  import { UserPreview } from '../../api/UsersSlice'
+  import UpdateUserDataDialog from '../../components/Dialogs/UpdateUserDataDialog'
+
+interface SettingsInterface  {
+    userData: UserPreview
+}  
+
+const Settings: React.FC<SettingsInterface> = ({userData}) => {
+ const [user, setUser] = useState<UserPreview | null>(null)
+ const [openModifyUserDataDialog, setOpenModifyUserDialog] = useState<boolean>(false)
+ const [openOptionsDialog, setOpenOptionsDialog] = useState<boolean>(false)
+
+
+    useEffect(() => {
+          setUser(userData)
+      }, [userData])
+
+    const navigate = useNavigate()
+
+
+
+          
+
+
+  return (
+    <>
+    {openModifyUserDataDialog && user && <UpdateUserDataDialog userData={user} open={openModifyUserDataDialog} onClose={()=>setOpenModifyUserDialog(false)}/>}
+    <Paper
+    sx={{
+        p: 2,
+        mt: 2
+    }}
+    >
+    <Typography variant="h4" gutterBottom>
+        Ajustes
+    </Typography>
+        <Stack
+        spacing={2}
+        >
+            <Button
+            variant='outlined'
+            color='primary'
+            onClick={()=>setOpenModifyUserDialog(true)}
+            >
+                mis datos
+            </Button>
+            <Button
+            variant='outlined'
+            color='primary'
+            >
+                opciones
+            </Button>
+            <Button
+            variant='outlined'
+            color='primary'
+            >
+                organizaciones
+            </Button>
+            <Button
+            variant='outlined'
+            color='primary'
+            >
+                sobre la app
+            </Button>
+        </Stack>
+    </Paper>
+    </>
+  )
+}
+
+export default Settings

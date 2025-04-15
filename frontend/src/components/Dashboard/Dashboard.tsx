@@ -106,22 +106,22 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
           <Logo darkMode={true} size={1}/>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
           </Typography>
-          <IconButton>
+          {/* <IconButton>
               <Tooltip title="Show notifications">
               <Badge badgeContent={userNotifications?.filter(notification=>notification.status === 0).length} color="error">
               <NotificationsIcon 
-//               onClick={() => navigate(`/notifications/${userData?.userId}`)}
+               onClick={() => navigate(`/notifications/${userData?.userId}`)}
                sx={{ color: "black" }}
               />
               </Badge>
               </Tooltip>
-          </IconButton>
+          </IconButton> */}
           <IconButton
-            //onClick={() => navigate(`/settings/${userData?.tenantId}`)}
+            onClick={() => navigate(`/settings`)}
             sx={{ color: "black" }}
           >
             <SettingsIcon />
-            <Typography marginLeft={1}> Settings </Typography>
+            <Typography marginLeft={1}> Ajustes </Typography>
           </IconButton>
         </Toolbar>
       </AppBar>

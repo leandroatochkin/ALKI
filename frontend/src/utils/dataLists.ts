@@ -289,3 +289,10 @@ export const spanishLocaleText = {
     todayButtonLabel: 'Hoy',
   }
 
+export const paymentStatusMapper = {
+    '0': 'Pagado',
+    '1': 'Deuda',
+    '2': 'En proceso',
+    '3': 'Parcial',
+    '4': 'Otro',
+}

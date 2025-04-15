@@ -10,7 +10,8 @@ import {
     FormLabel, 
     Select, 
     MenuItem,
-    Button 
+    Button,
+    CircularProgress 
 } from '@mui/material'
 import { useForm } from 'react-hook-form'; 
 import { Payment } from '../../api/PaymentsApiSlice';
@@ -22,6 +23,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs from 'dayjs';
 import 'dayjs/locale/es'
 import { spanishLocaleText } from '../../utils/dataLists';
+import { paymentStatusMapper } from '../../utils/dataLists';
+import { usePostPaymentsMutation } from '../../api/PaymentsApiSlice';
 
 
 interface InformPaymentDialogProps {
@@ -33,7 +36,7 @@ interface InformPaymentDialogProps {
 const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open, onClose}) => {
     const currentMonth = dayjs().startOf('month')
 
-
+    const [postPayment, {isLoading: isPaying}] = usePostPaymentsMutation()
 
     const {
         register,
@@ -47,13 +50,19 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
             date: String(new Date()),
             period: dayjs().startOf('month').format('MM-YY'),
             tenantId: property.tenantData?.tenantId,
+            status: 0
         }
     })
 
 
 
     const onSubmit = (data: Payment) => {
-        console.log(data)
+        try{
+            const paymentArr = Array(data)
+            postPayment(paymentArr).unwrap()
+        } catch(e){
+            console.log(e)
+        }
     }
 
   return (
@@ -65,13 +74,18 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
       <Dialog
     open={open}
     onClose={onClose}
+    fullWidth
     >
         <DialogTitle>Informar pago manual</DialogTitle>
         <DialogContent>
             <Box
             >
-                <Typography>{property.title}</Typography>
-                <Typography>monto mensual: {property.description}</Typography>
+                <Typography
+                sx={{
+                    fontWeight: 'bold'
+                }}
+                >{property.title}</Typography>
+                <Typography>monto mensual: ${property.tenantData?.contractValue.toFixed(2)}{property.tenantData?.contractCurrency}</Typography>
                 <form
                 onSubmit={handleSubmit(onSubmit)}
                 >
@@ -146,6 +160,26 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
                     <Box
                     sx={{
                         display: 'flex',
+                        flexDirection: 'column'
+                    }}
+                    >
+                    <FormLabel htmlFor='method'>Estado del pago:</FormLabel>
+                    <Select
+                          {...register(`status`, {
+                            required: 'Este campo es obligatorio',
+                        })}
+                        defaultValue={0}
+                    >
+                        {Object.entries(paymentStatusMapper).map(([code, type]) => (
+                            <MenuItem key={code} value={code}>
+                                {`${type}`}
+                            </MenuItem>
+                            ))}
+                    </Select>
+                    </Box>
+                    <Box
+                    sx={{
+                        display: 'flex',
                         flexDirection: {
                             xs: 'column',
                             md: 'row'
@@ -158,8 +192,15 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
                     type='submit'
                     variant='outlined'
                     color='primary'
+                    disabled={isPaying}
                     >
-                        informar
+                        {
+                            isPaying
+                            ?
+                            <CircularProgress size={20}/>
+                            :
+                            'registrar pago'
+                        }
                     </Button>
                     <Button
                     variant='outlined'

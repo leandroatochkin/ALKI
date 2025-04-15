@@ -4,11 +4,14 @@ import {store} from './api/store/store.ts'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant, AddInventory } from './views/index.ts'
+import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant, AddInventory, Settings } from './views/index'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
+
+
 import { mockProperties } from './api/PropertiesApiSlice.ts'
+import { mockUser } from './api/UsersSlice.ts'
 
 const mockTenant = {
   tenantId: "tenant-001",
@@ -109,6 +112,15 @@ const router = createBrowserRouter([
     element: (
       <Dashboard>
         <AddInventory />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/settings",
+    element: (
+      <Dashboard>
+        <Settings userData={mockUser} />
       </Dashboard>
     ),
     errorElement: <NotFound />,
