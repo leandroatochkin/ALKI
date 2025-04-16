@@ -8,6 +8,8 @@ import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant, AddInventory, 
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
+import { ThemeProvider, CssBaseline } from '@mui/material'
+import { getTheme } from './utils/theme.ts'
 
 
 import { mockProperties } from './api/PropertiesApiSlice.ts'
@@ -127,10 +129,17 @@ const router = createBrowserRouter([
   },
 ])
 
+
+
+const theme = getTheme(mockUser.theme === "dark" || mockUser.theme === "light" ? mockUser.theme : "light")
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+     <ThemeProvider theme={theme}>
+     <CssBaseline />
     <Provider store={store}>
     <RouterProvider router={router} />
     </Provider>
+    </ThemeProvider>
   </StrictMode>,
 )

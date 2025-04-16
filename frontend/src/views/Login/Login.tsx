@@ -54,7 +54,7 @@ export default function LoginPage() {
         p: { xs: 1, sm: 4 }, // p-6 sm:p-8 (24px on xs, 32px on sm+)
         borderRadius: '1rem', // rounded-xl
         boxShadow: 6, // shadow-lg
-        background: '#F5F5F5'
+
       }}
       >
         <Box 
@@ -70,7 +70,6 @@ export default function LoginPage() {
           <Typography 
           variant="body1"
           sx={{
-            color: '#333',
             fontWeight: 600,
           }}
           >gestión de propiedades simplificada</Typography>
@@ -81,7 +80,6 @@ export default function LoginPage() {
           <Typography 
           variant="body1"
           sx={{
-            color: '#333',
           }}
           >ingrese sus credenciales para comenzar</Typography>
         </Box>
@@ -109,9 +107,7 @@ export default function LoginPage() {
                       startAdornment: (
                         <InputAdornment position='start'>
                           <MailIcon 
-                            sx={{
-                                color: '#333'
-                            }}
+                          
                             />
                         </InputAdornment>
                       ),
@@ -178,10 +174,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </Box>
             <Box 
-            sx={{
-                color: '#333',
-    
-              }}
+
             >
               <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
             </Box>
@@ -191,16 +184,11 @@ export default function LoginPage() {
         </FormControl>
 
         <Box className="mt-4 text-center text-sm"
-        sx={{
-            color: '#333',
 
-          }}
         >
           Don't have an account?{" "}
           <Typography 
-          sx={{
-            color: '#333',
-          }}
+ 
           onClick={() => navigate('/signup')}
           >
             Sign up

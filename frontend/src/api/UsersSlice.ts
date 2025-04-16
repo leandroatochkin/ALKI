@@ -12,6 +12,8 @@ export interface UserPreview {
     state: string
     city: string
     postalCode: string
+    autoCalculateMRR?: boolean
+    theme: string
 }
 
 export const mockUser = {
@@ -21,7 +23,11 @@ export const mockUser = {
     email: 'mail@mail.com',
     phoneNumber: '2235111111',
     countryCode: '54',
-    address: 'direccion',
-    monthlyRevenue: 120000
-
+    addressLine1: 'direccion',
+    monthlyRevenue: 120000,
+    autoCalculateMRR: false,
+    state: 'buenos aires',
+    city: 'dolores',
+    postalCode: '1122',
+    theme: 'light'
 }

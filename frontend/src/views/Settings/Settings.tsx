@@ -8,6 +8,7 @@ import {
   import { useNavigate } from 'react-router-dom'
   import { UserPreview } from '../../api/UsersSlice'
   import UpdateUserDataDialog from '../../components/Dialogs/UpdateUserDataDialog'
+  import OptionsDialog from '../../components/Dialogs/OptionsDialog'
 
 interface SettingsInterface  {
     userData: UserPreview
@@ -33,6 +34,7 @@ const Settings: React.FC<SettingsInterface> = ({userData}) => {
   return (
     <>
     {openModifyUserDataDialog && user && <UpdateUserDataDialog userData={user} open={openModifyUserDataDialog} onClose={()=>setOpenModifyUserDialog(false)}/>}
+    {openOptionsDialog && user && <OptionsDialog userData={user} open={openOptionsDialog} onClose={()=>setOpenOptionsDialog(false)}/>}
     <Paper
     sx={{
         p: 2,
@@ -55,6 +57,7 @@ const Settings: React.FC<SettingsInterface> = ({userData}) => {
             <Button
             variant='outlined'
             color='primary'
+            onClick={()=>setOpenOptionsDialog(true)}
             >
                 opciones
             </Button>

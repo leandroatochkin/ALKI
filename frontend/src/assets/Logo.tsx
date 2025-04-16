@@ -1,4 +1,5 @@
 import React from 'react'
+import { mockUser } from '../api/UsersSlice'
 
 interface LogoProps {
   darkMode?: boolean
@@ -6,6 +7,7 @@ interface LogoProps {
 }
 
 const Logo: React.FC<LogoProps> = ({darkMode, size}) => {
+
   return (
     <svg width={size === 1 ? '100' : "200"} height={size === 1 ? '50' : "100"} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
 
@@ -17,7 +19,7 @@ const Logo: React.FC<LogoProps> = ({darkMode, size}) => {
   <path d="M40 25 C39 23, 41 21, 40 19" stroke="#66e0c4" strokeWidth="2" fill="none" />
 
 
-  <text x="80" y="65" fill={!darkMode ? "#e6fff8" : '#333'} fontFamily="Poppins, sans-serif" fontSize="48" fontWeight="600">alki</text>
+  <text x="80" y="65" fill={(darkMode || mockUser.theme === 'dark') ? '#e6fff8' : '#333'} fontFamily="Poppins, sans-serif" fontSize="48" fontWeight="600">alki</text>
 </svg>
 
   )

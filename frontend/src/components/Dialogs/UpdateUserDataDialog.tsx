@@ -8,7 +8,9 @@ import {
     FormLabel, 
     Select, 
     MenuItem,
-    Button, 
+    Button,
+    Typography,
+    Checkbox 
 } from '@mui/material'
 import { useForm } from 'react-hook-form'; 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -58,6 +60,7 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
                       setValue('state', userData.state)
                       setValue('city', userData.city)
                       setValue('postalCode', userData.postalCode)
+                      setValue('autoCalculateMRR', userData.autoCalculateMRR)
                     }
                   }, [userData, setValue])
 
@@ -279,6 +282,7 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
                                 />    
                             </Box>
                         </Box>
+
                         <Box
                         sx={{
                             display: 'flex',

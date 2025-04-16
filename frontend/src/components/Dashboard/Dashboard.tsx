@@ -101,7 +101,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
       <CssBaseline />
 
       {/* App Bar for Messages */}
-      <AppBar position="sticky" sx={{ backgroundColor: "#f8fafd" }}>
+      <AppBar position="sticky" >
         <Toolbar>
           <Logo darkMode={true} size={1}/>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
