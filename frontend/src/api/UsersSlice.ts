@@ -14,6 +14,8 @@ export interface UserPreview {
     postalCode: string
     autoCalculateMRR?: boolean
     theme: string
+    permissions: string[]
+    isPremium: boolean
 }
 
 export const mockUser = {
@@ -25,9 +27,11 @@ export const mockUser = {
     countryCode: '54',
     addressLine1: 'direccion',
     monthlyRevenue: 120000,
-    autoCalculateMRR: false,
+    autoCalculateMRR: true,
     state: 'buenos aires',
     city: 'dolores',
     postalCode: '1122',
-    theme: 'light'
+    theme: 'dark',
+    permissions: ['admin'] ,
+    isPremium: false
 }

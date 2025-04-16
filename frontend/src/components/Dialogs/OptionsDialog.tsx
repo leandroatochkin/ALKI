@@ -12,7 +12,9 @@ import {
     Typography,
     Checkbox,
     FormControlLabel,
-    ButtonGroup 
+    ButtonGroup,
+    ToggleButton,
+    ToggleButtonGroup 
 } from '@mui/material'
 import { useForm, Controller } from 'react-hook-form'; 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -84,7 +86,10 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) 
                         {/*---PERSONAL INFO---*/}
 
                         
-                        {/*MMR*/}
+                        {
+                            userData.permissions[0] === 'admin' &&
+                            <>
+                            {/*MMR*/}
                         <Box>
                             <FormLabel htmlFor="monthlyRevenue">Meta de ingresos mensuales</FormLabel>
                             <Typography
@@ -139,6 +144,8 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) 
                                 </Box>
                             </Box>
                         </Box>
+                            </>
+                        }
                         {/*THEME*/}
                         <Box
                         sx={{
@@ -150,26 +157,35 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) 
                         }}
                         >
                         <FormLabel htmlFor='theme'>Tema</FormLabel>
-                        <ButtonGroup
-                        id='theme'
+                        <Box
+                        sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            mt:1
+                        }}
                         >
-                            <Button
-                            onClick={
-                                ()=>setValue('theme', 'dark')
-                            }
+                        <ToggleButtonGroup
+                        id='theme'
+                        value={watch('theme')} 
+                        onChange={(e, val) => setValue('theme', val)}
+                        color='primary'
+                        exclusive
+                        >
+                            <ToggleButton
+                            value='dark'
                             >
                                 <BedtimeIcon/>
                                 oscuro
-                            </Button>
-                            <Button
-                            onClick={
-                                ()=>setValue('theme', 'light')
-                            }
+                            </ToggleButton>
+                            <ToggleButton
+                            value='light'
                             >
                                 <LightModeIcon/>
                                 claro
-                            </Button>
-                        </ButtonGroup>
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                        </Box>
                         </Box>
                         <Box
                         sx={{
@@ -189,7 +205,7 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) 
                             variant='outlined'
                             color='secondary'
                             >
-                                Modificar datos
+                                guardar cambios
                             </Button>
                             <Button
                             variant='outlined'

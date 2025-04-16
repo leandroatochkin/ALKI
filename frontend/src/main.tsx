@@ -4,12 +4,22 @@ import {store} from './api/store/store.ts'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { NotFound, LoginPage, SignUpPage, AddProperty, AddTenant, AddInventory, Settings } from './views/index'
+import { 
+  NotFound, 
+  LoginPage, 
+  SignUpPage, 
+  AddProperty, 
+  AddTenant, 
+  AddInventory, 
+  Settings, 
+  Organizations 
+} from './views/index'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import { getTheme } from './utils/theme.ts'
+
 
 
 import { mockProperties } from './api/PropertiesApiSlice.ts'
@@ -122,7 +132,16 @@ const router = createBrowserRouter([
     path: "/settings",
     element: (
       <Dashboard>
-        <Settings userData={mockUser} />
+        <Settings />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/organizations",
+    element: (
+      <Dashboard>
+        <Organizations />
       </Dashboard>
     ),
     errorElement: <NotFound />,

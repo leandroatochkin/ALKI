@@ -21,16 +21,21 @@ import {
   import { useNavigate } from 'react-router-dom'
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
   import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
+  import { useAppSelector } from '../../api/store/hooks'
+  import { UserPreview } from '../../api/UsersSlice'
 
 const AddProperty = () => {
         const [properties, setProperties] = useState<PropertyDTO[] | []>([])
         const [openDialog, setOpenDialog] = useState<boolean>(false)
         const [propertyToModify, setPropertyToModify] = useState<string | null>(null)
         const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
+         const userData: UserPreview = useAppSelector(
+            state => state.dashboard.userData,
+          )
 
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
-        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('')
+        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(userData.id)
 
         const [deleteProperty,{isLoading: isDeleting, isError: isErrorDeleting, status: isStatusDeleting}] = useDeletePropertyMutation()
 

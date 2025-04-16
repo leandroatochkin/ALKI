@@ -4,12 +4,15 @@ import PropertyCard from '../../components/Cards/PropertyCard'
 import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import {LinearProgress} from '@mui/material'
-import { mockUser } from '../../api/UsersSlice'
+import { useAppSelector } from '../../api/store/hooks'
+import { UserPreview } from '../../api/UsersSlice'
 
 const Properties = () => {
 const [properties, setProperties] = useState<PropertyDTO[] | []>([])
 const [progress, setProgress] = useState<number>(0);
-const userData = mockUser
+  const userData: UserPreview = useAppSelector(
+        state => state.dashboard.userData,
+      )
 
 const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('') 
 
@@ -27,12 +30,18 @@ const currentMonthlyTotalRevenue = properties
 .flat()
 .reduce((acc, propertyRev) => acc + propertyRev, 0)
 
+const calculatedMRR = properties
+.map((property) => property.tenantData?.contractValue ?? [])
+.flat()
+.reduce((acc, contractValue) => acc + contractValue, 0)
 
+console.log(calculatedMRR)
+console.log(properties)
 
 
 const getRevenueProgress = () => {
 
-const targetMonthlyRevenue = userData.monthlyRevenue
+const targetMonthlyRevenue = !userData.autoCalculateMRR ? userData.monthlyRevenue : calculatedMRR
 
 const progress = targetMonthlyRevenue > 0 
     ? Math.min(100, Math.round((currentMonthlyTotalRevenue / targetMonthlyRevenue) * 100))
@@ -85,7 +94,7 @@ const LinearProgressWithLabel = (props: any) => {
             }}
             >
             <Typography>
-              {`Ingreso mensual (meta: $${userData.monthlyRevenue.toFixed(2)})`}
+              {`Ingreso mensual (meta: $${userData.autoCalculateMRR ? calculatedMRR.toFixed(2) : userData.monthlyRevenue.toFixed(2)})`}
             </Typography>
             <Typography 
             variant='h4'

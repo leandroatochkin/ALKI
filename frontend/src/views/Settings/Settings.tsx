@@ -3,21 +3,24 @@ import {
     Paper,
     Typography,
     Stack,
-    Button
+    Button,
+    Tooltip
 } from '@mui/material'
   import { useNavigate } from 'react-router-dom'
   import { UserPreview } from '../../api/UsersSlice'
   import UpdateUserDataDialog from '../../components/Dialogs/UpdateUserDataDialog'
   import OptionsDialog from '../../components/Dialogs/OptionsDialog'
+  import { useAppSelector } from '../../api/store/hooks'
+  import LockIcon from '@mui/icons-material/Lock';
 
-interface SettingsInterface  {
-    userData: UserPreview
-}  
 
-const Settings: React.FC<SettingsInterface> = ({userData}) => {
+const Settings = () => {
  const [user, setUser] = useState<UserPreview | null>(null)
  const [openModifyUserDataDialog, setOpenModifyUserDialog] = useState<boolean>(false)
  const [openOptionsDialog, setOpenOptionsDialog] = useState<boolean>(false)
+ const userData: UserPreview = useAppSelector(
+    state => state.dashboard.userData,
+  )
 
 
     useEffect(() => {
@@ -61,16 +64,23 @@ const Settings: React.FC<SettingsInterface> = ({userData}) => {
             >
                 opciones
             </Button>
+            {
+                userData.permissions[0] === 'admin' &&
+                <Button
+                variant='outlined'
+                color='primary'
+                onClick={()=>navigate('/organizations')}
+                disabled={!userData.isPremium}
+                >   
+                {!userData.isPremium ? <LockIcon sx={{mr:1}}/> : ''}
+                    organizaciones
+                    {!userData.isPremium ? `(SOLO PREMIUM)` : ''}  
+                </Button>
+            }
             <Button
             variant='outlined'
             color='primary'
-            >
-                organizaciones
-            </Button>
-            <Button
-            variant='outlined'
-            color='primary'
-            >
+            > 
                 sobre la app
             </Button>
         </Stack>

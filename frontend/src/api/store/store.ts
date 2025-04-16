@@ -4,12 +4,14 @@ import { inventoriesApiSlice } from "../InventoriesApiSlice"
 import { propertiesApiSlice } from "../PropertiesApiSlice"
 import { tenantsApiSlice } from "../TenantsApiSlice"
 import { paymentsApiSlice } from "../PaymentsApiSlice"
+import { dashboardSlice } from "../../components/Dashboard/DashboardStore/DashboardStore"
+import { organizationsApiSlice } from "../OrganizationsSlice"
 
 
 export const store: Store = configureStore({
     reducer: {
       //onboard: onboardReducer,
-      //dashboard: dashboardSlice,
+      dashboard: dashboardSlice.reducer,
       //staff: staffSlice,
       //patient: patientSlice,
       //[authApi.reducerPath]: authApi.reducer,
@@ -17,6 +19,7 @@ export const store: Store = configureStore({
       [propertiesApiSlice.reducerPath]: propertiesApiSlice.reducer,
       [tenantsApiSlice.reducerPath]: tenantsApiSlice.reducer,
       [paymentsApiSlice.reducerPath]: paymentsApiSlice.reducer,
+      [organizationsApiSlice.reducerPath]: organizationsApiSlice.reducer,
       
     },
     middleware: getDefaultMiddleware =>
@@ -24,7 +27,8 @@ export const store: Store = configureStore({
         inventoriesApiSlice.middleware,
         propertiesApiSlice.middleware,
         tenantsApiSlice.middleware,
-        paymentsApiSlice.middleware
+        paymentsApiSlice.middleware,
+        organizationsApiSlice.middleware,
       ),
   })
   

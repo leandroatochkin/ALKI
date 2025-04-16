@@ -89,7 +89,6 @@ const SignUp = () => {
         p: { xs: 1, sm: 4 }, // p-6 sm:p-8 (24px on xs, 32px on sm+)
         borderRadius: '1rem', // rounded-xl
         boxShadow: 6, // shadow-lg
-        background: '#F5F5F5',
         overflowY: 'auto', // overflow-y-auto
       }}
       >
@@ -115,7 +114,6 @@ const SignUp = () => {
           <Typography 
           variant="body1"
           sx={{
-            color: '#333',
             fontWeight: 600,
           }}
           >gestión de propiedades simplificada</Typography>
@@ -125,14 +123,11 @@ const SignUp = () => {
 
           <Typography 
           variant="body1"
-          sx={{
-            color: '#333',
-          }}
           >complete los datos</Typography>
         </Box>
 
         <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-        <Box>
+            <Box>
             {/*EMAIL*/}
             <Box>
                 <FormLabel htmlFor="email">Email</FormLabel>
