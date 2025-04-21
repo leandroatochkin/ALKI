@@ -1,3 +1,8 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { useAuth0 } from "@auth0/auth0-react";
+
+
+
 export interface UserPreview {
     id: string;
     firstName: string;
@@ -17,6 +22,7 @@ export interface UserPreview {
     permissions: string[]
     isPremium: boolean
     parentUserId?: string 
+    password?: string
 }
 
 export const mockUser = {
@@ -36,3 +42,40 @@ export const mockUser = {
     permissions: ['view'] ,
     isPremium: false
 }
+
+const backend = import.meta.env.VITE_SERVER_HOST
+
+export const userApiSlice = createApi({
+    reducerPath: "userApiSlice",
+    baseQuery: fetchBaseQuery({
+      baseUrl: backend,
+      prepareHeaders: async (headers, { getState }) => {
+        try {
+          // Dynamically import Auth0, outside hooks
+          const { getAccessTokenSilently } = await import('./hooks/getToken') // <- we'll create this
+          const token = await getAccessTokenSilently()
+            console.log(token)
+          if (token) {
+            headers.set("authorization", `Bearer ${token}`)
+          }
+        } catch (error) {
+          console.error("Error fetching access token", error)
+        }
+  
+        return headers
+      },
+    }),
+    endpoints: (builder) => ({
+      signUpUser: builder.mutation<void, UserPreview>({
+        query: (payload) => ({
+          url: `/signup`,
+          method: "POST",
+          body: payload,
+        }),
+      }),
+    }),
+  })
+  
+  export const {
+    useSignUpUserMutation,
+  } = userApiSlice

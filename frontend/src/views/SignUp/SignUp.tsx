@@ -28,12 +28,15 @@ import {
 } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from '../../utils/dataLists';
 import { useNavigate } from 'react-router-dom';
+import { UserPreview, useSignUpUserMutation } from '../../api/UsersSlice';
+import { getAccessTokenWithConsent } from '../../api/hooks/auth0-client';
 
 const SignUp = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [repeatEmail, setRepeatEmail] = useState<string>("")
-    const [repeatPassword, setRepeatPassword] = useState<string>("");
+    const [repeatPassword, setRepeatPassword] = useState<string>("")
+
+    const [signUp, {isLoading}] = useSignUpUserMutation()
 
     const {  
         handleSubmit, 
@@ -41,11 +44,11 @@ const SignUp = () => {
         watch,
         setError, 
         formState: { errors }, 
-          } = useForm<SignUpDTO>()
+          } = useForm<UserPreview>()
     const watchEmail = watch("email");
     const watchPassword = watch("password")
     const navigate = useNavigate()
-    const onSubmit = (data: SignUpDTO) => {
+    const onSubmit = async (data: UserPreview) => {
         let hasError = false;
       
         if (repeatEmail !== data.email) {
@@ -58,8 +61,15 @@ const SignUp = () => {
         }
       
         if (hasError) return;
-      
-        console.log("✅ Validated data:", data);
+        const token = await getAccessTokenWithConsent()
+        const response = fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+                })
       };
 
 
@@ -328,7 +338,7 @@ const SignUp = () => {
                 <FormLabel htmlFor="country">País</FormLabel>
                 <Box>
                 <Select
-                {...register("country", {
+                {...register("countryCode", {
                     required: 'Este campo es obligatorio',
                 })}
                 >

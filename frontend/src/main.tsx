@@ -20,6 +20,7 @@ import TenantPayments from './views/Payments/TenantPayments.tsx'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import { getTheme } from './utils/theme.ts'
 import { Auth0Provider } from '@auth0/auth0-react';
+import AuthInit from './views/Auth/AuthInit.tsx'
 
 
 import { mockUser } from './api/UsersSlice.ts'
@@ -147,6 +148,13 @@ const router = createBrowserRouter([
   },
 ])
 
+const domain = import.meta.env.VITE_AUTH0_DOMAIN
+const clientId = import.meta.env.VITE_AUTH0_CLIENT
+
+console.log(domain)
+console.log(clientId)
+
+
 
 
 const theme = getTheme(mockUser.theme === "dark" || mockUser.theme === "light" ? mockUser.theme : "light")
@@ -154,15 +162,19 @@ const theme = getTheme(mockUser.theme === "dark" || mockUser.theme === "light" ?
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Auth0Provider
-    domain="{yourDomain}"
-    clientId="{yourClientId}"
+    domain= {domain}
+    clientId={clientId}
     authorizationParams={{
-      redirect_uri: window.location.origin
+      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      redirect_uri: 'http://localhost:5173/home'
     }}
+    cacheLocation='localstorage'
+    useRefreshTokens
   >
      <ThemeProvider theme={theme}>
      <CssBaseline />
     <Provider store={store}>
+    <AuthInit />
     <RouterProvider router={router} />
     </Provider>
     </ThemeProvider>

@@ -6,6 +6,7 @@ import { tenantsApiSlice } from "../TenantsApiSlice"
 import { paymentsApiSlice } from "../PaymentsApiSlice"
 import { dashboardSlice } from "../../components/Dashboard/DashboardStore/DashboardStore"
 import { organizationsApiSlice } from "../OrganizationsSlice"
+import { userApiSlice } from "../UsersSlice"
 
 
 export const store: Store = configureStore({
@@ -20,6 +21,7 @@ export const store: Store = configureStore({
       [tenantsApiSlice.reducerPath]: tenantsApiSlice.reducer,
       [paymentsApiSlice.reducerPath]: paymentsApiSlice.reducer,
       [organizationsApiSlice.reducerPath]: organizationsApiSlice.reducer,
+      [userApiSlice.reducerPath]: userApiSlice.reducer,
       
     },
     middleware: getDefaultMiddleware =>
@@ -29,6 +31,7 @@ export const store: Store = configureStore({
         tenantsApiSlice.middleware,
         paymentsApiSlice.middleware,
         organizationsApiSlice.middleware,
+        userApiSlice.middleware,
       ),
   })
   
