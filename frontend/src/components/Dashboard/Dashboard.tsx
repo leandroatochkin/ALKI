@@ -29,6 +29,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 //import { useGetNotificationsQuery } from "../../app/api/notificationsSlice"
 //import { skipToken } from "@reduxjs/toolkit/query"
 import Logo from "../../assets/Logo"
+import { useAppSelector } from "../../api/store/hooks"
 
 
 
@@ -42,7 +43,10 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [showSnackbar, setShowSnackbar] = useState(false)
-  const [userId, setUserId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('')
+  const userData = useAppSelector(
+    state => state.dashboard.userData
+  )
   //const { data: userData, refetch, isLoading } = useGetMyUserQuery(undefined)
 //   useEffect(() => {
 //     if (userData?.userId) {
@@ -103,7 +107,13 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
       {/* App Bar for Messages */}
       <AppBar position="sticky" >
         <Toolbar>
+          <div
+          onClick={
+            ()=>navigate('/home')
+          }
+          >
           <Logo darkMode={true} size={1}/>
+          </div>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
           </Typography>
           {/* <IconButton>
@@ -118,10 +128,15 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
           </IconButton> */}
           <IconButton
             onClick={() => navigate(`/settings`)}
-            sx={{ color: "black" }}
+            sx={{
+              color: userData.theme !== 'dark' ? `#333` : `#e6fff8`
+            }}
           >
             <SettingsIcon />
-            <Typography marginLeft={1}> Ajustes </Typography>
+            <Typography 
+            marginLeft={1}
+            
+            > Ajustes </Typography>
           </IconButton>
         </Toolbar>
       </AppBar>

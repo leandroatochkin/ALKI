@@ -237,6 +237,7 @@ const statusMapper = useCallback((status: number) => {
                   md: 'row'
                 },
                 justifyContent: "flex-end",
+                mt: 2
             }}
             >
                 <Button

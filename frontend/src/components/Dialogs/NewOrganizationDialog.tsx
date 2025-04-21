@@ -21,6 +21,7 @@ import {
 } from "../../api/OrganizationsSlice"
   import DeleteIcon from "@mui/icons-material/Delete"
   import AddIcon from "@mui/icons-material/Add"
+  import { useAppSelector } from "../../api/store/hooks"
 
   
   interface OrganizationProps {
@@ -35,6 +36,9 @@ import {
 const NewOrganizationDialog: React.FC<OrganizationProps> = ({open, onClose, organization, isNew}) => {
     const [updateOrganization, { isLoading: isUpdating }] = useUpdateOrganizationMutation()
     const [createOrganization, { isLoading: isCreating }] = useCreateOrganizationMutation()
+    const userData = useAppSelector(
+        state => state.dashboard.userData
+    )
   
     const [orgData, setOrgData] = useState<Organization>(
       organization || {
@@ -70,7 +74,7 @@ const NewOrganizationDialog: React.FC<OrganizationProps> = ({open, onClose, orga
   
     const handleAddMember = () => {
       const newMember: Member = {
-        memberId: crypto.randomUUID(),
+        memberId: '',
         name: "",
         email: "",
         permissions: [],
@@ -132,7 +136,7 @@ const NewOrganizationDialog: React.FC<OrganizationProps> = ({open, onClose, orga
                   onChange={e => handleMemberChange(index, "email", e.target.value)}
                 />
                 <Select
-                    
+
                   label="Permisos"
                   value={member.permissions[0] || ""}
                   onChange={e => handleMemberChange(index, "permissions", [e.target.value])}

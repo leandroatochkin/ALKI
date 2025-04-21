@@ -11,6 +11,7 @@ import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import { propertyIconMapper } from '../../utils/functions'
 import PropertyInfoDialog from '../Dialogs/PropertyInfoDialog'
 import InformPaymentDialog from '../Dialogs/InformPaymentDialog'
+import { useAppSelector } from '../../api/store/hooks'
 
 interface PropertyCardProps {
     property: PropertyDTO
@@ -20,6 +21,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     const [openPropertyInfoDialog, setOpenPropertyInfoDialog] = useState<boolean>(false)
     const [openInformPaymentInfoDialog, setOpenInformPaymentDialog] = useState<boolean>(false)
     const IconComponent = propertyIconMapper(property.type)
+    const userData = useAppSelector(
+      state => state.dashboard.userData
+    )
 
     
   return (
@@ -110,13 +114,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             gap: 2
           }}
           >
-            <Button
-            variant='outlined'
-            color='primary'
-            onClick={()=>setOpenInformPaymentDialog(true)}
-            >
-                registrar pago
-            </Button>
+            {
+              userData.permissions[0] !== 'view' &&
+              <Button
+                variant='outlined'
+                color='primary'
+                onClick={()=>setOpenInformPaymentDialog(true)}
+                >
+                    registrar pago
+                </Button>
+            }
             <Button
             variant='outlined'
             color='warning'

@@ -19,10 +19,9 @@ import Properties from './views/Properties/Properties.tsx'
 import TenantPayments from './views/Payments/TenantPayments.tsx'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import { getTheme } from './utils/theme.ts'
+import { Auth0Provider } from '@auth0/auth0-react';
 
 
-
-import { mockProperties } from './api/PropertiesApiSlice.ts'
 import { mockUser } from './api/UsersSlice.ts'
 
 const mockTenant = {
@@ -154,11 +153,19 @@ const theme = getTheme(mockUser.theme === "dark" || mockUser.theme === "light" ?
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <Auth0Provider
+    domain="{yourDomain}"
+    clientId="{yourClientId}"
+    authorizationParams={{
+      redirect_uri: window.location.origin
+    }}
+  >
      <ThemeProvider theme={theme}>
      <CssBaseline />
     <Provider store={store}>
     <RouterProvider router={router} />
     </Provider>
     </ThemeProvider>
+    </Auth0Provider>
   </StrictMode>,
 )

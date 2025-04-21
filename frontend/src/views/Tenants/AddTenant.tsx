@@ -26,7 +26,7 @@ import {
   import { mockProperties } from '../../api/PropertiesApiSlice'
   import { useNavigate } from 'react-router-dom'
 import { TenantDTO } from '../../api/TenantsApiSlice'
-import { paymentMethodMapper } from '../../utils/functions'
+import { paymentMethodMapper, idCheck } from '../../utils/functions'
 import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
 import { 
   useGetTenantsByUserIdQuery, 
@@ -36,6 +36,7 @@ import {
 } from '../../api/TenantsApiSlice'
 import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
 import { propertiesList } from '../../api/PropertiesApiSlice'
+import { useAppSelector } from '../../api/store/hooks'
 
 
 interface Observations {
@@ -52,11 +53,12 @@ const AddTenant = () => {
     const [observations, setObservations] = useState<Observations | null>(null)
     const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
     const [openAssignToPropertyDialog, setOpenAssignToPropertyDialog] = useState<boolean>(false)
+    const userData = useAppSelector(
+      state => state.dashboard.userData 
+    )
 
-    useEffect(() => {console.log(selectedTenant)}, [selectedTenant])
-
-    const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery('')
-    const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery('')
+    const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery(idCheck(userData))
+    const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idCheck(userData))
 
     const [assignTenantToProperty, {isLoading: isAssigning, isSuccess: isAssigned, isError: isErrorAssigning, status}] = useAssignTenantToPropertyMutation()
     const [deleteTenant, {isLoading: isDeleting, isSuccess: isDeleted, isError: isErrorDeleting, status: deletingStatus}] = useDeleteTenantMutation()
@@ -72,7 +74,7 @@ const AddTenant = () => {
 
     const mappedProps = mapPropertiesToIdTitle(properties ?? [])
     const propertiesMap = Object.keys(mappedProps).length > 0 ? mappedProps : propertiesList
-    console.log(propertiesMap)
+   
     
 
     const handleRowSelection = (selection: GridRowSelectionModel) => {
@@ -156,106 +158,60 @@ const AddTenant = () => {
       )
 
           const columns = useMemo<GridColDef<(typeof rows)[number]>[]>(
-              () => [
-                {
-                  field: "name",
-                  headerName: "nombre",
-                  width: 130,
-                  editable: false,
-                },
-                {
-                  field: "phoneNumber",
-                  headerName: "teléfono",
-                  width: 120,
-                  editable: false,
-                  renderCell: (params: GridCellParams) => {
-                    return (
-                        <Link
-                          href={`tel:${params.row.phoneNumber}`}
-                          underline="hover"
-                          color="inherit"
-                          sx={{ cursor: "pointer" }}
-                        >
-                          +{params.row.phoneNumber}
-                          </Link>
-                    )
-                  }
-                },
-                {
-                  field: "email",
-                  headerName: "email",
-                  width: 120,
-                  editable: false,
-                  renderCell: (params: GridCellParams) => {
-                    return (
-                        <Link
-                          href={`mailto:${params.row.email}`}
-                          underline="hover"
-                          color="inherit"
-                          sx={{ cursor: "pointer" }}
-                        >
-                          {params.row.email}
-                          </Link>
-                    )
-                  }
-                },
-                {
-                    field: "property",
-                    headerName: "prop. asign.",
-                    width: 120,
-                    editable: false,
-                  },
-                {
-                    field: "observations",
-                    headerName: "observaciones",
-                    width: 120,
-                    editable: false,
-                    renderCell: (params: GridCellParams) => {
-                      return (
-                        <Button
-                          color="primary"
-                          onClick={() => {
-                             setObservations(prev=>({
-                                ...prev,
-                                observations: params.row.observations,
-                                pets: params.row.pets,
-                                children: params.row.children,
-                                smoking: params.row.smoking,
-                              }))
-                          }}
-                        >
-                          ver obs.
-                        </Button>
-                      )
-                    },
-                  },
-                {
-                    field: "contractStartDate",
-                    headerName: "com. contrato",
-                    width: 120,
-                    editable: false,
-                  },
-                {
-                  field: "contractEndDate",
-                  headerName: "fin contrato",
+              () => {
+            const baseColumns = 
+            [
+              {
+                field: "name",
+                headerName: "nombre",
+                width: 130,
+                editable: false,
+              },
+              {
+                field: "phoneNumber",
+                headerName: "teléfono",
+                width: 120,
+                editable: false,
+                renderCell: (params: GridCellParams) => {
+                  return (
+                      <Link
+                        href={`tel:${params.row.phoneNumber}`}
+                        underline="hover"
+                        color="inherit"
+                        sx={{ cursor: "pointer" }}
+                      >
+                        +{params.row.phoneNumber}
+                        </Link>
+                  )
+                }
+              },
+              {
+                field: "email",
+                headerName: "email",
+                width: 120,
+                editable: false,
+                renderCell: (params: GridCellParams) => {
+                  return (
+                      <Link
+                        href={`mailto:${params.row.email}`}
+                        underline="hover"
+                        color="inherit"
+                        sx={{ cursor: "pointer" }}
+                      >
+                        {params.row.email}
+                        </Link>
+                  )
+                }
+              },
+              {
+                  field: "property",
+                  headerName: "prop. asign.",
                   width: 120,
                   editable: false,
                 },
-                {
-                  field: "contractStatus",
-                  headerName: "est. contrato",
-                  width: 120,
-                  editable: false,
-                },
-                {
-                  field: "contractPaymentFrequency",
-                  headerName: "frecuencia de pago",
-                  width: 150,
-                  editable: false,
-                },
-                {
-                  field: "modify",
-                  headerName: "modificar",
+              {
+                  field: "observations",
+                  headerName: "observaciones",
                   width: 120,
                   editable: false,
                   renderCell: (params: GridCellParams) => {
@@ -263,15 +219,72 @@ const AddTenant = () => {
                       <Button
                         color="primary"
                         onClick={() => {
-                           setTenantToModify(params.row.tenantId)
+                           setObservations(prev=>({
+                              ...prev,
+                              observations: params.row.observations,
+                              pets: params.row.pets,
+                              children: params.row.children,
+                              smoking: params.row.smoking,
+                            }))
                         }}
                       >
-                        Modificar
+                        ver obs.
                       </Button>
                     )
                   },
                 },
-              ],
+              {
+                  field: "contractStartDate",
+                  headerName: "com. contrato",
+                  width: 120,
+                  editable: false,
+                },
+              {
+                field: "contractEndDate",
+                headerName: "fin contrato",
+                width: 120,
+                editable: false,
+              },
+              {
+                field: "contractStatus",
+                headerName: "est. contrato",
+                width: 120,
+                editable: false,
+              },
+              {
+                field: "contractPaymentFrequency",
+                headerName: "frecuencia de pago",
+                width: 150,
+                editable: false,
+              },                
+            ]
+
+            const modifyColumn =
+            {
+              field: "modify",
+              headerName: "modificar",
+              width: 120,
+              editable: false,
+              renderCell: (params: GridCellParams) => {
+                return (
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                       setTenantToModify(params.row.tenantId)
+                    }}
+                  >
+                    Modificar
+                  </Button>
+                )
+              },
+            }
+
+            if (userData.permissions[0] !== 'view') {
+              baseColumns.push(modifyColumn)
+            }
+          
+            return baseColumns
+            },
               [],
             )
       
@@ -419,7 +432,13 @@ const AddTenant = () => {
         }}
         >
         <Typography variant="h4" gutterBottom>
-            Agregar o modificar inquilinos
+            {
+              userData.permissions[0] !== 'view'
+              ?
+              `Agregar o modificar inquilinos`
+              :
+              `Inquilinos`
+            }
         </Typography>
         {
           !isLoading
@@ -434,7 +453,7 @@ const AddTenant = () => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection
+            checkboxSelection={userData.permissions[0] !== 'view'}
             disableMultipleRowSelection
             onRowSelectionModelChange={handleRowSelection}
             sx={{
@@ -464,30 +483,36 @@ const AddTenant = () => {
                                 mt: 2,
                                 }}
                                 >
-                                    
-                                <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => setOpenDialog(true)}
-                                >
-                                    agregar inquilino
-                                </Button>
-                                <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => setOpenAssignToPropertyDialog(true)}
-                                disabled={disabledCondition || !selectedTenant }
-                                >
-                                    + asignar a propiedad
-                                </Button>
-                                <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => selectedTenant && handleDeleteTenant(selectedTenant)}
-                                disabled={disabledCondition || !selectedTenant }
-                                >
-                                    - dar de baja
-                                </Button>
+                                {
+                                  userData.permissions[0] !== 'view' &&
+                                  <>
+                                  <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  onClick={() => setOpenDialog(true)}
+                                  >
+                                      agregar inquilino
+                                  </Button>
+                                  <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  onClick={() => setOpenAssignToPropertyDialog(true)}
+                                  disabled={disabledCondition || !selectedTenant }
+                                  >
+                                      + asignar a propiedad
+                                  </Button>
+                                  <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  onClick={() => selectedTenant && handleDeleteTenant(selectedTenant)}
+                                  disabled={disabledCondition || !selectedTenant }
+                                  >
+                                      - dar de baja
+                                  </Button>
+                                  </>
+                                }
+                               
+
                                 <Button
                                 variant="outlined"
                                 color="secondary"

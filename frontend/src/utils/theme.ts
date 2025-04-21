@@ -15,7 +15,7 @@ export const getTheme = (mode: 'light' | 'dark') =>
         paper: mode === 'dark' ? '#1e1e1e' : '#fff',
       },
       text: {
-        primary: mode === 'dark' ? '#e6fff8' : '#000000',
+        primary: mode === 'dark' ? '#e6fff8' : '#333',
         secondary: mode === 'dark' ? '#bbbbbb' : '#555555',
       },
     },

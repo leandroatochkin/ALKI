@@ -17,7 +17,7 @@ import {
     GridPaginationModel,
   } from "@mui/x-data-grid"
   import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
-  import { propertyTitleMapper } from '../../utils/functions'
+  import { propertyTitleMapper, idCheck } from '../../utils/functions'
   import { useNavigate } from 'react-router-dom'
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
   import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
@@ -35,7 +35,7 @@ const AddProperty = () => {
 
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
-        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(userData.id)
+        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(idCheck(userData))
 
         const [deleteProperty,{isLoading: isDeleting, isError: isErrorDeleting, status: isStatusDeleting}] = useDeletePropertyMutation()
 
@@ -84,7 +84,9 @@ const AddProperty = () => {
 
 
     const columns = useMemo<GridColDef<(typeof rows)[number]>[]>(
-        () => [
+        () => {
+          const baseColumns =
+          [
           {
             field: "title",
             headerName: "nombre",
@@ -126,46 +128,39 @@ const AddProperty = () => {
             headerName: "ocupada",
             width: 150,
             editable: false,
-          },
-          {
-            field: "modify",
-            headerName: "modificar",
-            width: 120,
-            editable: false,
-            renderCell: (params: GridCellParams) => {
-              return (
-                <Button
-                  color="primary"
-                  onClick={() => {
-                     setPropertyToModify(params.row.propertyId)
-                  }}
-                >
-                  Modificar
-                </Button>
-              )
-            },
-          },
-          {
-            field: "delete",
-            headerName: "eliminar",
-            width: 120,
-            editable: false,
-            renderCell: (params: GridCellParams) => {
-              return (
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    console.log("Modificar propiedad", params.row.propertyId)
-                  }}
-                >
-                  Eliminar
-                </Button>
-              )
-            },
-          },
-        ],
+          }, 
+        ]
+        const modifyColumn = 
+      {
+        field: "modify",
+        headerName: "modificar",
+        width: 120,
+        editable: false,
+        renderCell: (params: GridCellParams) => {
+          return (
+            <Button
+              color="primary"
+              onClick={() => {
+                 setPropertyToModify(params.row.propertyId)
+              }}
+            >
+              Modificar
+            </Button>
+          )
+        },
+      }
+
+      if (userData.permissions[0] !== 'view') {
+        baseColumns.push(modifyColumn)
+      }
+    
+      return baseColumns
+
+      },
         [],
       )
+
+      
 
       const rows = useMemo(
         () =>
@@ -223,7 +218,13 @@ const AddProperty = () => {
     }}
     >
     <Typography variant="h4" gutterBottom>
-        Agregar o modificar propiedades
+        {
+          userData.permissions[0] === 'view'
+          ?
+          `Propiedades`
+          :
+          `Agregar o modificar propiedades`
+        }
     </Typography>
          {
           !isLoading
@@ -238,7 +239,7 @@ const AddProperty = () => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection
+            checkboxSelection={userData.permissions[0] !== 'view'}
             disableMultipleRowSelection
             onRowSelectionModelChange={handleRowSelection}
             loading={
@@ -271,9 +272,13 @@ const AddProperty = () => {
           },
           justifyContent: "flex-end",
           gap: 2,
+          mt: 2
       }}
       >   
-          <Button
+          {
+            userData.permissions[0] !== 'view' &&
+            <>
+            <Button
           variant="outlined"
           color="primary"
           onClick={() => setOpenDialog(true)}
@@ -288,6 +293,8 @@ const AddProperty = () => {
           >
               eliminar propiedad
           </Button>
+            </>
+          }
           <Button
           variant="outlined"
           color="secondary"

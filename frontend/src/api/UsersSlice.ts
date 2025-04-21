@@ -16,6 +16,7 @@ export interface UserPreview {
     theme: string
     permissions: string[]
     isPremium: boolean
+    parentUserId?: string 
 }
 
 export const mockUser = {
@@ -32,6 +33,6 @@ export const mockUser = {
     city: 'dolores',
     postalCode: '1122',
     theme: 'dark',
-    permissions: ['admin'] ,
+    permissions: ['view'] ,
     isPremium: false
 }

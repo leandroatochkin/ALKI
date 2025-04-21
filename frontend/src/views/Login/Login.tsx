@@ -5,6 +5,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Logo from "../../assets/Logo";
 import { useNavigate } from "react-router-dom"
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 export default function LoginPage() {
@@ -13,10 +14,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const { loginWithRedirect } = useAuth0();
+
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    navigate("/home")
+    loginWithRedirect()
+    //navigate("/home")
   }
  
   return (

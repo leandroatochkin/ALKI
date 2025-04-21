@@ -23,24 +23,49 @@ import {
 import { propertiesList } from '../../api/PropertiesApiSlice'
 import { Inventory, InventoryItem } from '../../api/InventoriesApiSlice'
 import { mockInventories } from '../../api/InventoriesApiSlice'
-import { useGetInventoryByPropertyQuery, useDeleteInventoryItemsMutation, useDeleteInventoryMutation } from '../../api/InventoriesApiSlice'
+import { 
+  useGetInventoryByPropertyQuery, 
+  useDeleteInventoryItemsMutation, 
+  useDeleteInventoryMutation 
+} from '../../api/InventoriesApiSlice'
+import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import AddItemsToInventoryDialog from '../../components/Dialogs/AddInventoryDialog'
 import { useNavigate } from 'react-router-dom'
+import { idCheck } from '../../utils/functions'
+import { useAppSelector } from '../../api/store/hooks'
 
 const AddInventory = () => {
 const [inventory, setInventory] = useState<Inventory | null>(null)
 const [selectedProperty, setSelectedProperty] = useState<string>('prop-001')
 const [openAddItemsToInventoryDialog, setOpenAddItemsToInventoryDialog] = useState<boolean>(false)
 const [itemsToDelete, setItemsToDelete] = useState<string[]>([])
+const [list, setList] = useState<any | null>(null)
+const userData = useAppSelector(
+  state => state.dashboard.userData
+)
 
 
 const navigate = useNavigate()
 
-
+const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idCheck(userData))
 const { data, isLoading, isError, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
 
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
+
+const propertiesMap = propertiesData?.reduce((acc, property) => {
+  acc[property.id] = property.title
+  return acc
+}, {} as Record<string, string>)
+
+useEffect(()=>{
+  if(!propertiesData){
+    setList(propertiesList)
+  } else {
+    setList(propertiesMap)
+  }
+},[propertiesData, isLoadingProperties, list])
+
 
 useEffect(() => {
     const filteredInventory = mockInventories.find(inventory => inventory.propertyId === selectedProperty)
@@ -50,6 +75,13 @@ useEffect(() => {
         setInventory(filteredInventory ?? null)
     }
 },[data, selectedProperty])
+
+useEffect(() => {
+  if (list && !selectedProperty) {
+    const firstKey = Object.keys(list)[0]
+    if (firstKey) setSelectedProperty(firstKey)
+  }
+}, [list])
 
     const TableSkeleton = () => (// for later use
         <Box
@@ -163,13 +195,27 @@ useEffect(() => {
     }}
     >
     <Typography variant="h4" gutterBottom>
-        Agregar o modificar inventarios
+        {
+          userData.permissions[0] === 'view'
+          ?
+          `Inventarios`
+          :
+          `Agregar o modificar inventarios`
+        }
     </Typography>
-    <FormLabel htmlFor='propiedades'>Seleccione la propiedad a inventariar</FormLabel>
+    <FormLabel htmlFor='propiedades'>
+    {
+          userData.permissions[0] === 'view'
+          ?
+          `Seleccione la propiedad`
+          :
+          `Seleccione la propiedad a inventariar`
+        }
+      </FormLabel>
         <Select
             fullWidth
             id='propiedades'
-            defaultValue={`${propertiesList['prop-001']}`}
+            value={selectedProperty}
             sx={{ mb: 2 }}
             onChange={(e) => {
                 const selectedProperty = e.target.value
@@ -198,7 +244,7 @@ useEffect(() => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection
+            checkboxSelection={userData.permissions[0] !== 'view'}
             onRowSelectionModelChange={handleRowSelection}
             sx={{
                 //opacity: isUnpaidNotesLoading || refreshLoading ? 0.7 : 1,
@@ -229,7 +275,10 @@ useEffect(() => {
       mt: 2
     }}
     >  
-         <Button
+       {
+        userData.permissions[0] !== 'view' &&
+        <>
+       <Button
        onClick={()=>setOpenAddItemsToInventoryDialog(true)}
        variant='outlined'
        color='primary'
@@ -254,7 +303,7 @@ useEffect(() => {
        onClick={handleDeleteInventory}
        variant='outlined'
        color='warning'
-       disabled={isDeletingInventory}
+       disabled={isDeletingInventory || !inventory}
        >
         {
           isDeletingInventory
@@ -264,6 +313,9 @@ useEffect(() => {
            `eliminar inventario`
         }
        </Button>
+       </>
+
+       }
        <Button
        onClick={()=>navigate('/home')}
        variant='outlined'

@@ -35,8 +35,7 @@ const calculatedMRR = properties
 .flat()
 .reduce((acc, contractValue) => acc + contractValue, 0)
 
-console.log(calculatedMRR)
-console.log(properties)
+
 
 
 const getRevenueProgress = () => {

@@ -12,11 +12,6 @@ import {
   ListItemText
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
-// import { useAppSelector } from "../../../../app/hooks"
-// import {
-//   useGetMyUserQuery,
-//   UserPreview,
-// } from "../../../../app/api/usersSliceApi"
 import { useNavigate } from "react-router-dom"
 
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -29,6 +24,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import { mockUser } from "../../../api/UsersSlice"
 import { UserPreview } from "../../../api/UsersSlice"
+import { useAppSelector } from "../../../api/store/hooks"
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 // import {
@@ -58,15 +55,22 @@ function Sidebar() {
   //const menuItems = useAppSelector(state => state.dashboard.menuItems)
   //const role = useAppSelector(state => state.dashboard.role)
   const navigate = useNavigate()
+  const { logout } = useAuth0();
   const [userAttributes, setUserAttributes] = useState<UserSidebarAttributes>({
     email: "",
     name: "",
     userId: "",
   })
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
-  //const { data: myUserData } = useGetMyUserQuery(undefined)
+  const userData: UserPreview = useAppSelector(
+      state => state.dashboard.userData,
+    )
+  
 
-  const sidebarItems = [
+  const sidebarItems = 
+    (userData.permissions[0] === 'admin' || userData.permissions[0] === 'edit')
+    ?
+    [
     {
         text: 'Agregar/modificar propiedad',
         path: '/properties',
@@ -79,14 +83,29 @@ function Sidebar() {
       text: 'Crear/modificar inventario',
       path: '/inventories',
     }
-]
+    ]
+    :
+    [
+    {
+        text: 'Propiedades',
+        path: '/properties',
+    },
+    {
+      text: 'Inquilinos',
+      path: '/tenants',
+    },
+    {
+      text: 'Inventarios',
+      path: '/inventories',
+    }
+    ]
+
 
   const [menuItemsFiltered, setMenuItemsFiltered] = useState<
     { [key: string]: any }[]
   >([])
   const signOutHandler = () => {
-    //signOut()
-    navigate("/sign-in")
+    logout({ logoutParams: { returnTo: window.location.origin } })
   }
 
   const setAttributes = async () => {
@@ -176,9 +195,9 @@ function Sidebar() {
               <ListItemButton onClick={onSelect(item.path)}>
                 <ListItemIcon>
                   <Box component="span">
-                    {item.text === "Agregar/modificar propiedad" && <HouseIcon />}
-                    {item.text === "Agregar/modificar inquilino" && <PersonAddIcon />}
-                    {item.text === "Crear/modificar inventario" && <InventoryIcon />}
+                    {(item.text === "Agregar/modificar propiedad" || item.text === 'Propiedades')  && <HouseIcon />}
+                    {(item.text === "Agregar/modificar inquilino" || item.text === 'Inquilinos') && <PersonAddIcon />}
+                    {(item.text === "Crear/modificar inventario" || item.text === 'Inventarios') && <InventoryIcon />}
                   </Box>
                 </ListItemIcon>
                 <ListItemText>{item.text}</ListItemText>
@@ -215,7 +234,7 @@ function Sidebar() {
             }}
             >
             <IconButton
-              onClick={() => navigate(`/settings/${userAttributes?.userId}`)}
+              onClick={() => navigate(`/settings`)}
               sx={{ color: "black" }}
             >
               <SettingsIcon />
