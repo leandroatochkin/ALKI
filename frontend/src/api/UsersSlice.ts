@@ -39,8 +39,8 @@ export const mockUser = {
     city: 'dolores',
     postalCode: '1122',
     theme: 'dark',
-    permissions: ['view'] ,
-    isPremium: false
+    permissions: ['admin'] ,
+    isPremium: true
 }
 
 const backend = import.meta.env.VITE_SERVER_HOST

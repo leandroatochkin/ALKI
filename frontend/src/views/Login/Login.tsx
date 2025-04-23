@@ -1,26 +1,87 @@
 import React, {useState} from "react"
-import {Box, Button, TextField, Typography, FormControl, FormLabel, Checkbox, InputAdornment, IconButton, Input} from "@mui/material"
+import {Box, Button, TextField, Typography, FormControl, FormLabel, Checkbox, InputAdornment, IconButton, Input, CircularProgress} from "@mui/material"
 import MailIcon from '@mui/icons-material/Mail';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Logo from "../../assets/Logo";
 import { useNavigate } from "react-router-dom"
 import { useAuth0 } from "@auth0/auth0-react";
+import AnimatedButton from "./Button/Button";
 
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  
 
-  const { loginWithRedirect } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect, isLoading } = useAuth0()
 
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    loginWithRedirect()
-    //navigate("/home")
+  const handleSubmit = async () => {
+    loginWithRedirect({
+      authorizationParams: {
+        ui_locales: "es",
+      },
+    })
+    try {
+      const token = await getAccessTokenSilently()
+  
+      if (user && isAuthenticated) {
+        const signupData = {
+          id: user.sub,       // Auth0 user ID (e.g. "auth0|123456...")
+          email: user.email,  // Optional but useful
+        }
+  
+        const response = await fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(signupData)
+        })
+  
+        if (response.ok) {
+          console.log('User created in DB 🎉')
+        } else {
+          console.error('Failed to create user in DB')
+        }
+      }
+    } catch (err) {
+      console.error('Signup flow error:', err)
+    }
+  }
+
+  const handleSignup = async () => {
+    try {
+      const token = await getAccessTokenSilently()
+  
+      if (user && isAuthenticated) {
+        const signupData = {
+          id: user.sub,       // Auth0 user ID (e.g. "auth0|123456...")
+          email: user.email,  // Optional but useful
+        }
+  
+        const response = await fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(signupData)
+        })
+  
+        if (response.ok) {
+          console.log('User created in DB 🎉')
+        } else {
+          console.error('Failed to create user in DB')
+        }
+      }
+    } catch (err) {
+      console.error('Signup flow error:', err)
+    }
   }
  
   return (
@@ -54,13 +115,20 @@ export default function LoginPage() {
         maxHeight: '90vh',  
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         gap: 2, // space-y-8 (approx 32px vertical spacing between children)
-        p: { xs: 1, sm: 4 }, // p-6 sm:p-8 (24px on xs, 32px on sm+)
         borderRadius: '1rem', // rounded-xl
         boxShadow: 6, // shadow-lg
-
+        pb: 2,
       }}
       >
+        {
+          isLoading
+          ?
+          <CircularProgress size={40} />
+          :
+          <>
         <Box 
         sx={{
             display: 'flex',
@@ -76,128 +144,36 @@ export default function LoginPage() {
           sx={{
             fontWeight: 600,
           }}
-          >gestión de propiedades simplificada</Typography>
-        </Box>
-
-        <Box className="text-center">
-
-          <Typography 
-          variant="body1"
-          sx={{
-          }}
-          >ingrese sus credenciales para comenzar</Typography>
-        </Box>
-
-        <FormControl onSubmit={handleSubmit} fullWidth>
-          <Box className="space-y-4"
           >
-            <Box className="space-y-2"
-            
-            >
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <Box className="relative">
-                <TextField
-                  fullWidth
-                  id="email"
-                  type="email"
-                  variant="standard"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position='start'>
-                          <MailIcon 
-                          
-                            />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-                
-              </Box>
-            </Box>
-
-            <Box className="space-y-2">
-              <Box className="flex items-center justify-between">
-                <FormLabel htmlFor="password">Password</FormLabel>
-                {/* <Link href="#" className="text-xs text-primary hover:underline underline-offset-4">
-                  Forgot password?
-                </Link> */}
-              </Box>
-              <Box className="relative">
-                <Input
-                    fullWidth
-                  id="password"
-                  color="secondary"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={
-                          showPassword ? 'hide the password' : 'display the password'
-                        }
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-
-                
-              </Box>
-            </Box>
-          </Box>
-
-          <Box className="flex items-center space-x-2">
-            <Checkbox id="remember" />
-            <FormLabel htmlFor="remember" >
-              recordarme en este dispositivo
-            </FormLabel>
-          </Box>
-
-          <Button 
-          className="w-full" 
-          disabled={isLoading}
-          onClick={handleSubmit}
-          >
-            {isLoading ? "Signing in..." : "Sign in"}
-          </Button>
-
-          <Box className="relative">
-            <Box className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </Box>
-            <Box 
-
-            >
-              <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
-            </Box>
-          </Box>
-
-          
-        </FormControl>
-
-        <Box className="mt-4 text-center text-sm"
-
-        >
-          Don't have an account?{" "}
-          <Typography 
- 
-          onClick={() => navigate('/signup')}
-          >
-            Sign up
+            gestión de propiedades simplificada
           </Typography>
         </Box>
+
+        <Box
+        sx={{
+          width: '100%',
+    
+        }}
+        >
+        <Box 
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+        >
+
+        <AnimatedButton 
+          onClick={handleSubmit}
+          disabled={isLoading}
+          text={'ENTRAR'}
+          />
+
+        </Box>
+        </Box>
+
+        </>
+        }
       </Box>
     </Box>
   )

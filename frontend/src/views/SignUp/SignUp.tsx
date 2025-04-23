@@ -30,6 +30,7 @@ import { countryListAlpha2 } from '../../utils/dataLists';
 import { useNavigate } from 'react-router-dom';
 import { UserPreview, useSignUpUserMutation } from '../../api/UsersSlice';
 import { getAccessTokenWithConsent } from '../../api/hooks/auth0-client';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const SignUp = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false)

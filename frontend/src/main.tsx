@@ -24,6 +24,8 @@ import AuthInit from './views/Auth/AuthInit.tsx'
 
 
 import { mockUser } from './api/UsersSlice.ts'
+import PostLogin from './views/Login/PostLogin.tsx'
+import { Onboarding } from './views/Onboarding/Onboarding.tsx'
 
 const mockTenant = {
   tenantId: "tenant-001",
@@ -146,6 +148,22 @@ const router = createBrowserRouter([
     ),
     errorElement: <NotFound />,
   },
+  {
+    path: "/auth-redirect",
+    element: (
+      <PostLogin />
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/onboarding",
+    element: (
+      <Onboarding />
+    ),
+    errorElement: <NotFound />,
+  },
+  
+
 ])
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN
@@ -166,7 +184,8 @@ createRoot(document.getElementById('root')!).render(
     clientId={clientId}
     authorizationParams={{
       audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      redirect_uri: 'http://localhost:5173/home'
+      redirect_uri: `${import.meta.env.VITE_FE_CLIENT}/auth-redirect`,
+       ui_locales: "es"
     }}
     cacheLocation='localstorage'
     useRefreshTokens
