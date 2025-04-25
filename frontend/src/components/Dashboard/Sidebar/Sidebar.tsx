@@ -65,10 +65,8 @@ function Sidebar() {
   const userData: UserPreview = useAppSelector(
       state => state.dashboard.userData,
     )
-  
-
   const sidebarItems = 
-    (userData.permissions[0] === 'admin' || userData.permissions[0] === 'edit')
+    (userData?.permissions?.[0] === 'admin' || userData?.permissions?.[0] === 'edit')
     ?
     [
     {

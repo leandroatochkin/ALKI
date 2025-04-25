@@ -9,6 +9,7 @@ import { ValidationError, ServerError } from 'api/error_handling/errorModels';
 import { 
   emailRegex, 
 } from 'api/helpers/regexPatterns';
+import { RowDataPacket } from 'mysql2';
 
 
 const domain = process.env.AUTH0_DOMAIN
@@ -48,13 +49,15 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
       [email]
     );
     
-    // If email exists
+
     if (Array.isArray(existingUsers) && existingUsers.length > 0) {
-      res
-      .status(200)
-      .json({isNewUser: false});
+      const rows = existingUsers as RowDataPacket[];
+      const isNew = rows[0]?.is_new === 1;
+      
+      res.status(200).json({ isNewUser: isNew === true });
       return;
     }
+    
     
     // Insert new user
     await db.query(
@@ -62,7 +65,7 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
       [id, email, true]
     );
     
-    res.status(201).json({ message: 'User created successfully', isNewUser: false });
+    res.status(201).json({ message: 'User created successfully', isNewUser: true });
     return;
     
   } catch (err) {

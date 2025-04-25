@@ -1,6 +1,8 @@
 import { useEffect } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { useNavigate } from "react-router-dom"
+import { setToken } from "../../api/store/token"
+import { setId } from "../../api/store/id"
 
 const PostLogin = () => {
   const { user, isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0()
@@ -10,6 +12,8 @@ const PostLogin = () => {
     const uploadUser = async () => {
       try {
         const token = await getAccessTokenSilently()
+        setToken(token)
+        setId(user?.sub ?? '')
 
         const res = await fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`, {
           method: "POST",
@@ -26,7 +30,7 @@ const PostLogin = () => {
         const data = await res.json()
 
         if (data.isNewUser) {
-          navigate("/welcome") 
+          navigate("/onboarding") 
         } else {
           navigate("/home")
         }

@@ -18,7 +18,8 @@ import {
   FormLabel,
   TextField,
   Select,
-  MenuItem
+  MenuItem,
+  CircularProgress
 } from "@mui/material";
 import { 
   CheckCircle, 
@@ -36,6 +37,8 @@ import {
     addressRegex
 } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from "../../utils/dataLists";
+import { useOnboardUserMutation } from "../../api/UsersSlice";
+import { getUserId } from "../../api/store/id";
 
 
 
@@ -80,51 +83,33 @@ export const Onboarding = () => {
           watch,
           setError, 
           formState: { errors }, 
-            } = useForm<UserPreview>()
+            } = useForm<UserPreview>({
+                defaultValues: {
+                    id: getUserId() ?? '',
+                    middleName: ''
+                }
+                
+            })
   
+
 
   // Handle step changes
   const handleStepChange = (event: React.SyntheticEvent, newStep: number) => {
     setActiveStep(newStep);
     if (newStep === 0) setProgress(50);
     if (newStep === 1) setProgress(100);
-  };
+  }
+  const [onBoard, { isLoading }] = useOnboardUserMutation();
 
-  // Handle form submissions
-  const onPersonalSubmit = (data: any) => {
-    console.log("Personal info:", data);
-    setActiveStep(1);
-    setProgress(66);
-  };
-
-  const onProfessionalSubmit = (data: any) => {
-    console.log("Professional info:", data);
-    setActiveStep(2);
-    setProgress(100);
-  };
-
-  const onLocationSubmit = async (data: any) => {
-    console.log("Location info:", data);
-
-    // Combine all form data
-    
-
+  const onSubmit = async (data: UserPreview) => {
     try {
-      // Here you would typically send the data to your API
-      // const response = await fetch('/api/profile', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(completeProfile),
-      // });
-
-      // if (!response.ok) throw new Error('Failed to update profile');
-
-      // Redirect to dashboard after successful submission
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error updating profile:", error);
+      await onBoard(data).unwrap()
+      navigate('/home')
+    } catch (err) {
+      console.error('Onboarding error:', err)
+      navigate('/error')
     }
-  };
+  }
 
   return (
     <Container maxWidth="md" sx={{ 
@@ -184,11 +169,16 @@ export const Onboarding = () => {
             </Box>
 
             {/* Personal Tab */}
+            <form 
+            onSubmit={handleSubmit(onSubmit)}
+            >
             <TabPanel value={activeStep} index={0}>
-              <form >
-                {/* Add your personal form fields here */}
-
-                <>
+         
+                <Box
+                sx={{
+                    pointerEvents: isLoading ? 'none' : 'all'
+                }}
+                >
                 {/*FIRST NAME*/}
             <Box>
                 <FormLabel htmlFor="email">Nombre</FormLabel>
@@ -270,7 +260,7 @@ export const Onboarding = () => {
 
                 </Box>
             </Box>
-                </>
+                </Box>
                 
                 <Box sx={{ mt: 3 }}>
                   <Button 
@@ -288,14 +278,19 @@ export const Onboarding = () => {
                     continuar
                   </Button>
                 </Box>
-              </form>
+              
             </TabPanel>
 
-            {/* Professional Tab */}
+         
             <TabPanel value={activeStep} index={1}>
-              <form >
+             
                 {/* Add your professional form fields here */}
-                            {/*COUNTRY*/}
+                <Box
+                sx={{
+                    pointerEvents: isLoading ? 'none' : 'all'
+                }}
+                >
+                                          {/*COUNTRY*/}
             <Box>
                 <FormLabel htmlFor="country">País</FormLabel>
                 <Box>
@@ -408,6 +403,7 @@ export const Onboarding = () => {
                     />    
                 </Box>
             </Box>
+                </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
                   <Button 
                     variant="outlined" 
@@ -415,28 +411,33 @@ export const Onboarding = () => {
                       setActiveStep(0);
                       setProgress(50);
                     }}
+                    disabled={isLoading}
                   >
                     volver
                   </Button>
                   <Button 
-                  onClick={
-                    () => {
-                        setActiveStep(1);
-                        setProgress(90);
-                      }
-                  }
-                  >enviar datos</Button>
-                </Box>
-              </form>
-            </TabPanel>
+                  type="submit"
+                  >
+                    {
+                        isLoading
+                        ?
+                        <CircularProgress size={20}/>
+                        :
+                        `enviar datos`
+                    }
 
+                  </Button>
+                </Box>
+        
+            </TabPanel>
+            </form>
           </Box>
         </CardContent>
         <Divider />
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
             <CheckCircle sx={{ mr: 1 }} color="success" fontSize="small" />
-            Your information is securely stored and you can edit it anytime
+            Su información se almacena de forma segura y se puede editar en cualquier momento.
           </Typography>
         </Box>
       </Box>

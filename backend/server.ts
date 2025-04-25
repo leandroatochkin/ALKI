@@ -5,6 +5,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 //import centralizedErrorHandler from './middleware/error_handling/error_handler.cjs'; // Keeping this .cjs since it's CommonJS
 import signupRoute from './api/routes/signup/signup';
+import newUserRoute from './api/routes/newUser/newUser'
+import getUserData from './api/routes/userData/userData'
+import getProperties from './api/routes/properties/getProperties'
 
 
 const app = express();
@@ -42,7 +45,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Load routes
-app.use('/signup', signupRoute);
+app.use('/signup', signupRoute)
+app.use('/newuser', newUserRoute)
+app.use('/user', getUserData)
+app.use('/properties', getProperties)
 
 //app.use(centralizedErrorHandler);
 

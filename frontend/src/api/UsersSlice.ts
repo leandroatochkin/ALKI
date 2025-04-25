@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { useAuth0 } from "@auth0/auth0-react";
+import { getToken } from "./store/token";
 
 
 
@@ -8,7 +9,7 @@ export interface UserPreview {
     firstName: string;
     lastName: string;
     middleName?: string
-    email: string;
+    email?: string;
     phoneNumber: string;
     countryCode: string;
     addressLine1: string;
@@ -23,6 +24,10 @@ export interface UserPreview {
     isPremium: boolean
     parentUserId?: string 
     password?: string
+}
+
+export interface UserInfo {
+    userInfo: UserPreview
 }
 
 export const mockUser = {
@@ -40,21 +45,19 @@ export const mockUser = {
     postalCode: '1122',
     theme: 'dark',
     permissions: ['admin'] ,
-    isPremium: true
+    isPremium: false
 }
 
-const backend = import.meta.env.VITE_SERVER_HOST
+
 
 export const userApiSlice = createApi({
     reducerPath: "userApiSlice",
     baseQuery: fetchBaseQuery({
-      baseUrl: backend,
+      baseUrl: import.meta.env.VITE_SERVER_HOST,
       prepareHeaders: async (headers, { getState }) => {
         try {
           // Dynamically import Auth0, outside hooks
-          const { getAccessTokenSilently } = await import('./hooks/getToken') // <- we'll create this
-          const token = await getAccessTokenSilently()
-            console.log(token)
+          const token = getToken()
           if (token) {
             headers.set("authorization", `Bearer ${token}`)
           }
@@ -66,16 +69,23 @@ export const userApiSlice = createApi({
       },
     }),
     endpoints: (builder) => ({
-      signUpUser: builder.mutation<void, UserPreview>({
+      onboardUser: builder.mutation<void, UserPreview>({
         query: (payload) => ({
-          url: `/signup`,
+          url: `/newuser`,
           method: "POST",
           body: payload,
+        }),
+      }),
+      getUserData: builder.query<UserInfo, string>({
+        query: (id) => ({
+          url: `/user?id=${id}`,
+          method: "GET",
         }),
       }),
     }),
   })
   
   export const {
-    useSignUpUserMutation,
+    useOnboardUserMutation,
+    useGetUserDataQuery
   } = userApiSlice

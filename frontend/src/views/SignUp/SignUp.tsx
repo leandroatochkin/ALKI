@@ -28,8 +28,7 @@ import {
 } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from '../../utils/dataLists';
 import { useNavigate } from 'react-router-dom';
-import { UserPreview, useSignUpUserMutation } from '../../api/UsersSlice';
-import { getAccessTokenWithConsent } from '../../api/hooks/auth0-client';
+import { UserPreview, useOnboardUserMutation } from '../../api/UsersSlice';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const SignUp = () => {
@@ -37,7 +36,7 @@ const SignUp = () => {
     const [repeatEmail, setRepeatEmail] = useState<string>("")
     const [repeatPassword, setRepeatPassword] = useState<string>("")
 
-    const [signUp, {isLoading}] = useSignUpUserMutation()
+    const [signUp, {isLoading}] = useOnboardUserMutation()
 
     const {  
         handleSubmit, 
@@ -62,7 +61,7 @@ const SignUp = () => {
         }
       
         if (hasError) return;
-        const token = await getAccessTokenWithConsent()
+        const token = `await getAccessTokenWithConsent()`
         const response = fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`,{
             method: 'POST',
             headers: {

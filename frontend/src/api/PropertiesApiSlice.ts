@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TenantDTO } from "./TenantsApiSlice";
 import { Inventory } from "./InventoriesApiSlice";
 import { Payment } from "./PaymentsApiSlice";
+import { getToken } from "./store/token";
 
 export interface Service {
     id: string;
@@ -31,21 +32,21 @@ export interface PropertyDTO {
 export const propertiesApiSlice = createApi({
     reducerPath: "propertiesApiSlice",
     baseQuery: fetchBaseQuery({
-      baseUrl: import.meta.env.VITE_BASEAPIURL,
-    //   prepareHeaders: async headers => {
-    //     const session = await fetchAuthSession()
-    //     const idToken = session.tokens?.idToken?.toString()
-    //     if (idToken) {
-    //       headers.set("authorization", `Bearer ${idToken}`)
-    //       headers.set("Access-Control-Allow-Origin", "*")
-    //       headers.set(
-    //         "Access-Control-Allow-Headers",
-    //         "Origin, X-Requested-With, Content-Type, Accept",
-    //       )
-    //     }
-    //     return headers
-    //   },
-    }),
+          baseUrl: import.meta.env.VITE_SERVER_HOST,
+          prepareHeaders: async (headers, { getState }) => {
+            try {
+              // Dynamically import Auth0, outside hooks
+              const token = getToken()
+              if (token) {
+                headers.set("authorization", `Bearer ${token}`)
+              }
+            } catch (error) {
+              console.error("Error fetching access token", error)
+            }
+      
+            return headers
+          },
+        }),
     endpoints: builder => ({
       getPropertyById: builder.query<PropertyDTO, string>({
         query: id => ({
@@ -55,7 +56,7 @@ export const propertiesApiSlice = createApi({
       }),
       getPropertiesByUserId: builder.query<PropertyDTO[], string>({
         query: userId => ({
-          url: `api/inventories/get-properties-by-userid/${userId}`,
+          url: `/properties?id=${userId}`,
           method: "GET",
         }),
       }),

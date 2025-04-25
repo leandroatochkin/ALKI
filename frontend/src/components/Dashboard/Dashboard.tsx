@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-//import { getCurrentUser } from "aws-amplify/auth"
-//import { useGetMyUserQuery } from "../../app/api/usersSliceApi"
-//import { setUserData, setStripeConnectInstance, setUserNotifications } from "./dashboardSlice"
-//import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   Box,
   CssBaseline,
@@ -11,84 +7,50 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Badge,
   Snackbar,
   Alert,
-  Tooltip
 } from "@mui/material"
 import Sidebar from "./Sidebar/Sidebar"
-import MailIcon from "@mui/icons-material/Mail"
-//import BrandLogo from "./components/common/BrandLogo"
-//import {
-//  CreateStripeAccountSessionRequest,
-//  useCreateStripeAccountSessionMutation,
-//} from "../../app/api/tenantApiSlice"
-//import { loadConnectAndInitialize } from "@stripe/connect-js"
 import SettingsIcon from "@mui/icons-material/Settings"
 import NotificationsIcon from '@mui/icons-material/Notifications';
-//import { useGetNotificationsQuery } from "../../app/api/notificationsSlice"
-//import { skipToken } from "@reduxjs/toolkit/query"
 import Logo from "../../assets/Logo"
-import { useAppSelector } from "../../api/store/hooks"
+import { useAppSelector, useAppDispatch } from "../../api/store/hooks"
+import { useGetUserDataQuery } from "../../api/UsersSlice"
+import { getUserId } from "../../api/store/id"
+import { setUserData, setUserId } from "./DashboardStore/DashboardStore"
 
 
 
 export default function Dashboard({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
-//   const dispatch = useAppDispatch()
-//   const stripeAccountId = useAppSelector(state => state.dashboard.paymentsId)
-//   const [createStripeAccountSession, { isSuccess, isError }] =
-//     useCreateStripeAccountSessionMutation()
+  const dispatch = useAppDispatch()
+
+  
+  const userData = useAppSelector(
+    state => state.dashboard.userData
+  )
+  const userId = useAppSelector(
+    state => state.dashboard.userId
+  )
+
+  const getUserIdToStore = getUserId()
+
+  const {data, isLoading, refetch} = useGetUserDataQuery(getUserIdToStore ?? '')
 
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [showSnackbar, setShowSnackbar] = useState(false)
-  const [userId, setUserId] = useState<string>('')
-  const userData = useAppSelector(
-    state => state.dashboard.userData
-  )
-  //const { data: userData, refetch, isLoading } = useGetMyUserQuery(undefined)
-//   useEffect(() => {
-//     if (userData?.userId) {
-//       setUserId(userData.userId);
-//     }
-//   }, [userData])
 
-  const userNotifications = [{
-    status: 0,
-    title: "New user created",
-  }]
+  useEffect(() => {
+    if (!isLoading && data) {
+      dispatch(setUserData(data.userInfo)); // sets the full user
+      dispatch(setUserId(data.userInfo.id)); // new action: just store the ID
+    } else if (!isLoading && !data) {
+      navigate("/sign-in");
+    }
+  }, [data, isLoading, dispatch, navigate]);
   
-//   const { data: userNotifications } = useGetNotificationsQuery(
-//     userData?.userId ? { userId: userData.userId } : skipToken
-//   )
 
-
-//   useEffect(() => {
-//     if (userNotifications) {
-//         dispatch(setUserNotifications(userNotifications));
-//     }
-// }, [userNotifications, dispatch]);
-
-
-//   useEffect(() => {
-//     const checkUser = async () => {
-//       try {
-//         const user = await getCurrentUser()
-//         if (!user) {
-//           navigate("/sign-in")
-//         } else {
-//           if (!isLoading) {
-//             await refetch()
-//             dispatch(setUserData(userData || { permissions: [] }))
-//           }
-//         }
-//       } catch (error) {
-//         navigate("/sign-in")
-//       }
-//     }
-//     checkUser()
-//   }, [navigate, refetch, dispatch, isLoading, userData])
 
   const handleCloseSnackbar = () => setShowSnackbar(false)
 
@@ -116,16 +78,6 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
           </div>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
           </Typography>
-          {/* <IconButton>
-              <Tooltip title="Show notifications">
-              <Badge badgeContent={userNotifications?.filter(notification=>notification.status === 0).length} color="error">
-              <NotificationsIcon 
-               onClick={() => navigate(`/notifications/${userData?.userId}`)}
-               sx={{ color: "black" }}
-              />
-              </Badge>
-              </Tooltip>
-          </IconButton> */}
           <IconButton
             onClick={() => navigate(`/settings`)}
             sx={{

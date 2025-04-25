@@ -102,7 +102,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             flexDirection: 'column',
            }}
            >
-            <Typography>${property.tenantData?.contractValue.toFixed(2)}</Typography>
+            <Typography>${Number(property.tenantData?.contractValue).toFixed(2)}</Typography>
             <Typography>hasta {property.tenantData?.contractEndDate}</Typography>
            </Box>
           </Box>
@@ -115,7 +115,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           }}
           >
             {
-              userData.permissions[0] !== 'view' &&
+              userData?.permissions?.[0] !== 'view' &&
               <Button
                 variant='outlined'
                 color='primary'

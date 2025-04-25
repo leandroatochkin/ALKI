@@ -162,6 +162,13 @@ const router = createBrowserRouter([
     ),
     errorElement: <NotFound />,
   },
+  {
+    path: "/error",
+    element: (
+      <NotFound />
+    ),
+    errorElement: <NotFound />,
+  },
   
 
 ])

@@ -6,10 +6,32 @@ import { mockUser } from "../../../api/UsersSlice"
 interface DashboardState {
     //notifications: Notification[]
     userData: UserPreview
+    userId: string | null
   }
 
   const initialState: DashboardState = {
-    userData: mockUser
+    userData: {
+      id: '',
+      firstName: '',
+      lastName: '',
+      middleName: '',
+      email: '',
+      phoneNumber: '',
+      countryCode: '',
+      addressLine1: '',
+      addressLine2: '',
+      monthlyRevenue: 0,
+      state: '',
+      city: '',
+      postalCode: '',
+      autoCalculateMRR: false,
+      theme: 'dark',
+      permissions: [],
+      isPremium: false,
+      parentUserId: '', 
+      password: ''
+    },
+    userId: null
   }
 
   export const dashboardSlice = createSlice({
@@ -18,25 +40,16 @@ interface DashboardState {
     reducers: {
       setUserData: (state, action: PayloadAction<UserPreview>) => {
         state.userData = action.payload
-        //set role
-        // if (state.userData.permissions.includes("admin")) {
-        //   state.role = "admin"
-        //   return
-        // } else if (state.userData.permissions.includes("clinician")) {
-        //   state.role = "clinician"
-        //   return
-        // } else {
-        //   state.role = "patient"
-        // }
       },
-    //   setUserNotifications: (state, action: PayloadAction<Notification[]>) => {
-    //     state.notifications = action.payload
-    //   },
+      setUserId: (state, action) => {
+        state.userId = action.payload;
+      }
     },
   })
   
   export const {
     setUserData,
+    setUserId
   } = dashboardSlice.actions
   export default dashboardSlice.reducer
   

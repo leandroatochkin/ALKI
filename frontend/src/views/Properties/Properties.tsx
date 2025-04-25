@@ -1,58 +1,72 @@
-import React, {useState, useEffect} from 'react'
-import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
+import React, {useState, useEffect, useMemo} from 'react'
+import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import PropertyCard from '../../components/Cards/PropertyCard'
 import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import {LinearProgress} from '@mui/material'
 import { useAppSelector } from '../../api/store/hooks'
 import { UserPreview } from '../../api/UsersSlice'
+import { skipToken } from '@reduxjs/toolkit/query';
 
 const Properties = () => {
-const [properties, setProperties] = useState<PropertyDTO[] | []>([])
-const [progress, setProgress] = useState<number>(0);
-  const userData: UserPreview = useAppSelector(
-        state => state.dashboard.userData,
-      )
+  const [properties, setProperties] = useState<PropertyDTO[]>([]);
+  const [progress, setProgress] = useState<number>(0);
 
-const { data, isLoading, isError } = useGetPropertiesByUserIdQuery('') 
+  const userData: UserPreview | undefined = useAppSelector(
+    (state) => state.dashboard.userData
+  );
 
-useEffect(() => {
+  const userId = userData?.id;
+
+
+
+
+
+  const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(
+    userId ? userId : skipToken
+  );
+
+  const { currentMonthlyTotalRevenue, calculatedMRR } = useMemo(() => {
+    const payments = properties
+      .flatMap((property) => property.tenantData?.payments ?? [])
+      .map((payment) => Number(payment?.amount) || 0);
+  
+    const contractValues = properties
+      .map((property) => Number(property.tenantData?.contractValue) || 0);
+  
+    const currentMonthlyTotalRevenue = payments.reduce((sum, val) => sum + val, 0);
+    const calculatedMRR = contractValues.reduce((sum, val) => sum + val, 0);
+  
+    return { currentMonthlyTotalRevenue, calculatedMRR };
+  }, [properties]);
+  
+  
+  const getRevenueProgress = () => {
+    const targetMonthlyRevenue = !userData?.autoCalculateMRR
+      ? userData?.monthlyRevenue
+      : calculatedMRR;
+  
+    return targetMonthlyRevenue ?? 0 > 0
+      ? Math.min(
+          100,
+          Math.round((currentMonthlyTotalRevenue / (targetMonthlyRevenue || 1)) * 100)
+        )
+      : 0;
+  };
+
+
+  useEffect(() => {
     if (data) {
-        setProperties(data)
-    } else {
-        setProperties(mockProperties)
+      setProperties(data);
     }
-},[data])
+  }, [data]);
+  useEffect(()=>{
+    const revenueProgress = getRevenueProgress()
+    setProgress(revenueProgress)
+  },[properties])
 
-const currentMonthlyTotalRevenue = properties
-.map((property) => property.tenantData?.payments ?? [])
-.map((payments) => payments.map((payment) => payment?.amount ?? 0))
-.flat()
-.reduce((acc, propertyRev) => acc + propertyRev, 0)
+if (!userData?.id) return <div>Loading user...</div>;
 
-const calculatedMRR = properties
-.map((property) => property.tenantData?.contractValue ?? [])
-.flat()
-.reduce((acc, contractValue) => acc + contractValue, 0)
-
-
-
-
-const getRevenueProgress = () => {
-
-const targetMonthlyRevenue = !userData.autoCalculateMRR ? userData.monthlyRevenue : calculatedMRR
-
-const progress = targetMonthlyRevenue > 0 
-    ? Math.min(100, Math.round((currentMonthlyTotalRevenue / targetMonthlyRevenue) * 100))
-    : 0
-
-  return progress
-}
-
-useEffect(()=>{
-  const revenueProgress = getRevenueProgress()
-  setProgress(revenueProgress)
-},[properties])
 
 const LinearProgressWithLabel = (props: any) => {
   return (
@@ -68,6 +82,10 @@ const LinearProgressWithLabel = (props: any) => {
     </Box>
   );
 }
+
+if (!userData?.id) return <div>Loading user...</div>;
+if (isLoading) return <div>Loading properties...</div>;
+if (isError) return <div>Failed to load properties</div>;
 
 
   return (
@@ -93,7 +111,7 @@ const LinearProgressWithLabel = (props: any) => {
             }}
             >
             <Typography>
-              {`Ingreso mensual (meta: $${userData.autoCalculateMRR ? calculatedMRR.toFixed(2) : userData.monthlyRevenue.toFixed(2)})`}
+              {`Ingreso mensual (meta: $${userData?.autoCalculateMRR ? calculatedMRR?.toFixed(2) : userData?.monthlyRevenue?.toFixed(2)})`}
             </Typography>
             <Typography 
             variant='h4'
@@ -101,10 +119,12 @@ const LinearProgressWithLabel = (props: any) => {
               textAlign: 'end'
             }}
             >
-              {`$${currentMonthlyTotalRevenue.toFixed(2)}`}
+       {`$${Number(currentMonthlyTotalRevenue).toFixed(2)}`}
+
             </Typography>
             <LinearProgressWithLabel value={progress}/>
             </Paper>
+
             { 
             !isLoading
             ?
