@@ -43,6 +43,10 @@ interface DashboardState {
       },
       setUserId: (state, action) => {
         state.userId = action.payload;
+      },
+      clearUserData: (state) => {
+        state.userData = initialState.userData
+        state.userId = null
       }
     },
   })

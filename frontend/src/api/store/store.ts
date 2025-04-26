@@ -1,39 +1,40 @@
-import type { Store } from "@reduxjs/toolkit"
-import { configureStore } from "@reduxjs/toolkit"
-import { inventoriesApiSlice } from "../InventoriesApiSlice"
-import { propertiesApiSlice } from "../PropertiesApiSlice"
-import { tenantsApiSlice } from "../TenantsApiSlice"
-import { paymentsApiSlice } from "../PaymentsApiSlice"
-import { dashboardSlice } from "../../components/Dashboard/DashboardStore/DashboardStore"
-import { organizationsApiSlice } from "../OrganizationsSlice"
-import { userApiSlice } from "../UsersSlice"
+// store.ts
 
+import { configureStore } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import rootReducer from "./rootReducer"; // 👈 NEW import!
+import { inventoriesApiSlice } from "../InventoriesApiSlice";
+import { propertiesApiSlice } from "../PropertiesApiSlice";
+import { tenantsApiSlice } from "../TenantsApiSlice";
+import { paymentsApiSlice } from "../PaymentsApiSlice";
+import { organizationsApiSlice } from "../OrganizationsSlice";
+import { userApiSlice } from "../UsersSlice";
 
-export const store: Store = configureStore({
-    reducer: {
-      //onboard: onboardReducer,
-      dashboard: dashboardSlice.reducer,
-      //staff: staffSlice,
-      //patient: patientSlice,
-      //[authApi.reducerPath]: authApi.reducer,
-      [inventoriesApiSlice.reducerPath]: inventoriesApiSlice.reducer,
-      [propertiesApiSlice.reducerPath]: propertiesApiSlice.reducer,
-      [tenantsApiSlice.reducerPath]: tenantsApiSlice.reducer,
-      [paymentsApiSlice.reducerPath]: paymentsApiSlice.reducer,
-      [organizationsApiSlice.reducerPath]: organizationsApiSlice.reducer,
-      [userApiSlice.reducerPath]: userApiSlice.reducer,
-      
-    },
-    middleware: getDefaultMiddleware =>
-      getDefaultMiddleware().concat(
-        inventoriesApiSlice.middleware,
-        propertiesApiSlice.middleware,
-        tenantsApiSlice.middleware,
-        paymentsApiSlice.middleware,
-        organizationsApiSlice.middleware,
-        userApiSlice.middleware,
-      ),
-  })
-  
-  export type RootState = ReturnType<typeof store.getState>
-  export type AppDispatch = typeof store.dispatch
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["dashboard"], // 👈 only persist dashboard (and maybe later others)
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // 👈 ADD THIS or persist will complain about non-serializable data
+    }).concat(
+      inventoriesApiSlice.middleware,
+      propertiesApiSlice.middleware,
+      tenantsApiSlice.middleware,
+      paymentsApiSlice.middleware,
+      organizationsApiSlice.middleware,
+      userApiSlice.middleware,
+    ),
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

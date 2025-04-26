@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { Provider } from "react-redux"
-import {store} from './api/store/store.ts'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
@@ -21,11 +20,11 @@ import { ThemeProvider, CssBaseline } from '@mui/material'
 import { getTheme } from './utils/theme.ts'
 import { Auth0Provider } from '@auth0/auth0-react';
 import AuthInit from './views/Auth/AuthInit.tsx'
-
-
+import { PersistGate } from 'redux-persist/integration/react'
 import { mockUser } from './api/UsersSlice.ts'
 import PostLogin from './views/Login/PostLogin.tsx'
 import { Onboarding } from './views/Onboarding/Onboarding.tsx'
+import { store, persistor } from './api/store/store.ts'
 
 const mockTenant = {
   tenantId: "tenant-001",
@@ -197,13 +196,19 @@ createRoot(document.getElementById('root')!).render(
     cacheLocation='localstorage'
     useRefreshTokens
   >
+    
      <ThemeProvider theme={theme}>
      <CssBaseline />
-    <Provider store={store}>
-    <AuthInit />
-    <RouterProvider router={router} />
-    </Provider>
-    </ThemeProvider>
+     
+     <Provider store={store}>
+     <PersistGate loading={null} persistor={persistor}>
+     <AuthInit />
+     </PersistGate>
+     <RouterProvider router={router} />
+     </Provider>
+     
+     </ThemeProvider>
+
     </Auth0Provider>
   </StrictMode>,
 )

@@ -1,12 +1,24 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { useNavigate } from "react-router-dom"
 import { setToken } from "../../api/store/token"
 import { setId } from "../../api/store/id"
+import { useAppDispatch } from "../../api/store/hooks"
+import { setUserData, setUserId } from "../../components/Dashboard/DashboardStore/DashboardStore"
+import { useGetUserDataQuery } from "../../api/UsersSlice"
+
 
 const PostLogin = () => {
   const { user, isAuthenticated, getAccessTokenSilently, isLoading } = useAuth0()
+  const [id, setId]=useState<string | null>(null)
+  const { data, isLoading: isLoadingUser } = useGetUserDataQuery(id ?? '', {
+      skip: !id, // ⛔ don't send the query if we don't have a userId yet
+    })
+  
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+
 
   useEffect(() => {
     const uploadUser = async () => {
@@ -26,7 +38,7 @@ const PostLogin = () => {
             email: user?.email
           }),
         })
-
+        dispatch(setUserId(user?.sub))
         const data = await res.json()
 
         if (data.isNewUser) {
@@ -43,6 +55,12 @@ const PostLogin = () => {
       uploadUser()
     }
   }, [user, isAuthenticated, isLoading])
+
+  useEffect(()=>{
+    if(data){
+        dispatch(setUserData(data.userInfo))
+    }
+  },[data, isLoadingUser])
 
   return null
 }

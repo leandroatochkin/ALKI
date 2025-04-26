@@ -50,7 +50,7 @@ export const propertiesApiSlice = createApi({
     endpoints: builder => ({
       getPropertyById: builder.query<PropertyDTO, string>({
         query: id => ({
-          url: `api/inventories/get-property-by-id/${id}`,
+          url: `api/properties/get-property-by-id/${id}`,
           method: "GET",
         }),
       }),
@@ -62,21 +62,21 @@ export const propertiesApiSlice = createApi({
       }),
       postProperty: builder.mutation<void, PropertyDTO>({
         query: payload => ({
-          url: `api/properties`,
+          url: `/add-property`,
           method: "POST",
           body: payload,
         }),
       }),
       updateProperty: builder.mutation<void, PropertyDTO>({
         query: payload => ({
-          url: `api/properties`,
+          url: `/update-property`,
           method: "PUT",
           body: payload,
         }),
       }),
       deleteProperty: builder.mutation<void, string>({
-        query: id => ({
-          url: `api/properties/${id}`,
+        query: propId => ({
+          url: `/delete-property?propId=${propId}`,
           method: "DELETE",
         }),
       }),

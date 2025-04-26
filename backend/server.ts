@@ -8,6 +8,9 @@ import signupRoute from './api/routes/signup/signup';
 import newUserRoute from './api/routes/newUser/newUser'
 import getUserData from './api/routes/userData/userData'
 import getProperties from './api/routes/properties/getProperties'
+import addProperty from './api/routes/properties/addProperty'
+import deleteProperty from './api/routes/properties/deleteProperty'
+import updateProperty from './api/routes/properties/updateProperty'
 
 
 const app = express();
@@ -49,6 +52,9 @@ app.use('/signup', signupRoute)
 app.use('/newuser', newUserRoute)
 app.use('/user', getUserData)
 app.use('/properties', getProperties)
+app.use('/add-property', addProperty)
+app.use('/delete-property', deleteProperty)
+app.use('/update-property', updateProperty)
 
 //app.use(centralizedErrorHandler);
 

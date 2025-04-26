@@ -1,12 +1,20 @@
 import React, {useState, useEffect, useMemo} from 'react'
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import PropertyCard from '../../components/Cards/PropertyCard'
-import { Box, CircularProgress, Paper, Typography } from '@mui/material'
+import { 
+  Box, 
+  CircularProgress, 
+  Paper, 
+  Typography,
+  Button 
+} from '@mui/material'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import {LinearProgress} from '@mui/material'
 import { useAppSelector } from '../../api/store/hooks'
 import { UserPreview } from '../../api/UsersSlice'
 import { skipToken } from '@reduxjs/toolkit/query';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import { useNavigate } from 'react-router-dom'
 
 const Properties = () => {
   const [properties, setProperties] = useState<PropertyDTO[]>([]);
@@ -19,7 +27,7 @@ const Properties = () => {
   const userId = userData?.id;
 
 
-
+  const navigate = useNavigate()
 
 
   const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(
@@ -83,10 +91,45 @@ const LinearProgressWithLabel = (props: any) => {
   );
 }
 
+const NoProperty = () => {
+  return(
+    <Box 
+        sx={{
+            height: '100%', 
+            width: '100%', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            }}>
+                <Box sx={{
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 2
+                    }}>
+                    <HomeWorkIcon
+                    fontSize='large'
+                    />
+                            <Typography>
+                                Aún no has cargado ninguna propiedad.
+                            </Typography>
+                            <Button
+                            variant='outlined'
+                            onClick={
+                              ()=>navigate('/properties')
+                            }
+                            >
+                              empieza por aquí
+                            </Button>
+                      </Box>
+          </Box>
+  )
+}
+
 if (!userData?.id) return <div>Loading user...</div>;
 if (isLoading) return <div>Loading properties...</div>;
-if (isError) return <div>Failed to load properties</div>;
-
+if (properties.length === 0 || isError) return <NoProperty/>
+                                
 
   return (
   <>
@@ -136,6 +179,7 @@ if (isError) return <div>Failed to load properties</div>;
             <CircularProgress size={40} color='primary'/>
             )
             }
+            
         </Box>
   </>
   )

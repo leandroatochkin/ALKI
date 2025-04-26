@@ -12,6 +12,7 @@ import { propertyIconMapper } from '../../utils/functions'
 import PropertyInfoDialog from '../Dialogs/PropertyInfoDialog'
 import InformPaymentDialog from '../Dialogs/InformPaymentDialog'
 import { useAppSelector } from '../../api/store/hooks'
+import dayjs from 'dayjs'
 
 interface PropertyCardProps {
     property: PropertyDTO
@@ -41,6 +42,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             flexDirection: {xs: 'column', md: 'row'},
             width: '100%',
             padding: 2,
+            justifyContent: {
+              md: 'space-between'
+            },
         }}
         >
          {/*UPPER*/}   
@@ -75,8 +79,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: {
+              xs: 'column',
+              md: 'row'
+            },
             width: '100%',
+             justifyContent: 'space-between'           
           }}
           >
             <Box
@@ -85,12 +93,21 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                 display: 'flex',
                 padding: 2,
                 flexDirection: {xs: 'column', md: 'row'},
+                justifyContent: {
+                  md: 'space-between'
+                }                
           }}
           >
            <Box
            sx={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: {
+              md:'column',
+              xs: 'row'
+            },
+            justifyContent: {
+              xs: 'space-between'
+            },
            }}
            >
            <FormLabel htmlFor='tenantName'>Inquilino</FormLabel>
@@ -102,8 +119,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             flexDirection: 'column',
            }}
            >
-            <Typography>${Number(property.tenantData?.contractValue).toFixed(2)}</Typography>
-            <Typography>hasta {property.tenantData?.contractEndDate}</Typography>
+            <Typography
+            sx={{
+              textAlign: 'end'
+            }}
+            >${Number(property.tenantData?.contractValue).toFixed(2)}</Typography>
+            <Typography
+            sx={{
+              textAlign: 'end'
+            }}
+            >hasta {dayjs(property.tenantData?.contractEndDate).format('DD/MM/YY')}</Typography>
            </Box>
           </Box>
           <Box
@@ -111,7 +136,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             width: '100%',
             display: 'flex',
             flexDirection: {xs: 'column', md: 'row'},
-            gap: 2
+            justifyContent: {
+              md: 'flex-end'
+            },
+            gap: 2,
           }}
           >
             {

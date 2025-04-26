@@ -33,9 +33,11 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
     state => state.dashboard.userId
   )
 
-  const getUserIdToStore = getUserId()
+  console.log(userId)
 
-  const {data, isLoading, refetch} = useGetUserDataQuery(getUserIdToStore ?? '')
+  const { data, isLoading } = useGetUserDataQuery(userId ?? '', {
+    skip: !userId, // ⛔ don't send the query if we don't have a userId yet
+  })
 
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
@@ -43,12 +45,12 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && data) {
-      dispatch(setUserData(data.userInfo)); // sets the full user
-      dispatch(setUserId(data.userInfo.id)); // new action: just store the ID
+      dispatch(setUserData(data.userInfo))
+      console.log('✅ userData after login:', data.userInfo)
     } else if (!isLoading && !data) {
-      navigate("/sign-in");
+      navigate("/sign-in")
     }
-  }, [data, isLoading, dispatch, navigate]);
+  }, [data, isLoading])
   
 
 

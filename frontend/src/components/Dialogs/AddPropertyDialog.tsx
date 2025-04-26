@@ -10,13 +10,21 @@ import {
     Button, 
     Checkbox, 
     Select, 
-    MenuItem 
+    MenuItem, 
+    CircularProgress
 } from '@mui/material'
 
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'
 import { addressRegex, propertyNameRegex } from '../../utils/regexPatterns';
 import { propertyTypeList, countryListAlpha2 } from '../../utils/dataLists';
+import { 
+    usePostPropertyMutation,
+    useUpdatePropertyMutation
+} from '../../api/PropertiesApiSlice';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { useAppSelector } from '../../api/store/hooks';
+import { UserPreview } from '../../api/UsersSlice';
 
 
 interface PropertyInfoDialogProps {
@@ -24,21 +32,33 @@ interface PropertyInfoDialogProps {
     open: boolean,
     modify?: boolean,
     onClose: () => void,
+    refetch: () => void,
 }
 
-const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, modify, onClose}) => {
+const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, modify, onClose, refetch}) => {
 
+  const userData: UserPreview | undefined = useAppSelector(
+    (state) => state.dashboard.userData
+  );
+
+  console.log(userData)
      const {  
             handleSubmit, 
             register, 
             setValue,
             getValues,
             formState: { errors }, 
-              } = useForm<PropertyDTO>()
-
+              } = useForm<PropertyDTO>({
+                defaultValues: {
+                    userId: userData.id
+                }
+              })
+              const [postProperty, {isLoading, status, isError}] = usePostPropertyMutation()
+              const [updateProperty, {isLoading: isUpdating}] = useUpdatePropertyMutation()
               useEffect(() => {
                 if (modify && property) {
                   // Set basic fields
+                  setValue('id', property.id)
                   setValue('title', property.title)
                   setValue('description', property.description)
                   setValue('address', property.address)
@@ -53,13 +73,31 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
     const navigate = useNavigate()
 
     const onSubmit = async (data: PropertyDTO) => {
-        try {
-            // Call the API to add the property
-            console.log(data)
-            // If successful, close the dialog and refresh the properties list
-            onClose()
-        } catch (error) {
-            console.error('Error adding property:', error)
+        console.log(data)
+        if(!modify){
+            try {
+                // Call the API to add the property
+                 postProperty(data).unwrap()
+                // If successful, close the dialog and refresh the properties list
+                refetch()
+             
+            } catch (error) {
+                console.error('Error adding property:', error)
+            } finally {
+                onClose()
+            }
+        } else {
+            try {
+                // Call the API to add the property
+                updateProperty(data).unwrap()
+                // If successful, close the dialog and refresh the properties list
+                refetch()
+             
+            } catch (error) {
+                console.error('Error adding property:', error)
+            } finally {
+                onClose()
+            }
         }
     }
 
@@ -237,18 +275,30 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
                 gap: 2
             }}
             >       <Button
-                     variant="contained"
+                     variant="outlined"
                      color="secondary"
                      onClick={onClose}
+                     disabled={isLoading}
                         >
                         volver
                     </Button>
                     <Button
                     type="submit"
-                    variant="contained"
+                    variant="outlined"
                     color="primary"
+                    disabled={isLoading}
                     >
-                        {modify ? 'Modificar' : 'Agregar'}
+                        {
+                            (!isLoading && !isUpdating)
+                            ?
+                            (
+                                modify ? 'Modificar' : 'Agregar'
+                            )
+                            :
+                            <CircularProgress size={20
+
+                            }/>
+                        }
                     </Button>
             </Box>
             </form>

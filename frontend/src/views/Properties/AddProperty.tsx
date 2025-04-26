@@ -14,6 +14,7 @@ import {
     GridCellParams,
     GridRowSelectionModel,
     GridOverlay,
+    GridLocaleText,
     GridPaginationModel,
   } from "@mui/x-data-grid"
   import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
@@ -22,7 +23,8 @@ import {
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
   import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
   import { useAppSelector } from '../../api/store/hooks'
-  import { UserPreview } from '../../api/UsersSlice'
+  import { UserInfo, UserPreview } from '../../api/UsersSlice'
+  import ReplayIcon from '@mui/icons-material/Replay';
 
 const AddProperty = () => {
         const [properties, setProperties] = useState<PropertyDTO[] | []>([])
@@ -32,20 +34,23 @@ const AddProperty = () => {
          const userData: UserPreview = useAppSelector(
             state => state.dashboard.userData,
           )
-
+        console.log(userData)
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
-        const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(idCheck(userData))
+        const { data, isLoading, isError, refetch } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
         const [deleteProperty,{isLoading: isDeleting, isError: isErrorDeleting, status: isStatusDeleting}] = useDeletePropertyMutation()
+
+        const customLocaleText: Partial<GridLocaleText> = {
+          noRowsLabel: 'Nada por aquí',
+        }
+        
 
         useEffect(() => {
           if (!isLoading && !isError && data) {
               setProperties(data)
-          } else if (!isLoading && isError) {
-              setProperties(mockProperties)
-          }
-      }, [data, isLoading, isError])
+          } 
+      }, [data, isLoading, isError, refetch])
 
     const navigate = useNavigate()
 
@@ -157,7 +162,7 @@ const AddProperty = () => {
       return baseColumns
 
       },
-        [],
+        [userData.permissions],
       )
 
       
@@ -175,7 +180,7 @@ const AddProperty = () => {
             type: propertyTitleMapper(property.type),
             occupied: property.occupied ? "Sí" : "No",
           })),
-        [],
+        [properties],
       )
 
         const handleRowSelection = (selection: GridRowSelectionModel) => {
@@ -209,15 +214,22 @@ const AddProperty = () => {
 
   return (
     <>
-    {openDialog && <AddPropertyDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false}/>}
-    {propertyToModify && <AddPropertyDialog open={!!propertyToModify} onClose={()=>setPropertyToModify(null)} modify={true} property={propertyFiltered}/>}
+    {openDialog && <AddPropertyDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false} refetch={refetch}/>}
+    {propertyToModify && <AddPropertyDialog open={!!propertyToModify} onClose={()=>setPropertyToModify(null)} modify={true} property={propertyFiltered} refetch={refetch}/>}
     <Paper
     sx={{
         p: 2,
         mt: 2
     }}
     >
-    <Typography variant="h4" gutterBottom>
+   <Box
+   sx={{
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between'
+   }}
+   >
+   <Typography variant="h4" gutterBottom>
         {
           userData.permissions[0] === 'view'
           ?
@@ -226,6 +238,14 @@ const AddProperty = () => {
           `Agregar o modificar propiedades`
         }
     </Typography>
+    <Button
+    onClick={
+      ()=>refetch()
+    }
+    >
+      <ReplayIcon/>
+    </Button>
+   </Box>
          {
           !isLoading
           ?
@@ -233,6 +253,7 @@ const AddProperty = () => {
             <DataGrid
             rows={rows}
             columns={columns}
+            localeText={customLocaleText}
             pagination
             pageSizeOptions={[10, 25, 50, 100]}
             paginationMode="client"

@@ -1,17 +1,18 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { db } from 'api/db/db';
+import { checkJwt } from 'api/middleware/checkToken';
 
 // Create router instance
 const router = express.Router();
 
 // Define route handler
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/', checkJwt, async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
   try {
     const [propertiesResult] = await db.query('SELECT * FROM properties WHERE userId = ?', [id]) as any[];
 
     if (!Array.isArray(propertiesResult) || propertiesResult.length === 0) {
-      res.status(404).json({ message: 'No properties found for this user' })
+      res.status(200).json({ message: 'No properties found for this user' })
       return
     }
 

@@ -5,7 +5,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import FactoryIcon from '@mui/icons-material/Factory';
 import ForestIcon from '@mui/icons-material/Forest';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import { UserPreview } from '../api/UsersSlice';
+import { UserPreview, UserInfo } from '../api/UsersSlice';
 
 export const propertyIconMapper = (propertyType: number) => {
     switch (propertyType) {
@@ -62,9 +62,15 @@ export const paymentMethodMapper = (paymentMethod: number) => {
     }
 }
 
-export const idCheck = (data: UserPreview) =>
-    data.permissions[0] === 'admin'
-          ?
-          data.id ?? ''
-          :
-          data.parentUserId ?? ''
+export const idCheck = (data: UserInfo) => {
+
+if(data){
+    data.userInfo.permissions[0] === 'admin'
+    ?
+    data.userInfo.id ?? ''
+    :
+    data.userInfo.parentUserId ?? ''
+}
+console.log('no data')
+}
+

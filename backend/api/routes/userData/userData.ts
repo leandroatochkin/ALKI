@@ -4,13 +4,14 @@ import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
 import { db } from 'api/db/db';
 import { ServerError } from 'api/error_handling/errorModels';
+import { checkJwt } from 'api/middleware/checkToken';
 
 
 
 const router = express.Router();
 
 
-router.get('/', async (req: Request & AuthResponse, res: Response, next) => {
+router.get('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
   try {
     const { id } = req.query;
 
