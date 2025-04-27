@@ -35,6 +35,8 @@ import {
     useUpdateTenantMutation
  } from '../../api/TenantsApiSlice';
 import dayjs from 'dayjs';
+import { useAppSelector } from '../../api/store/hooks';
+import { UserPreview } from '../../api/UsersSlice';
 
 
 
@@ -46,6 +48,9 @@ interface TenantInfoDialogProps {
 }
 
 const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify, onClose}) => {
+    const userData: UserPreview = useAppSelector(
+        state => state.dashboard.userData
+    )
 
      const {  
             handleSubmit, 
@@ -53,7 +58,13 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
             setValue,
             watch,
             formState: { errors }, 
-              } = useForm<TenantDTO>()
+              } = useForm<TenantDTO>(
+                {
+                    defaultValues: {
+                        propietorId: userData.permissions[0] === 'admin' ? userData?.id : userData?.parentUserId
+                    }
+                }
+              )
     const smoking = watch("smoking")
               useEffect(() => {
                 if (modify && tenant) {
@@ -95,7 +106,7 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
                 onClose()
             }
         } catch (error) {
-            console.error('Error adding property:', error)
+            console.error('Error adding tenant:', error)
         }
     }
 

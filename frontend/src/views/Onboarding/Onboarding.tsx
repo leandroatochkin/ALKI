@@ -72,7 +72,7 @@ function a11yProps(index: number) {
   };
 }
 
-export const Onboarding = () => {
+const Onboarding = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [progress, setProgress] = useState(33);
@@ -444,3 +444,5 @@ export const Onboarding = () => {
     </Container>
   );
 }
+
+export default Onboarding

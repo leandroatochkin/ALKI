@@ -37,6 +37,7 @@ import {
 import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
 import { propertiesList } from '../../api/PropertiesApiSlice'
 import { useAppSelector } from '../../api/store/hooks'
+import dayjs from 'dayjs'
 
 
 interface Observations {
@@ -48,6 +49,7 @@ interface Observations {
 
 const AddTenant = () => {
     const [tenants, setTenants] = useState<TenantDTO[] | []>([])
+  
     const [openDialog, setOpenDialog] = useState<boolean>(false)
     const [tenantToModify, setTenantToModify] = useState<string | null>(null)
     const [observations, setObservations] = useState<Observations | null>(null)
@@ -57,8 +59,13 @@ const AddTenant = () => {
       state => state.dashboard.userData 
     )
 
-    const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery(idCheck(userData))
-    const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idCheck(userData))
+    const idPermissionCheck = (userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? ''
+
+    const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery(idPermissionCheck)
+    console.log(data)
+    useEffect(()=>console.log(tenants as any),[tenants, data])
+
+    const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idPermissionCheck)
 
     const [assignTenantToProperty, {isLoading: isAssigning, isSuccess: isAssigned, isError: isErrorAssigning, status}] = useAssignTenantToPropertyMutation()
     const [deleteTenant, {isLoading: isDeleting, isSuccess: isDeleted, isError: isErrorDeleting, status: deletingStatus}] = useDeleteTenantMutation()
@@ -91,17 +98,9 @@ const AddTenant = () => {
     
 
     useEffect(() => {
-      if (isLoading) return; // Don't do anything while loading
-    
-      if (!isError && data && Array.isArray(data)) {
-        setTenants(data);
-      } else {
-        // fallback only if there's an error or no valid data
-        const fallbackTenants = mockProperties
-          .map((property) => property.tenantData)
-          .filter((tenant): tenant is TenantDTO => tenant !== undefined);
-        setTenants(fallbackTenants);
-      }
+      if (!isError && data && Array.isArray(data.tenants)) {
+        setTenants(data.tenants);
+      } 
     }, [data, isLoading, isError, refetch]);
     
     
@@ -285,7 +284,7 @@ const AddTenant = () => {
           
             return baseColumns
             },
-              [],
+              [tenants],
             )
       
             const rows = useMemo(
@@ -301,12 +300,12 @@ const AddTenant = () => {
                   phoneNumber: tenant.phoneNumber,
                   property: tenant.propertyId,
                   observations: tenant.observations,
-                  contractStartDate: tenant.contractStartDate,
-                  contractEndDate: tenant.contractEndDate,
+                  contractStartDate: dayjs(tenant.contractStartDate).format('DD/MM/YY'),
+                  contractEndDate: dayjs(tenant.contractEndDate).format('DD/MM/YY'),
                   contractStatus: tenant.contractStatus,
                   contractId: tenant.contractId,
                   contractType: tenant.contractType,
-                  contractValue: `${tenant.contractValue.toFixed(2)}`,
+                  contractValue: `${Number(tenant?.contractValue).toFixed(2) ?? 0}`,
                   contractCurrency: tenant.contractCurrency,
                   contractPaymentMethod: paymentMethodMapper(tenant.contractPaymentMethod),
                   contractPaymentFrequency: tenant.contractPaymentFrequency,
@@ -315,7 +314,7 @@ const AddTenant = () => {
                   children: tenant.children,
                   smoking: tenant.smoking ? "Sí" : "No",
                 })),
-              [],
+              [tenants],
             )
 
   const ObservationsDialog = () => {

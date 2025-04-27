@@ -6,3 +6,7 @@ export {default as AddTenant} from "./Tenants/AddTenant"
 export {default as AddInventory} from "./Inventories/AddInventory"
 export {default as Settings} from "./Settings/Settings"
 export {default as Organizations} from './Organizations/Organizations'
+export {default as PostLogin} from './Login/PostLogin'
+export {default as Onboarding} from './Onboarding/Onboarding'
+export {default as Properties} from './Properties/Properties'
+export {default as TenantPayments} from './Payments/TenantPayments'

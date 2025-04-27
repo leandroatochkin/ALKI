@@ -26,6 +26,8 @@ import {  onlyNumbersRegex } from '../../utils/regexPatterns';
 import { useNavigate } from 'react-router-dom';
 import BedtimeIcon from '@mui/icons-material/Bedtime';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { useAppSelector, useAppDispatch } from '../../api/store/hooks'
+import { setUserData } from '../../components/Dashboard/DashboardStore/DashboardStore'
 
 
 
@@ -35,7 +37,13 @@ interface OptionsDialogProps {
     onClose: () => void
 }
 
-const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) => {
+const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
+     const userData: UserPreview = useAppSelector(
+        state => state.dashboard.userData,
+      )
+
+    const dispatch = useAppDispatch()
+        
 
     const navigate = useNavigate()
 
@@ -168,7 +176,10 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({userData, open, onClose}) 
                         <ToggleButtonGroup
                         id='theme'
                         value={watch('theme')} 
-                        onChange={(e, val) => setValue('theme', val)}
+                        onChange={(e, val) => {
+                            setValue('theme', val)
+                            dispatch(setUserData({ ...userData, theme: val }));
+                        }}
                         color='primary'
                         exclusive
                         >

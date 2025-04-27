@@ -11,6 +11,8 @@ import getProperties from './api/routes/properties/getProperties'
 import addProperty from './api/routes/properties/addProperty'
 import deleteProperty from './api/routes/properties/deleteProperty'
 import updateProperty from './api/routes/properties/updateProperty'
+import getTenants from './api/routes/tenants/getTenants'
+import addTenant from './api/routes/tenants/addTenant'
 
 
 const app = express();
@@ -55,6 +57,8 @@ app.use('/properties', getProperties)
 app.use('/add-property', addProperty)
 app.use('/delete-property', deleteProperty)
 app.use('/update-property', updateProperty)
+app.use('/get-tenants', getTenants)
+app.use('/add-tenant', addTenant)
 
 //app.use(centralizedErrorHandler);
 

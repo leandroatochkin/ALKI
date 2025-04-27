@@ -1,5 +1,10 @@
 import { Payment } from "./PaymentsApiSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { getToken } from "./store/token";
+
+export interface TenantsResponse {
+  tenants: TenantDTO[]
+}
 
 export interface TenantDTO {
     tenantId: string;
@@ -32,22 +37,22 @@ export interface AssignTenantDTO {
 
 export const tenantsApiSlice = createApi({
     reducerPath: "tenantsApiSlice",
-    baseQuery: fetchBaseQuery({
-      baseUrl: import.meta.env.VITE_BASEAPIURL,
-    //   prepareHeaders: async headers => {
-    //     const session = await fetchAuthSession()
-    //     const idToken = session.tokens?.idToken?.toString()
-    //     if (idToken) {
-    //       headers.set("authorization", `Bearer ${idToken}`)
-    //       headers.set("Access-Control-Allow-Origin", "*")
-    //       headers.set(
-    //         "Access-Control-Allow-Headers",
-    //         "Origin, X-Requested-With, Content-Type, Accept",
-    //       )
-    //     }
-    //     return headers
-    //   },
-    }),
+      baseQuery: fetchBaseQuery({
+              baseUrl: import.meta.env.VITE_SERVER_HOST,
+              prepareHeaders: async (headers, { getState }) => {
+                try {
+                  // Dynamically import Auth0, outside hooks
+                  const token = getToken()
+                  if (token) {
+                    headers.set("authorization", `Bearer ${token}`)
+                  }
+                } catch (error) {
+                  console.error("Error fetching access token", error)
+                }
+          
+                return headers
+              },
+            }),
     endpoints: builder => ({
       getTenantById: builder.query<TenantDTO, string>({
         query: id => ({
@@ -55,15 +60,15 @@ export const tenantsApiSlice = createApi({
           method: "GET",
         }),
       }),
-      getTenantsByUserId: builder.query<TenantDTO[], string>({
+      getTenantsByUserId: builder.query<TenantsResponse, string>({
         query: userId => ({
-          url: `api/tenants/get-tenants-by-userid/${userId}`,
+          url: `/get-tenants?userId=${userId}`,
           method: "GET",
         }),
       }),
       postTenant: builder.mutation<void, TenantDTO>({
         query: payload => ({
-          url: `api/tenants`,
+          url: `/add-tenant`,
           method: "POST",
           body: payload,
         }),

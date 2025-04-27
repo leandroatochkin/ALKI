@@ -10,8 +10,10 @@ import {
   import { UserPreview } from '../../api/UsersSlice'
   import UpdateUserDataDialog from '../../components/Dialogs/UpdateUserDataDialog'
   import OptionsDialog from '../../components/Dialogs/OptionsDialog'
-  import { useAppSelector } from '../../api/store/hooks'
+  import { useAppSelector, useAppDispatch } from '../../api/store/hooks'
+  import { setUserData } from '../../components/Dashboard/DashboardStore/DashboardStore'
   import LockIcon from '@mui/icons-material/Lock';
+
 
 
 const Settings = () => {

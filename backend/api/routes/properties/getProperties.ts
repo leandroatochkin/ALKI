@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { db } from 'api/db/db';
 import { checkJwt } from 'api/middleware/checkToken';
+import { ServerError } from 'api/error_handling/errorModels';
 
 // Create router instance
 const router = express.Router();
@@ -55,8 +56,7 @@ router.get('/', checkJwt, async (req: Request, res: Response, next: NextFunction
 
     res.status(200).json(properties);
   } catch (err) {
-    console.error('Error fetching properties data:', err);
-    next(err);
+    return next(new ServerError('Server error', err));
   }
 
 });
