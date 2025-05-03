@@ -59,8 +59,9 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
         contractPaymentFrequency, 
         pets,
         children,
-        smoking
-      ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        smoking,
+        isActive
+      ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,TRUE)`,
       [
         tenantId,
         propietorId,

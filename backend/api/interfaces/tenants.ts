@@ -22,6 +22,8 @@ export interface TenantDTO {
     children: number;
     smoking: boolean;
     propertyId?: string;
+    isActive?: boolean;
+    terminationReason?: string;
 }
 
 export interface AssignTenantDTO {

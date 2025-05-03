@@ -98,6 +98,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                 }                
           }}
           >
+           {
+            property.tenantData !== null ?
+            <Box>
            <Box
            sx={{
             display: 'flex',
@@ -130,6 +133,23 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             }}
             >hasta {dayjs(property.tenantData?.contractEndDate).format('DD/MM/YY')}</Typography>
            </Box>
+
+           </Box>
+            :
+            <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 2,
+            }}
+            >
+              <Typography>Sin inquilino</Typography>
+              <Typography>Sin contrato</Typography>
+            </Box>
+
+           }
           </Box>
           <Box
           sx={{
@@ -148,6 +168,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                 variant='outlined'
                 color='primary'
                 onClick={()=>setOpenInformPaymentDialog(true)}
+                disabled={property.tenantData === null}
                 >
                     registrar pago
                 </Button>

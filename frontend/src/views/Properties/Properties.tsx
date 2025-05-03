@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react'
+import {useState, useEffect, useMemo} from 'react'
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
 import PropertyCard from '../../components/Cards/PropertyCard'
 import { 
@@ -154,7 +154,7 @@ if (properties.length === 0 || isError) return <NoProperty/>
             }}
             >
             <Typography>
-              {`Ingreso mensual (meta: $${userData?.autoCalculateMRR ? calculatedMRR?.toFixed(2) : userData?.monthlyRevenue?.toFixed(2)})`}
+              {`Ingreso mensual (meta: $${userData?.autoCalculateMRR ? calculatedMRR?.toFixed(2) : Number(userData?.monthlyRevenue).toFixed(2)})`}
             </Typography>
             <Typography 
             variant='h4'

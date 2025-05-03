@@ -40,7 +40,7 @@ router.get('/', checkJwt, async (req, res, next) => {
         payments: paymentRows.filter((p: Payment) => p.tenantId === tenant.tenantId)
       }))
   
-      res.status(200).json({ tenants: tenantsWithPayments })
+      res.status(200).json({ tenants: tenantsWithPayments.filter((tenant: TenantDTO) => tenant.isActive) })
   
     } catch (error) {
         return next(new ServerError('Server error', error));

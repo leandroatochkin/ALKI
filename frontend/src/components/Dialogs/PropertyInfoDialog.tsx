@@ -27,7 +27,9 @@ const PropertyInfoDialog: React.FC<PropertyInfoDialogProps> = ({property, open, 
                 <Typography>Título: {property.title}</Typography>
                 <Typography>Descripción: {property.description}</Typography>
                 <Typography>Tipo: {propertyTitleMapper(property.type)}</Typography>
-                <Accordion>
+                {
+                    property.tenantData && (
+                        <Accordion>
                     <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1-content"
@@ -67,6 +69,8 @@ const PropertyInfoDialog: React.FC<PropertyInfoDialogProps> = ({property, open, 
                      </Box>
                     </AccordionDetails>
                 </Accordion>
+                    )
+                }
             </Box>
         </DialogContent>
 

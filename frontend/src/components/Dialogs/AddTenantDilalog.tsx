@@ -16,7 +16,6 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'
 import { 
     nameRegex, 
@@ -37,6 +36,7 @@ import {
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../api/store/hooks';
 import { UserPreview } from '../../api/UsersSlice';
+
 
 
 
@@ -87,10 +87,10 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
                 }
               }, [modify, tenant, setValue])
 
-    const navigate = useNavigate()
 
-    const [postTenant, {isLoading: isPosting, isSuccess: isPosted,isError: isPostingError, status: isPostingStatus}] = usePostTenantMutation()
-    const [updateTenant, {isLoading: isUpdating, isSuccess: isUpdated,isError: isUpdatingError, status: isUpdatingStatus}] = useUpdateTenantMutation()
+
+    const [postTenant, {isLoading: isPosting, isSuccess: isPosted}] = usePostTenantMutation()
+    const [updateTenant, {isLoading: isUpdating, isSuccess: isUpdated}] = useUpdateTenantMutation()
 
     const onSubmit = async (data: TenantDTO) => {
         try {

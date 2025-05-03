@@ -35,11 +35,16 @@ export interface AssignTenantDTO {
     propertyId: string;
 }
 
+export interface TenantTermination {
+    tenantId: string;
+    terminationReason: string;
+}
+
 export const tenantsApiSlice = createApi({
     reducerPath: "tenantsApiSlice",
       baseQuery: fetchBaseQuery({
               baseUrl: import.meta.env.VITE_SERVER_HOST,
-              prepareHeaders: async (headers, { getState }) => {
+              prepareHeaders: async (headers) => {
                 try {
                   // Dynamically import Auth0, outside hooks
                   const token = getToken()
@@ -80,10 +85,11 @@ export const tenantsApiSlice = createApi({
           body: payload,
         }),
       }),
-      deleteTenant: builder.mutation<void, string>({
-        query: id => ({
-          url: `api/tenants/${id}`,
-          method: "DELETE",
+      deleteTenant: builder.mutation<void, TenantTermination>({
+        query: payload => ({
+          url: `/delete-tenant`,
+          method: "POST",
+          body: payload,
         }),
       }),
       assignTenantToProperty: builder.mutation<void, AssignTenantDTO>({

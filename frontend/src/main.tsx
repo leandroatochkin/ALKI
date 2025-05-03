@@ -14,8 +14,9 @@ import { App } from './App.tsx'
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN
 const clientId = import.meta.env.VITE_AUTH0_CLIENT
+const feClient = import.meta.env.VITE_FE_CLIENT
 
-
+console.log("VITE_FE_CLIENT =", feClient);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,7 +25,7 @@ createRoot(document.getElementById('root')!).render(
     clientId={clientId}
     authorizationParams={{
       audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      redirect_uri: `${import.meta.env.VITE_FE_CLIENT}/auth-redirect`,
+      redirect_uri: `${feClient}/auth-redirect`,
        ui_locales: "es"
     }}
     cacheLocation='localstorage'

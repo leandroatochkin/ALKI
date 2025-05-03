@@ -13,8 +13,6 @@ import {
     MenuItem, 
     CircularProgress
 } from '@mui/material'
-
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form'
 import { addressRegex, propertyNameRegex } from '../../utils/regexPatterns';
 import { propertyTypeList, countryListAlpha2 } from '../../utils/dataLists';
@@ -22,7 +20,6 @@ import {
     usePostPropertyMutation,
     useUpdatePropertyMutation
 } from '../../api/PropertiesApiSlice';
-import ReplayIcon from '@mui/icons-material/Replay';
 import { useAppSelector } from '../../api/store/hooks';
 import { UserPreview } from '../../api/UsersSlice';
 
@@ -46,14 +43,13 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
             handleSubmit, 
             register, 
             setValue,
-            getValues,
             formState: { errors }, 
               } = useForm<PropertyDTO>({
                 defaultValues: {
                     userId: userData.id
                 }
               })
-              const [postProperty, {isLoading, status, isError}] = usePostPropertyMutation()
+              const [postProperty, {isLoading}] = usePostPropertyMutation()
               const [updateProperty, {isLoading: isUpdating}] = useUpdatePropertyMutation()
               useEffect(() => {
                 if (modify && property) {
@@ -70,7 +66,6 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
                 }
               }, [modify, property, setValue])
 
-    const navigate = useNavigate()
 
     const onSubmit = async (data: PropertyDTO) => {
         console.log(data)

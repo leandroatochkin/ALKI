@@ -42,8 +42,7 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
         register,
         handleSubmit,
         setValue,
-        watch,
-        formState: {errors},
+        watch
     } = useForm<Payment>({
         defaultValues: {
             id: '',

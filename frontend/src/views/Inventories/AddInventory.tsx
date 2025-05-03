@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react'
+import  {useState, useMemo, useEffect} from 'react'
 import {
     Paper,
     Typography,
@@ -8,11 +8,7 @@ import {
     Select,
     MenuItem,
     FormLabel,
-    Dialog,
-    DialogTitle,
-    DialogContent,
     Button,
-    TextField,
 } from '@mui/material'
 import {
     DataGrid,
@@ -20,9 +16,7 @@ import {
     GridOverlay,
     GridRowSelectionModel
   } from "@mui/x-data-grid"
-import { propertiesList } from '../../api/PropertiesApiSlice'
 import { Inventory, InventoryItem } from '../../api/InventoriesApiSlice'
-import { mockInventories } from '../../api/InventoriesApiSlice'
 import { 
   useGetInventoryByPropertyQuery, 
   useDeleteInventoryItemsMutation, 
@@ -31,8 +25,8 @@ import {
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import AddItemsToInventoryDialog from '../../components/Dialogs/AddInventoryDialog'
 import { useNavigate } from 'react-router-dom'
-import { idCheck } from '../../utils/functions'
 import { useAppSelector } from '../../api/store/hooks'
+import { customLocaleText } from '../../utils/locale'
 
 const AddInventory = () => {
 const [inventory, setInventory] = useState<Inventory | null>(null)
@@ -47,9 +41,10 @@ const userData = useAppSelector(
 
 const navigate = useNavigate()
 
-const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idCheck(userData))
-const { data, isLoading, isError, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
+const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
+const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
+console.log(data)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
 
@@ -59,20 +54,19 @@ const propertiesMap = propertiesData?.reduce((acc, property) => {
 }, {} as Record<string, string>)
 
 useEffect(()=>{
-  if(!propertiesData){
-    setList(propertiesList)
-  } else {
+  if(propertiesData){
     setList(propertiesMap)
+  } else {
+    console.error('No se encontraron propiedades')
   }
-},[propertiesData, isLoadingProperties, list])
+},[propertiesData, isLoadingProperties])
 
 
 useEffect(() => {
-    const filteredInventory = mockInventories.find(inventory => inventory.propertyId === selectedProperty)
     if (data) {
         setInventory(data)
     } else {
-        setInventory(filteredInventory ?? null)
+        console.error('No se encontró el inventario')
     }
 },[data, selectedProperty])
 
@@ -224,7 +218,7 @@ useEffect(() => {
             }
             }
         >
-            {Object.entries(propertiesList).map(([key, value]) => (
+            {propertiesMap && Object.entries(propertiesMap).map(([key, value]) => (
                 <MenuItem key={key} value={key}>
                     {value}
                 </MenuItem>
@@ -235,9 +229,10 @@ useEffect(() => {
             !isLoading
             ?
             (
-                <DataGrid
+            <DataGrid
             rows={rows}
             columns={columns}
+            localeText={customLocaleText}
             pagination
             pageSizeOptions={[10, 25, 50, 100]}
             paginationMode="client"

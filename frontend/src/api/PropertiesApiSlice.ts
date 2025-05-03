@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { TenantDTO } from "./TenantsApiSlice";
 import { Inventory } from "./InventoriesApiSlice";
-import { Payment } from "./PaymentsApiSlice";
 import { getToken } from "./store/token";
 
 export interface Service {
@@ -23,7 +22,7 @@ export interface PropertyDTO {
     state: string;
     country: string;
     occupied?: boolean;
-    tenantData?: TenantDTO
+    tenantData?: TenantDTO | null; // tenant data if occupied
     type: number; // 0: house, 1: apartment, 2: store/commercial, 3: Land, 4: office, 5: industrial, 6: other
     inventory?: Inventory;
     services?: Service[];
@@ -33,7 +32,7 @@ export const propertiesApiSlice = createApi({
     reducerPath: "propertiesApiSlice",
     baseQuery: fetchBaseQuery({
           baseUrl: import.meta.env.VITE_SERVER_HOST,
-          prepareHeaders: async (headers, { getState }) => {
+          prepareHeaders: async (headers) => {
             try {
               // Dynamically import Auth0, outside hooks
               const token = getToken()
@@ -91,156 +90,4 @@ export const {
   useDeletePropertyMutation,
  } = propertiesApiSlice
 
-export const mockProperties: PropertyDTO[] = [
-    {
-      id: "prop-001",
-      userId: "user-abc",
-      title: "Downtown Loft",
-      description: "Cozy modern loft in the heart of the city.",
-      address: "123 Main St, Capital City",
-      occupied: true,
-      city: 'ciudad',
-      state: 'provincia',
-      country: 'Argentina',
-      tenantData: {
-        tenantId: "tenant-001",
-        propietorId: "user-abc",
-        firstName: "Lucas",
-        lastName: "Gómez",
-        email: "lucas.gomez@example.com",
-        phoneNumber: "541123456789",
-        observations: "Prefers email communication.",
-        contractStartDate: "2024-01-01",
-        contractEndDate: "2024-12-31",
-        contractStatus: "active",
-        contractId: "contract-001",
-        contractType: "residential",
-        contractValue: 120000,
-        contractCurrency: "ARS",
-        contractPaymentMethod: 0,
-        contractPaymentFrequency: "monthly",
-        propertyId: "prop-001",
-        payments: [
-          {
-            id: "pay-001",
-            tenantId: "tenant-001",
-            amount: 10000,
-            date: "2024-01-05",
-            method: 0,
-            period: "2024-01",
-            status: 0
-          },
-          {
-            id: "pay-002",
-            tenantId: "tenant-001",
-            amount: 10000,
-            date: "2024-02-05",
-            method: 0,
-            period: "2024-02",
-            status: 0
-          }
-        ],
-        pets: 1,
-        children: 0,
-        smoking: false
-      },
-        type: 0 // Residential
-    },
-    {
-      id: "prop-002",
-      userId: "user-abc",
-      title: "Seaside Apartment",
-      description: "Ocean view, 2BR apartment with balcony.",
-      address: "456 Beach Ave, Mar del Plata",
-      city: 'ciudad',
-      state: 'provincia',
-      country: 'Argentina',
-      occupied: true,
-      tenantData: {
-        tenantId: "tenant-002",
-        propietorId: "user-abc",
 
-        firstName: "Valentina",
-        lastName: "Ruiz",
-        email: "valen.ruiz@example.com",
-        phoneNumber: "5491122334455",
-        contractStartDate: "2023-06-01",
-        contractEndDate: "2024-05-31",
-        contractStatus: "active",
-        contractId: "contract-002",
-        contractType: "residential",
-        contractValue: 150000,
-        contractCurrency: "ARS",
-        contractPaymentMethod: 1,
-        contractPaymentFrequency: "monthly",
-        propertyId: "prop-002",
-        payments: [
-          {
-            id: "pay-003",
-            tenantId: "tenant-002",
-            amount: 12500,
-            date: "2024-03-01",
-            method: 1,
-            period: "2024-03",
-            status: 0
-          }
-        ],
-        pets: 0,
-        children: 2,
-        smoking: true
-      },
-      type: 1 // Residential
-    },
-    {
-      id: "prop-003",
-      userId: "user-abc",
-      title: "Country House",
-      description: "Quiet retreat with large garden space.",
-      address: "789 Campo Rd, Córdoba",
-      city: 'ciudad',
-      state: 'provincia',
-      country: 'Argentina',
-      occupied: true,
-      tenantData: {
-        tenantId: "tenant-003",
-        propietorId: "user-abc",
-
-        firstName: "Joaquín",
-        lastName: "Pérez",
-        email: "joaquin.perez@example.com",
-        phoneNumber: "541167890123",
-        observations: "Has a dog and works from home.",
-        contractStartDate: "2022-03-01",
-        contractEndDate: "2025-03-01",
-        contractStatus: "active",
-        contractId: "contract-003",
-        contractType: "residential",
-        contractValue: 180000,
-        contractCurrency: "USD",
-        contractPaymentMethod: 2,
-        contractPaymentFrequency: "quarterly",
-        propertyId: "prop-003",
-        payments: [
-          {
-            id: "pay-004",
-            tenantId: "tenant-003",
-            amount: 45000,
-            date: "2024-04-01",
-            method: 2,
-            period: "Q2 2024",
-            status: 1
-          }
-        ],
-        pets: 1,
-        children: 1,
-        smoking: false
-      },
-      type: 2 // Residential
-    }
-  ];
-  
-export const propertiesList = {
-  'prop-001': 'Downtown Loft',
-  'prop-002': 'Seaside Apartment',
-  'prop-003': 'Country House'
-}

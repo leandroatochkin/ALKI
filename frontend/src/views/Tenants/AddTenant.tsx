@@ -1,7 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react'
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import  {useState, useMemo, useEffect} from 'react'
 import {
     Paper,
     Typography,
@@ -15,6 +12,7 @@ import {
     Link,
     Select,
     MenuItem,
+    IconButton
 } from '@mui/material'
 import {
     DataGrid, 
@@ -23,21 +21,20 @@ import {
     GridRowSelectionModel,
     GridOverlay,
   } from "@mui/x-data-grid"
-  import { mockProperties } from '../../api/PropertiesApiSlice'
   import { useNavigate } from 'react-router-dom'
 import { TenantDTO } from '../../api/TenantsApiSlice'
-import { paymentMethodMapper, idCheck } from '../../utils/functions'
+import { paymentMethodMapper } from '../../utils/functions'
 import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
+import DeleteTenantDialog from '../../components/Dialogs/DeleteTenantDialog'
 import { 
   useGetTenantsByUserIdQuery, 
   useAssignTenantToPropertyMutation, 
-  useDeleteTenantMutation,
-  useUpdateTenantMutation
 } from '../../api/TenantsApiSlice'
 import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
-import { propertiesList } from '../../api/PropertiesApiSlice'
 import { useAppSelector } from '../../api/store/hooks'
 import dayjs from 'dayjs'
+import ReplayIcon from '@mui/icons-material/Replay';
+import { customLocaleText } from '../../utils/locale'
 
 
 interface Observations {
@@ -54,6 +51,7 @@ const AddTenant = () => {
     const [tenantToModify, setTenantToModify] = useState<string | null>(null)
     const [observations, setObservations] = useState<Observations | null>(null)
     const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
+    const [openDeleteTenantDialog, setOpenDeleteTenantDialog] = useState<boolean>(false)
     const [openAssignToPropertyDialog, setOpenAssignToPropertyDialog] = useState<boolean>(false)
     const userData = useAppSelector(
       state => state.dashboard.userData 
@@ -67,10 +65,9 @@ const AddTenant = () => {
 
     const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idPermissionCheck)
 
-    const [assignTenantToProperty, {isLoading: isAssigning, isSuccess: isAssigned, isError: isErrorAssigning, status}] = useAssignTenantToPropertyMutation()
-    const [deleteTenant, {isLoading: isDeleting, isSuccess: isDeleted, isError: isErrorDeleting, status: deletingStatus}] = useDeleteTenantMutation()
+    const [assignTenantToProperty, {isLoading: isAssigning}] = useAssignTenantToPropertyMutation()
 
-    const disabledCondition = isLoading || isLoadingProperties || isAssigning || isDeleting
+    const disabledCondition = isLoading || isLoadingProperties || isAssigning
 
     const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, string> => {
       return properties.reduce((acc, prop) => {
@@ -80,7 +77,7 @@ const AddTenant = () => {
     }
 
     const mappedProps = mapPropertiesToIdTitle(properties ?? [])
-    const propertiesMap = Object.keys(mappedProps).length > 0 ? mappedProps : propertiesList
+    const propertiesMap =  mappedProps 
    
     
 
@@ -109,19 +106,6 @@ const AddTenant = () => {
     const tenantFiltered = tenants.filter((tenant) => tenant.tenantId === tenantToModify)[0] ?? null
 
     const navigate = useNavigate()
-
-    const handleDeleteTenant = async (tenantId: string) => {
-        if(confirm("¿Está seguro de que desea eliminar este inquilino?")) {
-          try {
-            await deleteTenant(tenantId).unwrap()
-            setTenants(prev => prev.filter(tenant => tenant.tenantId !== tenantId))
-        } catch (error) {
-            console.error('Error deleting tenant:', error)
-        }
-        }
-    }
-
- 
 
     const TableSkeleton = () => (// for later use
         <Box
@@ -423,14 +407,20 @@ const AddTenant = () => {
     {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false} />}
     {tenantToModify && <AddTenantDialog open={!!tenantToModify} onClose={()=>setTenantToModify(null)} modify={true} tenant={tenantFiltered}/>}
     {openAssignToPropertyDialog && <AssignToPropertyDialog />}
-
+    {openDeleteTenantDialog && <DeleteTenantDialog open={openDeleteTenantDialog} onClose={()=>setOpenDeleteTenantDialog(false)} tenantId={selectedTenant ?? ''} refetch={refetch}/>}
       <Paper
         sx={{
             p: 2,
             mt: 2,
         }}
         >
-        <Typography variant="h4" gutterBottom>
+        <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+        >
+          <Typography variant="h4" gutterBottom>
             {
               userData.permissions[0] !== 'view'
               ?
@@ -439,6 +429,12 @@ const AddTenant = () => {
               `Inquilinos`
             }
         </Typography>
+        <IconButton
+        onClick={() => refetch()}
+        >
+          <ReplayIcon/>
+        </IconButton>
+        </Box>
         {
           !isLoading
           ?
@@ -446,6 +442,7 @@ const AddTenant = () => {
             <DataGrid
             rows={rows}
             columns={columns}
+            localeText={customLocaleText}
             pagination
             pageSizeOptions={[10, 25, 50, 100]}
             paginationMode="client"
@@ -503,7 +500,7 @@ const AddTenant = () => {
                                   <Button
                                   variant="outlined"
                                   color="primary"
-                                  onClick={() => selectedTenant && handleDeleteTenant(selectedTenant)}
+                                  onClick={() => setOpenDeleteTenantDialog(true)}
                                   disabled={disabledCondition || !selectedTenant }
                                   >
                                       - dar de baja

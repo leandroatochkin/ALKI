@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
+import { RowDataPacket } from 'mysql2';
 import { db } from 'api/db/db';
 import { ServerError } from 'api/error_handling/errorModels';
 import { checkJwt } from 'api/middleware/checkToken';
@@ -18,7 +19,7 @@ router.get('/', checkJwt, async (req: Request & AuthResponse, res: Response, nex
     // Validate email format
 
     // Check if email exists (using promise-based pool)
-    const [existingUsers] = await db.query(
+    const [existingUsers] = await db.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE id = ?', 
       [id]
     );
@@ -31,7 +32,10 @@ router.get('/', checkJwt, async (req: Request & AuthResponse, res: Response, nex
     
 
     if (Array.isArray(existingUsers) && existingUsers.length > 0) {      
-      res.status(200).json({ userInfo: existingUsers[0] });
+      existingUsers[0].autoCalculateMRR = existingUsers[0].autoCalculateMRR === 1 ? true : false;
+      res.status(200).json({ userInfo: {
+       ...existingUsers[0],
+      } });
       return;
     }
     

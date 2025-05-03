@@ -1,8 +1,7 @@
-import React,{useMemo, useState, useEffect} from 'react'
+import {useMemo, useState, useEffect} from 'react'
 import {
     Paper,
     Typography,
-    TextField,
     Button,
     Box,
     Skeleton,
@@ -14,17 +13,16 @@ import {
     GridCellParams,
     GridRowSelectionModel,
     GridOverlay,
-    GridLocaleText,
-    GridPaginationModel,
   } from "@mui/x-data-grid"
-  import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
-  import { propertyTitleMapper, idCheck } from '../../utils/functions'
+  import { PropertyDTO } from '../../api/PropertiesApiSlice'
+  import { propertyTitleMapper } from '../../utils/functions'
   import { useNavigate } from 'react-router-dom'
   import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
   import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
   import { useAppSelector } from '../../api/store/hooks'
-  import { UserInfo, UserPreview } from '../../api/UsersSlice'
-  import ReplayIcon from '@mui/icons-material/Replay';
+  import ReplayIcon from '@mui/icons-material/Replay'
+  import { UserPreview } from '../../api/UsersSlice'
+  import { customLocaleText } from '../../utils/locale'
 
 const AddProperty = () => {
         const [properties, setProperties] = useState<PropertyDTO[] | []>([])
@@ -34,16 +32,13 @@ const AddProperty = () => {
          const userData: UserPreview = useAppSelector(
             state => state.dashboard.userData,
           )
-        console.log(userData)
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
         const { data, isLoading, isError, refetch } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
-        const [deleteProperty,{isLoading: isDeleting, isError: isErrorDeleting, status: isStatusDeleting}] = useDeletePropertyMutation()
+        const [deleteProperty,{isLoading: isDeleting}] = useDeletePropertyMutation()
 
-        const customLocaleText: Partial<GridLocaleText> = {
-          noRowsLabel: 'Nada por aquí',
-        }
+      
         
 
         useEffect(() => {
