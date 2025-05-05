@@ -6,6 +6,7 @@ import {
     Box,
     Skeleton,
     CircularProgress,
+    IconButton,
 } from '@mui/material'
 import {
     DataGrid,
@@ -233,13 +234,13 @@ const AddProperty = () => {
           `Agregar o modificar propiedades`
         }
     </Typography>
-    <Button
+    <IconButton
     onClick={
       ()=>refetch()
     }
     >
       <ReplayIcon/>
-    </Button>
+    </IconButton>
    </Box>
          {
           !isLoading

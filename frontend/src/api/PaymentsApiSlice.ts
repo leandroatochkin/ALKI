@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { getToken } from "./store/token";
 
 
 export interface Payment {
@@ -14,26 +15,26 @@ export interface Payment {
 
 export const paymentsApiSlice = createApi({
     reducerPath: "paymentsApiSlice",
-    baseQuery: fetchBaseQuery({
-      baseUrl: import.meta.env.VITE_BASEAPIURL,
-    //   prepareHeaders: async headers => {
-    //     const session = await fetchAuthSession()
-    //     const idToken = session.tokens?.idToken?.toString()
-    //     if (idToken) {
-    //       headers.set("authorization", `Bearer ${idToken}`)
-    //       headers.set("Access-Control-Allow-Origin", "*")
-    //       headers.set(
-    //         "Access-Control-Allow-Headers",
-    //         "Origin, X-Requested-With, Content-Type, Accept",
-    //       )
-    //     }
-    //     return headers
-    //   },
-    }),
+   baseQuery: fetchBaseQuery({
+             baseUrl: import.meta.env.VITE_SERVER_HOST,
+             prepareHeaders: async (headers) => {
+               try {
+                 // Dynamically import Auth0, outside hooks
+                 const token = getToken()
+                 if (token) {
+                   headers.set("authorization", `Bearer ${token}`)
+                 }
+               } catch (error) {
+                 console.error("Error fetching access token", error)
+               }
+         
+               return headers
+             },
+           }),
     endpoints: builder => ({
       getTenantPaymentsByTenantId: builder.query<Payment[], string>({
         query: tenantId => ({
-          url: `api/payments/get-payments-by-tenantid/${tenantId}`,
+          url: `/get-payments-by-tenantId?tenantId=${tenantId}`,
           method: "GET",
         }),
       }),

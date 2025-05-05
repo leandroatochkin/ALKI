@@ -3,8 +3,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { getToken } from "./store/token";
 
 export interface TenantsResponse {
-  tenants: TenantDTO[]
+  tenants: TenantDTO[] 
 }
+
 
 export interface TenantDTO {
     tenantId: string;
@@ -59,9 +60,9 @@ export const tenantsApiSlice = createApi({
               },
             }),
     endpoints: builder => ({
-      getTenantById: builder.query<TenantDTO, string>({
-        query: id => ({
-          url: `api/tenants/get-tenant-by-id/${id}`,
+      getTenantById: builder.query<TenantsResponse, string>({
+        query: tenantId => ({
+          url: `/get-tenant-by-id?tenantId=${tenantId}`,
           method: "GET",
         }),
       }),

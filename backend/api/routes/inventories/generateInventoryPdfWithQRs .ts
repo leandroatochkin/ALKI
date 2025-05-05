@@ -27,7 +27,7 @@ export const generateInventoryPdfWithQRs = async (propertyId: string) => {
     const fontSize = 10;
   
     let x = 40;
-    let y = 780;
+    let y = 740;
     const qrSize = 80;
     const margin = 20;
   
@@ -65,7 +65,7 @@ export const generateInventoryPdfWithQRs = async (propertyId: string) => {
         if (y < 60) {
           const newPage = pdfDoc.addPage([595, 842]);
           x = 40;
-          y = 780;
+          y = 740;
           page = newPage;
         }
       }

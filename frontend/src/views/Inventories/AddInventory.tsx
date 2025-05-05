@@ -9,6 +9,7 @@ import {
     MenuItem,
     FormLabel,
     Button,
+    IconButton,
 } from '@mui/material'
 import {
     DataGrid,
@@ -21,13 +22,14 @@ import {
   useGetInventoryByPropertyQuery, 
   useDeleteInventoryItemsMutation, 
   useDeleteInventoryMutation,
-  useGetQrsPdfsMutation 
 } from '../../api/InventoriesApiSlice'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import AddItemsToInventoryDialog from '../../components/Dialogs/AddInventoryDialog'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../api/store/hooks'
 import { customLocaleText } from '../../utils/locale'
+import LockIcon from '@mui/icons-material/Lock';
+import ReplayIcon from '@mui/icons-material/Replay'
 
 const AddInventory = () => {
 const [inventory, setInventory] = useState<InventoryItem[] | null>(null)
@@ -48,7 +50,7 @@ const {data: propertiesData, isLoading: isLoadingProperties } = useGetProperties
 const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
-const [getQrsPDF, {isLoading: isLoadingQrsPDF}] = useGetQrsPdfsMutation()
+
 
 const propertiesMap = propertiesData?.reduce((acc, property) => {
   acc[property.id] = property.title
@@ -227,7 +229,13 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
         mt: 2
     }}
     >
-    <Typography variant="h4" gutterBottom>
+    <Box
+    sx={{
+      display: 'flex',
+      
+    }}
+    >
+      <Typography variant="h4" gutterBottom>
         {
           userData.permissions[0] === 'view'
           ?
@@ -236,6 +244,15 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
           `Agregar o modificar inventarios`
         }
     </Typography>
+    <IconButton
+        onClick={
+          ()=>refetchItems()
+        }
+        >
+          <ReplayIcon/>
+        </IconButton>
+
+    </Box>
     <FormLabel htmlFor='propiedades'>
     {
           userData.permissions[0] === 'view'
@@ -305,6 +322,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
         xs: 'column',
         md: 'row' 
       },
+      justifyContent: 'flex-end',
       gap: 2,
       mt: 2
     }}
@@ -354,8 +372,11 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
        onClick={() => handleDownloadQrsPDF(selectedProperty)}
        variant='outlined'
        color='primary'
+       disabled={!userData.isPremium || !selectedProperty}
        >
-        DESCARGAR PLANTILLA QR
+        {!userData.isPremium ? <LockIcon sx={{mr:1}}/> : ''}
+        Descargar plantilla QR
+
        </Button>
        <Button
        onClick={()=>navigate('/home')}

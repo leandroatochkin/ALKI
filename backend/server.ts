@@ -13,12 +13,15 @@ import deleteProperty from './api/routes/properties/deleteProperty'
 import updateProperty from './api/routes/properties/updateProperty'
 import getTenants from './api/routes/tenants/getTenants'
 import addTenant from './api/routes/tenants/addTenant'
+import getTenantById from './api/routes/tenants/getTenantById'
 import deleteTenant from './api/routes/tenants/deleteTenant'
 import getInventories from './api/routes/inventories/getInventories'
 import deleteInventoryItems from './api/routes/inventories/deleteInventoryItems'
 import addNewInventoryItems from './api/routes/inventories/addNewInventoryItems'
 import deleteInventory from './api/routes/inventories/deleteWholeInventory'
 import printPDFs from './api/routes/inventories/returnQrPdfs'
+import getPaymentsByTenantId from './api/routes/payments/getPaymentsByTenantId'
+import getPaymentsByUserId from './api/routes/payments/getPaymentsByUserId'
 
 
 const app = express();
@@ -71,6 +74,9 @@ app.use('/delete-inventory-items', deleteInventoryItems)
 app.use('/add-inventory-items', addNewInventoryItems)
 app.use('/delete-inventory', deleteInventory)
 app.use('/return-pdfs', printPDFs)
+app.use('/get-payments-by-tenantId', getPaymentsByTenantId)
+app.use('/get-payments-by-userId', getPaymentsByUserId)
+app.use('/get-tenant-by-id', getTenantById)
 
 //app.use(centralizedErrorHandler);
 

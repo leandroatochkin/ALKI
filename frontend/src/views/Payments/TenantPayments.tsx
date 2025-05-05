@@ -1,4 +1,4 @@
-import React, {useMemo, useCallback, useEffect, useState} from 'react'
+import  {useMemo, useCallback, useEffect, useState} from 'react'
 import {
     Paper,
     Box,
@@ -6,44 +6,57 @@ import {
     Skeleton,
     Chip,
     CircularProgress,
-    Button
+    Button,
+    IconButton,
 } from '@mui/material'
 import {
     DataGrid,
     GridColDef,
     GridCellParams,
-    GridRowSelectionModel,
     GridOverlay,
-    GridPaginationModel,
   } from "@mui/x-data-grid"
 import { Payment } from '../../api/PaymentsApiSlice'
 import { TenantDTO } from '../../api/TenantsApiSlice'
-import dayjs, { Dayjs } from "dayjs"
+import dayjs from "dayjs"
 import { paymentMethodMapper } from '../../utils/functions'
 import { useNavigate } from 'react-router-dom'
 import { useGetTenantPaymentsByTenantIdQuery } from '../../api/PaymentsApiSlice'
+import { useGetTenantByIdQuery } from '../../api/TenantsApiSlice'
+  import ReplayIcon from '@mui/icons-material/Replay'
+  import { customLocaleText } from '../../utils/locale'
 
-interface TenantPaymentsProps {
-    tenant: TenantDTO
-}
 
-const TenantPayments: React.FC<TenantPaymentsProps> = ({tenant}) => {
+const TenantPayments = () => {
 const [payments, setPayments] = useState<Payment[] | []>([])
+const [tenant, setTenant] = useState<TenantDTO | null>(null)
 
-const {data, isLoading, isError, status, refetch} = useGetTenantPaymentsByTenantIdQuery(tenant.tenantId)
+const tenantId = new URLSearchParams(window.location.search).get('tenantId') || '';
 
+const {data, isLoading, isError, status, refetch} = useGetTenantPaymentsByTenantIdQuery(tenantId)
+const {data: tenantData, isLoading: isLoadingTenant} = useGetTenantByIdQuery(tenantId)
+console.log(tenantData?.tenants[0])
+console.log(data)
 
     useEffect(() => {
       if (isLoading) return; // Don't do anything while loading
     
       if (!isError && data && Array.isArray(data)) {
         setPayments(data);
-      } else {
-        // fallback only if there's an error or no valid data
-        const fallbackPayments = tenant.payments
-        setPayments(fallbackPayments);
       }
     }, [data, isLoading, isError, refetch]);
+
+    useEffect(() => {
+      if (isLoadingTenant) return; // Don't do anything while loading
+    
+      if (!isLoadingTenant && tenantData) {
+        if (Array.isArray(tenantData.tenants)) {
+          setTenant(tenantData.tenants[0]);
+        }
+       
+      }
+    }, [tenantData, isLoadingTenant])
+
+
 
 const navigate = useNavigate()    
 
@@ -161,7 +174,7 @@ const statusMapper = useCallback((status: number) => {
           (payments ?? []).map((payment: Payment, index: number) => ({
             id: index,
             paymentId: payment.id,
-            amount: `$${payment.amount.toFixed(2)}`,
+            amount: `$${Number(payment.amount).toFixed(2)}`,
             date: dayjs(payment.date).format("DD/MM/YYYY"),
             method: paymentMethodMapper(payment.method),
             period: payment.period,
@@ -180,9 +193,31 @@ const statusMapper = useCallback((status: number) => {
         p: 2
     }}
     >
-    <Typography variant="h6" sx={{ padding: 2 }}>
-    Pagos de {tenant?.firstName} {tenant?.lastName}
-    </Typography>
+     {
+      isLoadingTenant 
+      ?
+      (
+        <CircularProgress size={40}/>
+      )
+      :
+     (
+      <>
+      <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+      >
+        <Typography variant="h6" sx={{ padding: 2 }}>
+        Pagos de {tenant?.firstName} {tenant?.lastName}
+        </Typography>
+        <IconButton
+        onClick={() => refetch()}
+        >
+          <ReplayIcon/>
+        </IconButton>
+      </Box>
             {
               isLoading
               ?
@@ -190,22 +225,13 @@ const statusMapper = useCallback((status: number) => {
               :
               (
                 <DataGrid
+              localeText={customLocaleText}  
               rows={rows}
               columns={columns}
-            //   initialState={{
-            //     pagination: {
-            //       paginationModel: {
-            //         page,
-            //         pageSize,
-            //       },
-            //     },
-            //   }}
               pagination
               pageSizeOptions={[10, 25, 50, 100]}
               paginationMode="client"
               rowCount={rows.length}
-              //paginationModel={{ page, pageSize }}
-             // onPaginationModelChange={handlePaginationModelChange}
               disableColumnFilter
               disableColumnSelector
               checkboxSelection
@@ -248,6 +274,9 @@ const statusMapper = useCallback((status: number) => {
                     volver
                 </Button>
             </Box>
+      </>
+     )
+     }
     </Paper>
     </>
   )

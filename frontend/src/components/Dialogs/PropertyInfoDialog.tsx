@@ -56,7 +56,7 @@ const PropertyInfoDialog: React.FC<PropertyInfoDialogProps> = ({property, open, 
                         <Button
                         variant='contained'
                         color='primary'
-                        onClick={()=>navigate('/payments')}
+                        onClick={()=>navigate(`/payments?tenantId=${property.tenantData?.tenantId}`)}
                         >
                         ver pagos
                         </Button>
