@@ -48,7 +48,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
       dispatch(setUserData(data.userInfo))
       console.log('✅ userData after login:', data.userInfo)
     } else if (!isLoading && !data) {
-      navigate("/sign-in")
+      navigate("/")
     }
   }, [data, isLoading])
   

@@ -17,10 +17,10 @@ router.get('/', checkJwt, async (req: Request, res: Response, next: NextFunction
       return
     }
 
-    console.log('inventoryResult', inventoryResult)
+
 
     const inventoryId = inventoryResult[0].id
-    console.log('inventoryId', inventoryId)
+
 
       const inventory = await db.query('SELECT * FROM inventory_items WHERE inventoryId = ?', [inventoryId]);
         console.log('inventory', inventory)

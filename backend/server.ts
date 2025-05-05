@@ -15,6 +15,9 @@ import getTenants from './api/routes/tenants/getTenants'
 import addTenant from './api/routes/tenants/addTenant'
 import deleteTenant from './api/routes/tenants/deleteTenant'
 import getInventories from './api/routes/inventories/getInventories'
+import deleteInventoryItems from './api/routes/inventories/deleteInventoryItems'
+import addNewInventoryItems from './api/routes/inventories/addNewInventoryItems'
+import deleteInventory from './api/routes/inventories/deleteWholeInventory'
 
 
 const app = express();
@@ -63,6 +66,9 @@ app.use('/get-tenants', getTenants)
 app.use('/add-tenant', addTenant)
 app.use('/delete-tenant', deleteTenant)
 app.use('/get-inventory', getInventories)
+app.use('/delete-inventory-items', deleteInventoryItems)
+app.use('/add-inventory-items', addNewInventoryItems)
+app.use('/delete-inventory', deleteInventory)
 
 //app.use(centralizedErrorHandler);
 

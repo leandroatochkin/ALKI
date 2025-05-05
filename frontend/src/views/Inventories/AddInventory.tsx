@@ -16,7 +16,7 @@ import {
     GridOverlay,
     GridRowSelectionModel
   } from "@mui/x-data-grid"
-import { Inventory, InventoryItem } from '../../api/InventoriesApiSlice'
+import { InventoryItem } from '../../api/InventoriesApiSlice'
 import { 
   useGetInventoryByPropertyQuery, 
   useDeleteInventoryItemsMutation, 
@@ -29,7 +29,7 @@ import { useAppSelector } from '../../api/store/hooks'
 import { customLocaleText } from '../../utils/locale'
 
 const AddInventory = () => {
-const [inventory, setInventory] = useState<Inventory | null>(null)
+const [inventory, setInventory] = useState<InventoryItem[] | null>(null)
 const [selectedProperty, setSelectedProperty] = useState<string>('prop-001')
 const [openAddItemsToInventoryDialog, setOpenAddItemsToInventoryDialog] = useState<boolean>(false)
 const [itemsToDelete, setItemsToDelete] = useState<string[]>([])
@@ -44,7 +44,6 @@ const navigate = useNavigate()
 const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
 const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
-console.log(data)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
 
@@ -129,16 +128,13 @@ useEffect(() => {
                     [],
                   )
             
-                  const rows = useMemo(
-                    () =>
-                      (inventory?.items ?? []).map((item: InventoryItem, index: number) => ({
-                        id: index,
-                        itemId: item.id,
-                        itemName: item.name,
-                        quantity: item.quantity,
-                      })),
-                    [],
-                  )
+                  const rows = (inventory ?? []).map((item: InventoryItem, index: number) => ({
+                    id: index,
+                    itemId: item.id,
+                    itemName: item.name,
+                    quantity: item.quantity,
+                    inventoryId: item.inventoryId,
+                  }))
 
           const handleRowSelection = (selection: GridRowSelectionModel) => {
             const selectedData = selection.map(
@@ -168,8 +164,7 @@ useEffect(() => {
           const handleDeleteInventory = () => {
             if(confirm('¿Está seguro que quiere eliminar este inventario?') && inventory) {
               try{
-                console.log(inventory.id)
-                deleteInventory(inventory.id).unwrap()
+                deleteInventory((inventory && inventory[0]?.inventoryId) ?? '').unwrap()
                 refetchItems()
               } catch(e) {
                 console.log(e)
@@ -180,7 +175,14 @@ useEffect(() => {
   return (
       <>
       {
-        openAddItemsToInventoryDialog && <AddItemsToInventoryDialog open={openAddItemsToInventoryDialog} onClose={()=>setOpenAddItemsToInventoryDialog(false)}/>
+        openAddItemsToInventoryDialog && 
+        <AddItemsToInventoryDialog 
+        open={openAddItemsToInventoryDialog} 
+        onClose={()=>setOpenAddItemsToInventoryDialog(false)} 
+        propertyId={selectedProperty} 
+        refetch={refetchItems}
+        prevItems={inventory?.length}
+        />
       }
          <Paper
     sx={{

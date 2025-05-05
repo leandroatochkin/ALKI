@@ -8,27 +8,48 @@
         DialogContent,
         TextField,
         FormLabel,
+        CircularProgress,
     } from '@mui/material'
-    import { InventoryItem } from '../../api/InventoriesApiSlice'
+    import { InventoryItem, NewItemsDTO } from '../../api/InventoriesApiSlice'
+    import { usePostInventoryItemsMutation } from '../../api/InventoriesApiSlice'
 
     interface AddItemsToInventoryDialogProps {
         open: boolean
         onClose: (value: boolean) => void
+        propertyId: string
+        refetch: () => void
+        prevItems: number | undefined
     }
+
+
     
-    const AddItemsToInventoryDialog: React.FC<AddItemsToInventoryDialogProps> = ({open, onClose}) => {
-    const [newItems, setNewItems] = useState<InventoryItem[] | []>([])
+    const AddItemsToInventoryDialog: React.FC<AddItemsToInventoryDialogProps> = ({open, onClose, propertyId, refetch, prevItems}) => {
+    const [newItems, setNewItems] = useState<NewItemsDTO>({
+      propertyId: propertyId,
+      items: [],
+    })
     const [currentNewItem, setCurrentNewItem] = useState<InventoryItem | null>(null)
+
+    const [postInventoryItems, { isLoading }] = usePostInventoryItemsMutation()
      
     
 
 
     const handleAddInventory = () => {
-        if (!newItems.length) return
-        console.log(newItems)
-        setNewItems([])
-        setCurrentNewItem(null)
-        onClose(false)
+        if (!newItems.items.length) return
+        try{
+          postInventoryItems(newItems).unwrap()
+          refetch()
+          setNewItems({
+            propertyId: '',
+            items: [],
+          })
+          setCurrentNewItem(null)
+          onClose(false)
+        } catch (error) {
+          console.error('Error al añadir artículos al inventario', error)
+        }
+        
       }
   
   
@@ -46,10 +67,10 @@
               <DialogTitle>Añadir artículos</DialogTitle>
               
               <DialogContent>
-              {newItems.length > 0 && (
+              {newItems.items.length > 0 && (
                   <Box sx={{ p: 2 }}>
                       <Typography variant="h6">Artículos añadidos:</Typography>
-                      {newItems.map((item) => (
+                      {newItems.items.map((item) => (
                           <Box
                           sx={{
                             display: "flex",
@@ -77,7 +98,6 @@
       setCurrentNewItem((prev) => ({
         ...prev,
         name: itemName,
-        id: prev?.id || itemName.toLowerCase().replace(/\s/g, '-'), // Basic ID if not set
         quantity: prev?.quantity || 1,
       }))
     }}
@@ -104,19 +124,25 @@
   onClick={() => {
     if (!currentNewItem?.name) return;
 
-    const exists = newItems.find(item => item.name === currentNewItem.name)
+    const exists = newItems.items.find(item => item.name === currentNewItem.name)
 
     if (exists) {
       // Remove if already added
-      setNewItems(prev => prev.filter(item => item.name !== currentNewItem.name))
+      setNewItems(prev => ({
+        ...prev,
+        items: prev.items.filter(item => item.name !== currentNewItem.name),
+      }))
     } else {
       // Add new item, let backend handle the real ID later
-      setNewItems(prev => [...prev, currentNewItem])
+      setNewItems(prev => ({
+        ...prev,
+        items: [...prev.items, currentNewItem],
+      }))
     }
   }}
   sx={{ minWidth: 40, height: 56 }}
 >
-  {newItems.find(item => item.name === currentNewItem?.name) ? '−' : '+'}
+  {newItems.items.find(item => item.name === currentNewItem?.name) ? '−' : '+'}
 </Button>
 
               </Box>
@@ -137,9 +163,17 @@
               onClick={handleAddInventory}
               variant='outlined'
               color='primary'
-              disabled={!newItems.length}
+              disabled={!newItems.items.length || isLoading}
               >
-                  crear inventario
+                  {
+                    isLoading
+                    ?
+                    <CircularProgress size={20} />
+                    :
+                    (
+                      !prevItems ? 'crear inventario' : 'añadir artículos'
+                    )
+                  }
               </Button>         
                   <Button
               onClick={() => {

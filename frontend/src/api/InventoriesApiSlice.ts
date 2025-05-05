@@ -3,16 +3,22 @@ import { getToken } from "./store/token";
 //import { fetchAuthSession } from "aws-amplify/auth"
 
 export interface InventoryItem {
-    id: string;
+    id?: string;
     name: string;
     quantity: number;
+    inventoryId?: string; // Optional, if you want to link it to a specific inventory
 }
 
 export interface Inventory {
-    id: string;
+    id?: string;
     propertyId: string;
     date: string;
     items: InventoryItem[];
+}
+
+export interface NewItemsDTO {
+      propertyId: string;
+      items: InventoryItem[];
 }
 
 export const inventoriesApiSlice = createApi({
@@ -40,15 +46,15 @@ export const inventoriesApiSlice = createApi({
           method: "GET",
         }),
       }),
-      getInventoryByProperty: builder.query<Inventory, string>({
+      getInventoryByProperty: builder.query<InventoryItem[], string>({
         query: propertyId => ({
           url: `/get-inventory?propertyId=${propertyId}`,
           method: "GET",
         }),
       }),
-      postInventory: builder.mutation<void, Inventory>({
+      postInventoryItems: builder.mutation<void, NewItemsDTO>({
         query: payload => ({
-          url: `api/inventories`,
+          url: `/add-inventory-items`,
           method: "POST",
           body: payload,
         }),
@@ -61,15 +67,15 @@ export const inventoriesApiSlice = createApi({
         }),
       }),
       deleteInventory: builder.mutation<void, string>({
-        query: id => ({
-          url: `api/inventories/${id}`,
+        query: inventoryId => ({
+          url: `/delete-inventory?inventoryId=${inventoryId}`,
           method: "DELETE",
         }),
       }),
       deleteInventoryItems: builder.mutation<void, string[]>({
         query: payload => ({
-          url: `api/inventories`,
-          method: "DELETE",
+          url: `/delete-inventory-items`,
+          method: "POST",
           body: payload
         }),
       }),
@@ -79,7 +85,7 @@ export const inventoriesApiSlice = createApi({
 export const { 
     useGetInventoryByIdQuery, 
     useGetInventoryByPropertyQuery,
-    usePostInventoryMutation,
+    usePostInventoryItemsMutation,
     useUpdateInventoryMutation,
     useDeleteInventoryMutation,
     useDeleteInventoryItemsMutation 

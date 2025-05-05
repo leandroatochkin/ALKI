@@ -2,11 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { expressjwt } from "express-jwt";
-import jwksRsa from "jwks-rsa";
 import { db } from 'api/db/db';
-import { ValidationError, ServerError } from 'api/error_handling/errorModels';
-import { RowDataPacket } from 'mysql2';
+import { ServerError } from 'api/error_handling/errorModels';
 import { v4 as uuidv4 } from 'uuid';
 import { checkJwt } from 'api/middleware/checkToken';
 
