@@ -1,4 +1,4 @@
-import  {useState, useMemo, useEffect} from 'react'
+import  {useState, useMemo, useEffect, useCallback} from 'react'
 import {
     Paper,
     Typography,
@@ -20,7 +20,8 @@ import { InventoryItem } from '../../api/InventoriesApiSlice'
 import { 
   useGetInventoryByPropertyQuery, 
   useDeleteInventoryItemsMutation, 
-  useDeleteInventoryMutation 
+  useDeleteInventoryMutation,
+  useGetQrsPdfsMutation 
 } from '../../api/InventoriesApiSlice'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
 import AddItemsToInventoryDialog from '../../components/Dialogs/AddInventoryDialog'
@@ -43,9 +44,11 @@ const navigate = useNavigate()
 
 const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
+
 const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
+const [getQrsPDF, {isLoading: isLoadingQrsPDF}] = useGetQrsPdfsMutation()
 
 const propertiesMap = propertiesData?.reduce((acc, property) => {
   acc[property.id] = property.title
@@ -75,6 +78,40 @@ useEffect(() => {
     if (firstKey) setSelectedProperty(firstKey)
   }
 }, [list])
+
+const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_HOST}/return-pdfs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Include auth if needed
+      },
+      body: JSON.stringify({ propertyId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch PDF");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `inventory-${propertyId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 1000);
+  } catch (error) {
+    console.error("Error exporting PDF:", error);
+  }
+}, []);
+
 
     const TableSkeleton = () => (// for later use
         <Box
@@ -313,6 +350,13 @@ useEffect(() => {
        </>
 
        }
+       <Button
+       onClick={() => handleDownloadQrsPDF(selectedProperty)}
+       variant='outlined'
+       color='primary'
+       >
+        DESCARGAR PLANTILLA QR
+       </Button>
        <Button
        onClick={()=>navigate('/home')}
        variant='outlined'

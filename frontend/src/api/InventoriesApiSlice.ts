@@ -52,6 +52,13 @@ export const inventoriesApiSlice = createApi({
           method: "GET",
         }),
       }),
+      getQrsPdfs: builder.mutation<any, string>({
+        query: (propertyId) => ({
+          url: `/return-pdfs`,
+          method: "POST",
+          body: { propertyId },
+        }),
+      }),
       postInventoryItems: builder.mutation<void, NewItemsDTO>({
         query: payload => ({
           url: `/add-inventory-items`,
@@ -88,7 +95,8 @@ export const {
     usePostInventoryItemsMutation,
     useUpdateInventoryMutation,
     useDeleteInventoryMutation,
-    useDeleteInventoryItemsMutation 
+    useDeleteInventoryItemsMutation,
+    useGetQrsPdfsMutation,
 } = inventoriesApiSlice
 
 export const mockInventories: Inventory[] = [

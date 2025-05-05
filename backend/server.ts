@@ -18,6 +18,7 @@ import getInventories from './api/routes/inventories/getInventories'
 import deleteInventoryItems from './api/routes/inventories/deleteInventoryItems'
 import addNewInventoryItems from './api/routes/inventories/addNewInventoryItems'
 import deleteInventory from './api/routes/inventories/deleteWholeInventory'
+import printPDFs from './api/routes/inventories/returnQrPdfs'
 
 
 const app = express();
@@ -69,6 +70,7 @@ app.use('/get-inventory', getInventories)
 app.use('/delete-inventory-items', deleteInventoryItems)
 app.use('/add-inventory-items', addNewInventoryItems)
 app.use('/delete-inventory', deleteInventory)
+app.use('/return-pdfs', printPDFs)
 
 //app.use(centralizedErrorHandler);
 
