@@ -19,12 +19,13 @@ import {
 import { 
     Organization, 
     useGetOrganizationsByUserIdQuery,  
-    useDeleteOrganizationMutation,
-    Member
+    useDeleteOrganizationMutation
 } from '../../api/OrganizationsSlice'
 import { useAppSelector } from '../../api/store/hooks'
 import { UserPreview } from '../../api/UsersSlice'
 import NewOrganizationDialog from '../../components/Dialogs/NewOrganizationDialog'
+import AddOrganizationMemberDialog from '../../components/Dialogs/AddOrganizationMemberDialog'
+import ViewOrganizationMembersDialog from '../../components/Dialogs/ViewOrganizationMembersDialog'
 import { customLocaleText } from '../../utils/locale'
   import ReplayIcon from '@mui/icons-material/Replay' 
 
@@ -32,17 +33,17 @@ const Organizations = () => {
     const [organizations, setOrganizations] = useState<Organization[] | []>([])
     const [openCreateOrganizationDialog, setOpenCreateOrganizationDialog] = useState<boolean>(false)
     const [openUpdateOrganizationDialog, setOpenUpdateOrganizationDialog] = useState<boolean>(false)
-    const [openViewMembersDialog, setOpenViewMembersDialog] = useState<Member[] | null>(null)
+    const [openViewMembersDialog, setOpenViewMembersDialog] = useState<boolean>(false)
     const [selectedOrganization, setSelectedOrganization] = useState<string | null>(null)
-    const [openAddMembersDialog, setOpenAddMembersDialog] = useState<string | null>(null)
+    const [openAddMembersDialog, setOpenAddMembersDialog] = useState<boolean>(false)
      const userData: UserPreview = useAppSelector(
         state => state.dashboard.userData,
       )
 
-      useEffect(()=>console.log(organizations),[organizations])
+
 
 const {data: organizationData, isLoading: isLoadingOrganizations, isError: isErrorLoadingOrganizations, refetch} = useGetOrganizationsByUserIdQuery(userData.id)
-const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = useDeleteOrganizationMutation()
+const [deleteOrganization, {isLoading: isDeleting}] = useDeleteOrganizationMutation()
 console.log(organizationData)
     
         
@@ -92,19 +93,19 @@ console.log(organizationData)
           {
             field: "name",
             headerName: "nombre",
-            width: 130,
+            width: 250,
             editable: false,
           },
           {
             field: "description",
             headerName: "descripción",
-            width: 120,
+            width: 250,
             editable: false,
           },
           {
             field: "members",
             headerName: "miembros",
-            width: 120,
+            width: 200,
             editable: false,
             renderCell: (params: GridCellParams) => {
                           const organizationId = params.row.organizationId
@@ -118,6 +119,26 @@ console.log(organizationData)
                            
                             >
                               añadir miembros
+                            </Button>
+                          )
+                        },
+          },
+          {
+            field: "modMembers",
+            headerName: "ver/quitar miembros de la org.",
+            width: 200,
+            editable: false,
+            renderCell: (params: GridCellParams) => {
+                          const organizationId = params.row.organizationId
+                          return (
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={() => {
+                                setOpenViewMembersDialog(true)
+                              }}                 
+                            >
+                              ver miembros
                             </Button>
                           )
                         },
@@ -167,7 +188,22 @@ console.log(organizationData)
   return (
     <>
     {
-      
+      openViewMembersDialog &&
+      <ViewOrganizationMembersDialog
+      open={openViewMembersDialog}
+      onClose={()=>setOpenViewMembersDialog(false)}
+      organizationId={selectedOrganization ?? ''}
+      />
+    }
+    {
+      openAddMembersDialog &&
+        <AddOrganizationMemberDialog
+        open={openAddMembersDialog}
+        onClose={() =>
+          setOpenAddMembersDialog(false)
+          }
+        organizationId={selectedOrganization ?? ''}
+        />
     }
     {
         openUpdateOrganizationDialog &&
@@ -225,6 +261,7 @@ console.log(organizationData)
             disableColumnFilter
             disableColumnSelector
             checkboxSelection
+            disableRowSelectionOnClick
             disableMultipleRowSelection
             onRowSelectionModelChange={handleRowSelection}
             loading={

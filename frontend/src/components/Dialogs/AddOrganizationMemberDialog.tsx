@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
     Dialog,
     DialogTitle,
@@ -6,10 +7,17 @@ import {
     Button,
     TextField,
     Box,
-    CircularProgress,
+    Select,
+    MenuItem,
+    Typography,
+    CircularProgress
   } from "@mui/material"
-
+  import { permissionsMap } from "../../utils/dataLists"
   import { useAppSelector } from "../../api/store/hooks"
+  import { Member } from "../../api/OrganizationsSlice"
+  import { useForm } from 'react-hook-form'
+import { emailRegex, nameRegex } from "../../utils/regexPatterns"
+import { useAddOrganizationMembersMutation } from "../../api/OrganizationsSlice"
 
   
   interface OrganizationProps {
@@ -20,53 +28,170 @@ import {
   }
   
   
-const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose}) => {
+const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose, organizationId}) => {
+    const [members, setMembers] = useState<Member[] | []>([])
     const userData = useAppSelector(
         state => state.dashboard.userData
     )
-  
 
-
+  const {
+          register,
+          handleSubmit,
+          setValue,
+          watch,
+          control,
+          reset
+      } = useForm<Member>({
+          defaultValues: {
+         organizationId: organizationId ?? '',
+         creatorId: userData.id,
+    
+          }
+      })
   
-  
+  const [addMembers, {isLoading: isAdding, isError: isAddingError}] = useAddOrganizationMembersMutation()
 
+  const onSubmit = async (data: Member) => {
+      setMembers((prev)=>(
+        [...prev, data]
+      ))
+      reset()
+  }
+ 
+  const removeUser = (index: number) =>{
+    setMembers((prev)=>
+      [...prev.slice(0, index), ...prev.slice(index + 1)]
+    )
+  }
+
+  const handleAddMembers = async () => {
+    if (members.length > 0) {
+      if (confirm('¿Esta seguro que quiere agregar estos miembros?')) {
+        try {
+        await addMembers(members).unwrap()
+        onClose()
+      } catch (error) {
+        alert('Error al agregar miembros')
+        console.error(error)
+      }
+      }
+  } return
+}
     
   
 
   
     return (
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <DialogTitle>{isNew ? "Crear organización" : "Modificar organización"}</DialogTitle>
+        <DialogTitle>{`Agregar o quitar miembros`}</DialogTitle>
+        
         <DialogContent>
-          <TextField
+          {
+          members.length > 0 && 
+          (
+          <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+          >
+            {
+              members.map((member, index)=>(
+            <Box
+            key={index}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              borderBottom: '1px solid #ccc',
+            }}
+            >
+              <Typography>
+                {member.name}
+              </Typography>
+              <Typography>
+                {member.email}
+              </Typography>
+              <Typography>
+                {member.permissions}
+              </Typography>
+              <Button
+              onClick={()=>removeUser(index)}
+              >
+                quitar
+              </Button>
+            </Box>
+          ))  
+            }
+          </Box>
+          )
+        }
+          <form 
+          onSubmit={handleSubmit(onSubmit)}
+          >
+            <Box
+            sx={{
+              display: 'flex',
+              gap: 1
+            }}
+            >
+            <TextField
             fullWidth
             margin="dense"
             label="Nombre"
-            value={orgData.name}
-            onChange={e => setOrgData({ ...orgData, name: e.target.value })}
+            {...register(`name`, {
+              pattern: nameRegex,
+              required: 'Este campo es obligatorio',
+          })}
           />
           <TextField
+          fullWidth
+          margin="dense"
+          
+            label="email"
+            {...register(`email`, {
+              pattern: emailRegex,
+              required: 'Este campo es obligatorio',
+          })}
+          />
+   
+          <Select
+            {...register('permissions', {
+              required: 'Este campo es obligatorio',
+            })}
+            defaultValue={'user'}
             fullWidth
             margin="dense"
-            label="Descripción"
-            value={orgData.description}
-            onChange={e => setOrgData({ ...orgData, description: e.target.value })}
-          />
-          <Box mt={3}>
+            sx={{
+              m: 1
+            }}
+          >
+            {Object.entries(permissionsMap).map(([permission, type]) => (
+              <MenuItem key={permission} value={permission}>
+                {type}
+              </MenuItem>
+            ))}
+          </Select>
       
-            
-          </Box>
+            </Box>
+          <Button
+          type="submit"
+          disabled={isAdding}
+          >
+            añadir miembro
+          </Button>
+          </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancelar</Button>
           <Button
-            onClick={handleSave}
-            variant="contained"
-            disabled={isUpdating || isCreating}
+            variant="outlined"
+            disabled={isAdding}
+            onClick={handleAddMembers}
           >  
-          {
-            (isUpdating || isCreating) ? <CircularProgress size={20}/> : (isNew ? "Crear" : "Guardar cambios")
-          }
+                {
+                  isAdding ? <CircularProgress size={20}/> : 'añadir miembros'
+                }
           </Button>
         </DialogActions>
       </Dialog>

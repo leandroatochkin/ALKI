@@ -3,10 +3,13 @@ import { getToken } from "./store/token"
 
 
 export interface Member{
-    memberId: string
+    memberId?: string
+    creatorId: string
+    organizationId: string
     name: string
     email: string
-    permissions: string[]
+    permissions: string
+    acceptedInvite?: boolean
 }
 
 export interface Organization {
@@ -67,6 +70,13 @@ export const organizationsApiSlice = createApi({
           method: "GET",
         }),
       }),
+      addOrganizationMembers: builder.mutation<void, Member[]>({
+        query: payload => ({
+          url: `/add-organization-members`,
+          method: "POST",
+          body: payload
+        })
+      }),
       deleteOrganizationMember: builder.mutation<void, string>({
         query: memberId => ({
           url: `/delete-organization-member?memberId=${memberId}`,
@@ -82,7 +92,8 @@ useCreateOrganizationMutation,
 useDeleteOrganizationMutation,
 useGetOrganizationMembersByOrganizationIdQuery,
 useDeleteOrganizationMemberMutation,
-useUpdateOrganizationMutation
+useUpdateOrganizationMutation,
+useAddOrganizationMembersMutation
 } = organizationsApiSlice
 
 
