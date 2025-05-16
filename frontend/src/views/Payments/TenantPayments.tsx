@@ -190,7 +190,8 @@ const statusMapper = useCallback((status: number) => {
     <>
     <Paper
     sx={{
-        p: 2
+        p: 2,
+        mt: 2,
     }}
     >
      {

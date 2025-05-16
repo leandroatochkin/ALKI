@@ -14,7 +14,7 @@ import {
     CircularProgress 
 } from '@mui/material'
 import { useForm } from 'react-hook-form'; 
-import { Payment } from '../../api/PaymentsApiSlice';
+import { Payment, PaymentDTO } from '../../api/PaymentsApiSlice';
 import { contractPaymentMethodList } from '../../utils/dataLists';
 import { onlyNumbersRegex } from '../../utils/regexPatterns';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -25,6 +25,8 @@ import 'dayjs/locale/es'
 import { spanishLocaleText } from '../../utils/dataLists';
 import { paymentStatusMapper } from '../../utils/dataLists';
 import { usePostPaymentsMutation } from '../../api/PaymentsApiSlice';
+import { useAppSelector } from '../../api/store/hooks';
+import { UserPreview } from '../../api/UsersSlice';
 
 
 interface InformPaymentDialogProps {
@@ -35,6 +37,11 @@ interface InformPaymentDialogProps {
 
 const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open, onClose}) => {
     const currentMonth = dayjs().startOf('month')
+     const userData: UserPreview | undefined = useAppSelector(
+       (state) => state.dashboard.userData
+     );
+   
+    console.log(currentMonth.format('MM-YY'))
 
     const [postPayment, {isLoading: isPaying}] = usePostPaymentsMutation()
 
@@ -43,22 +50,21 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
         handleSubmit,
         setValue,
         watch
-    } = useForm<Payment>({
+    } = useForm<PaymentDTO>({
         defaultValues: {
-            id: '',
             date: String(new Date()),
             period: dayjs().startOf('month').format('MM-YY'),
             tenantId: property.tenantData?.tenantId,
-            status: 0
+            status: 0,
+            propietorId: userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId,
         }
     })
 
 
 
-    const onSubmit = (data: Payment) => {
+    const onSubmit = (data: PaymentDTO) => {
         try{
-            const paymentArr = Array(data)
-            postPayment(paymentArr).unwrap()
+            postPayment(data).unwrap()
         } catch(e){
             console.log(e)
         }
@@ -84,7 +90,7 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
                     fontWeight: 'bold'
                 }}
                 >{property.title}</Typography>
-                <Typography>monto mensual: ${property.tenantData?.contractValue.toFixed(2)}{property.tenantData?.contractCurrency}</Typography>
+                <Typography>monto mensual: ${Number(property.tenantData?.contractValue).toFixed(2)}{property.tenantData?.contractCurrency}</Typography>
                 <form
                 onSubmit={handleSubmit(onSubmit)}
                 >

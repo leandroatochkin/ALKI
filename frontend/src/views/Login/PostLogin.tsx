@@ -5,6 +5,7 @@ import { setToken } from "../../api/store/token"
 import { useAppDispatch } from "../../api/store/hooks"
 import { setUserData, setUserId } from "../../components/Dashboard/DashboardStore/DashboardStore"
 import { useGetUserDataQuery } from "../../api/UsersSlice"
+import { CircularProgress, Box } from "@mui/material"
 
 
 const PostLogin = () => {
@@ -61,7 +62,19 @@ const PostLogin = () => {
     }
   },[data, isLoadingUser])
 
-  return null
+  return (
+    <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100dvh",
+      width: '100vw',
+    }}
+    >
+      <CircularProgress color="primary" size={50}/>
+    </Box>
+  )
 }
 
 export default PostLogin

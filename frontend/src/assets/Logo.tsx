@@ -9,7 +9,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({darkMode, size}) => {
 
   return (
-    <svg width={size === 1 ? '100' : "200"} height={size === 1 ? '50' : "100"} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size === 1 ? '100' : "200"} height={size === 1 ? '50' : "100"} viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" cursor={'pointer'}>
 
 
 

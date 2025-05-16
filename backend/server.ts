@@ -22,6 +22,13 @@ import deleteInventory from './api/routes/inventories/deleteWholeInventory'
 import printPDFs from './api/routes/inventories/returnQrPdfs'
 import getPaymentsByTenantId from './api/routes/payments/getPaymentsByTenantId'
 import getPaymentsByUserId from './api/routes/payments/getPaymentsByUserId'
+import registerPayment from './api/routes/payments/registerPayment'
+import createOrganization from './api/routes/organizations/createOrganization'
+import getOrganizationsByUserId from './api/routes/organizations/getOrganizationsByUserId'
+import deleteOrganization from './api/routes/organizations/deleteOrganization'
+import deleteOrganizationMember from './api/routes/organizations/deleteOrganizationMember'
+import getOrganizationMembersByOrganizationId from './api/routes/organizations/getOrganizationMembersByOrganizationId'
+import updateOrganization from './api/routes/organizations/updateOrganization'
 
 
 const app = express();
@@ -77,6 +84,13 @@ app.use('/return-pdfs', printPDFs)
 app.use('/get-payments-by-tenantId', getPaymentsByTenantId)
 app.use('/get-payments-by-userId', getPaymentsByUserId)
 app.use('/get-tenant-by-id', getTenantById)
+app.use('/register-payment', registerPayment)
+app.use('/create-organization', createOrganization)
+app.use('/get-organizations-by-userId', getOrganizationsByUserId)
+app.use('/delete-organization', deleteOrganization)
+app.use('/get-organization-members-by-organizationId', getOrganizationMembersByOrganizationId)
+app.use('/delete-organization-member', deleteOrganizationMember)
+app.use('/update-organization', updateOrganization)
 
 //app.use(centralizedErrorHandler);
 

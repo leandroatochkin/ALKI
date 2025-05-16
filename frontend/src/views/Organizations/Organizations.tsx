@@ -1,39 +1,32 @@
-import React,{useMemo, useState, useEffect} from 'react'
+import {useMemo, useState, useEffect} from 'react'
 import {
     Paper,
     Typography,
-    TextField,
     Button,
     Box,
     Skeleton,
     CircularProgress,
+    IconButton,
 } from '@mui/material'
 import {
     DataGrid,
     GridColDef,
-    GridCellParams,
     GridRowSelectionModel,
     GridOverlay,
-    GridPaginationModel,
+    GridCellParams,
   } from "@mui/x-data-grid"
-  import { mockProperties, PropertyDTO } from '../../api/PropertiesApiSlice'
-  import { propertyTitleMapper } from '../../utils/functions'
   import { useNavigate } from 'react-router-dom'
-  import AddPropertyDialog from '../../components/Dialogs/AddPropertyDialog'
-  import { useGetPropertiesByUserIdQuery, useDeletePropertyMutation } from '../../api/PropertiesApiSlice'
 import { 
     Organization, 
-    useGetOrganizationsByUserIdQuery, 
-    useCreateOrganizationMutation, 
-    useUpdateOrganizationMutation, 
+    useGetOrganizationsByUserIdQuery,  
     useDeleteOrganizationMutation,
-    mockOrganizations, 
     Member
 } from '../../api/OrganizationsSlice'
 import { useAppSelector } from '../../api/store/hooks'
 import { UserPreview } from '../../api/UsersSlice'
 import NewOrganizationDialog from '../../components/Dialogs/NewOrganizationDialog'
-  
+import { customLocaleText } from '../../utils/locale'
+  import ReplayIcon from '@mui/icons-material/Replay' 
 
 const Organizations = () => {
     const [organizations, setOrganizations] = useState<Organization[] | []>([])
@@ -41,20 +34,21 @@ const Organizations = () => {
     const [openUpdateOrganizationDialog, setOpenUpdateOrganizationDialog] = useState<boolean>(false)
     const [openViewMembersDialog, setOpenViewMembersDialog] = useState<Member[] | null>(null)
     const [selectedOrganization, setSelectedOrganization] = useState<string | null>(null)
+    const [openAddMembersDialog, setOpenAddMembersDialog] = useState<string | null>(null)
      const userData: UserPreview = useAppSelector(
         state => state.dashboard.userData,
       )
 
-const {data: organizationData, isLoading: isLoadingOrganizations, isError: isErrorLoadingOrganizations} = useGetOrganizationsByUserIdQuery(userData.id)
+      useEffect(()=>console.log(organizations),[organizations])
+
+const {data: organizationData, isLoading: isLoadingOrganizations, isError: isErrorLoadingOrganizations, refetch} = useGetOrganizationsByUserIdQuery(userData.id)
 const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = useDeleteOrganizationMutation()
+console.log(organizationData)
     
         
         useEffect(() => {
-          if (!isLoadingOrganizations && !isErrorLoadingOrganizations && organizationData) {
-            setOrganizations(mockOrganizations)
-          } else if (!isLoadingOrganizations && isErrorLoadingOrganizations) {
-            setOrganizations(mockOrganizations)
-          }
+          if (!organizationData) return // Don't do anything while loading
+          setOrganizations(organizationData)
       }, [organizationData, isLoadingOrganizations, isErrorLoadingOrganizations])
 
     const navigate = useNavigate()
@@ -112,22 +106,34 @@ const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = 
             headerName: "miembros",
             width: 120,
             editable: false,
+            renderCell: (params: GridCellParams) => {
+                          const organizationId = params.row.organizationId
+                          return (
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={() => {
+                                setOpenAddMembersDialog(organizationId)
+                              }}
+                           
+                            >
+                              añadir miembros
+                            </Button>
+                          )
+                        },
           },
         ],
         [],
       )
 
-      const rows = useMemo(
-        () =>
-          (organizations ?? []).map((organization: Organization, index: number) => ({
+      const rows = (organizations ?? []).map((organization: Organization, index: number) => ({
             id: index,
             organizationId: organization.organizationId,
             name: organization.name,
             description: organization.description,
-            members: organization.members.length,
-          })), 
-        [],
-      )
+
+          }))
+     
 
         const handleRowSelection = (selection: GridRowSelectionModel) => {
             const selectedData = selection.map(
@@ -161,12 +167,16 @@ const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = 
   return (
     <>
     {
+      
+    }
+    {
         openUpdateOrganizationDialog &&
         <NewOrganizationDialog
             open={Boolean(openUpdateOrganizationDialog)}
             onClose={() => setOpenUpdateOrganizationDialog(false)}
             organization={organizations.find(o => o.organizationId === selectedOrganization)!}
             isNew={false}
+            refetch={refetch}
 />
     }
     {
@@ -175,6 +185,7 @@ const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = 
             open={Boolean(openCreateOrganizationDialog)}
             onClose={() => setOpenCreateOrganizationDialog(false)}
             isNew={true}
+            refetch={refetch}
 />
     }
     <Paper
@@ -183,14 +194,28 @@ const [deleteOrganization, {isLoading: isDeleting, isError: isErrorDeleting}] = 
         mt: 2
     }}
     >
-    <Typography variant="h4" gutterBottom>
+    <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}
+    >
+        <Typography variant="h4" gutterBottom>
         Crear o modificar organizaciones
     </Typography>
+    <IconButton
+    onClick={() => refetch()}
+    >
+        <ReplayIcon />
+    </IconButton>
+    </Box>
          {
           !isLoadingOrganizations
           ?
           (
             <DataGrid
+            localeText={customLocaleText}
             rows={rows}
             columns={columns}
             pagination

@@ -232,7 +232,8 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
     <Box
     sx={{
       display: 'flex',
-      
+      justifyContent: 'space-between',
+      alignItems: 'center',
     }}
     >
       <Typography variant="h4" gutterBottom>

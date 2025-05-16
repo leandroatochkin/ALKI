@@ -10,6 +10,17 @@ export interface Payment {
     method: number; // 0: bank transfer, 1: cash, 2: credit card, 3: debit card, 4: other
     period: string;
     status: number; // 0: paid, 1: pending, 2: debt
+    propietorId: string;
+}
+
+export interface PaymentDTO {
+  tenantId: string
+  amount: number;
+  date: string;
+  method: number; // 0: bank transfer, 1: cash, 2: credit card, 3: debit card, 4: other
+  period: string;
+  status: number; // 0: paid, 1: pending, 2: debt
+  propietorId: string;
 }
 
 
@@ -50,9 +61,9 @@ export const paymentsApiSlice = createApi({
           method: "GET",
         }),
       }),
-      postPayments: builder.mutation<void, Payment[]>({
+      postPayments: builder.mutation<void, PaymentDTO>({
         query: payload => ({
-          url: `api/payments`,
+          url: `/register-payment`,
           method: "POST",
           body: payload,
         }),
