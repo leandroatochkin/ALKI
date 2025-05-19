@@ -9,8 +9,7 @@ import {
     Select, 
     MenuItem,
     Button,
-    Typography,
-    Checkbox 
+    CircularProgress,
 } from '@mui/material'
 import { useForm } from 'react-hook-form'; 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -20,7 +19,8 @@ import { spanishLocaleText } from '../../utils/dataLists';
 import { UserPreview } from '../../api/UsersSlice';
 import { nameRegex, phoneRegex, addressRegex, onlyNumbersRegex } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from '../../utils/dataLists';
-import { useNavigate } from 'react-router-dom';
+import { useUpdateUserDataMutation } from '../../api/UsersSlice';
+
 
 
 interface UpdateUserDataDialogProps {
@@ -31,17 +31,18 @@ interface UpdateUserDataDialogProps {
 
 const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, open, onClose}) => {
 
-    const navigate = useNavigate()
+
+    const [updateUser, {isLoading}] = useUpdateUserDataMutation()
+
 
     const {
         register,
         handleSubmit,
         setValue,
-        watch,
         formState: {errors},
     } = useForm<UserPreview>({
         defaultValues: {
-            id: ''
+            id: userData.id
         }
         
     })
@@ -56,18 +57,26 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
                       setValue('phoneNumber', userData.phoneNumber)
                       setValue('countryCode', userData.countryCode)
                       setValue('addressLine1', userData.addressLine1)
+                      setValue('addressLine2', userData.addressLine2)
                       setValue('monthlyRevenue', userData.monthlyRevenue)
                       setValue('state', userData.state)
                       setValue('city', userData.city)
                       setValue('postalCode', userData.postalCode)
                       setValue('autoCalculateMRR', userData.autoCalculateMRR)
+                      setValue('theme', userData.theme)
                     }
                   }, [userData, setValue])
 
 
 
-    const onSubmit = (data: UserPreview) => {
-        console.log(data)
+    const onSubmit = async (data: UserPreview) => {
+        try{
+            await updateUser(data).unwrap()
+            alert(`Datos actulizados`);
+        } catch(e){
+            alert(`Error al actualizar datos`)
+            console.log(e)
+        }
     }
 
   return (
@@ -300,14 +309,18 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
                             type='submit'
                             variant='outlined'
                             color='secondary'
+                            disabled={isLoading}
                             >
-                                Modificar datos
+                                {
+                                    isLoading ? <CircularProgress size={20}/> : 'Guardar cambios'
+                                }
                             </Button>
                             <Button
                             variant='outlined'
                             color='warning'
+                            disabled={isLoading}
                             onClick={() => {
-                                navigate('/')
+                                onClose()
                             }}
                             >
                                 Cancelar

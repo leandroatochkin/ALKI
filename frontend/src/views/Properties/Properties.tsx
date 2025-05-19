@@ -126,8 +126,8 @@ const NoProperty = () => {
   )
 }
 
-if (!userData?.id) return <div>Loading user...</div>;
-if (isLoading) return <div>Loading properties...</div>;
+if (!userData?.id) return <Box sx={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress size={50}/></Box>;
+if (isLoading) return <Box sx={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress size={50}/></Box>;
 if (properties.length === 0 || isError) return <NoProperty/>
                                 
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
     Dialog,
     DialogTitle,
@@ -37,9 +37,6 @@ const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose
   const {
           register,
           handleSubmit,
-          setValue,
-          watch,
-          control,
           reset
       } = useForm<Member>({
           defaultValues: {
@@ -49,7 +46,7 @@ const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose
           }
       })
   
-  const [addMembers, {isLoading: isAdding, isError: isAddingError}] = useAddOrganizationMembersMutation()
+  const [addMembers, {isLoading: isAdding}] = useAddOrganizationMembersMutation()
 
   const onSubmit = async (data: Member) => {
       setMembers((prev)=>(

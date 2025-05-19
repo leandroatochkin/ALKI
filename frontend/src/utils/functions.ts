@@ -5,7 +5,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import FactoryIcon from '@mui/icons-material/Factory';
 import ForestIcon from '@mui/icons-material/Forest';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import { UserPreview, UserInfo } from '../api/UsersSlice';
+import { UserInfo } from '../api/UsersSlice';
 
 export const propertyIconMapper = (propertyType: number) => {
     switch (propertyType) {

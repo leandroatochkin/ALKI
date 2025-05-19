@@ -32,10 +32,9 @@ const [tenant, setTenant] = useState<TenantDTO | null>(null)
 
 const tenantId = new URLSearchParams(window.location.search).get('tenantId') || '';
 
-const {data, isLoading, isError, status, refetch} = useGetTenantPaymentsByTenantIdQuery(tenantId)
+const {data, isLoading, isError, refetch} = useGetTenantPaymentsByTenantIdQuery(tenantId)
 const {data: tenantData, isLoading: isLoadingTenant} = useGetTenantByIdQuery(tenantId)
-console.log(tenantData?.tenants[0])
-console.log(data)
+
 
     useEffect(() => {
       if (isLoading) return; // Don't do anything while loading
@@ -169,9 +168,7 @@ const statusMapper = useCallback((status: number) => {
         [],
       )
 
-      const rows = useMemo(
-        () =>
-          (payments ?? []).map((payment: Payment, index: number) => ({
+      const rows = (payments ?? []).map((payment: Payment, index: number) => ({
             id: index,
             paymentId: payment.id,
             amount: `$${Number(payment.amount).toFixed(2)}`,
@@ -179,10 +176,8 @@ const statusMapper = useCallback((status: number) => {
             method: paymentMethodMapper(payment.method),
             period: payment.period,
             status: payment.status,
-          })),
-        [],
-      )
-
+          }))
+       
 
 
 

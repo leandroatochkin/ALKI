@@ -1,6 +1,6 @@
-import React, { useEffect, useState} from 'react'
-import { Dialog, DialogTitle, DialogContent, Box, Typography, Tooltip, Button, Divider } from '@mui/material'
-import { Member, useGetOrganizationMembersByOrganizationIdQuery } from '../../api/OrganizationsSlice'
+import React from 'react'
+import { Dialog, DialogTitle, DialogContent, Box, Typography, Button, Divider } from '@mui/material'
+import { useGetOrganizationMembersByOrganizationIdQuery } from '../../api/OrganizationsSlice'
 import VerifiedIcon from '@mui/icons-material/Verified';
 
 interface ViewOrganizationMembersDialogProps {
@@ -10,7 +10,7 @@ interface ViewOrganizationMembersDialogProps {
 }
 
 const ViewOrganizationMembersDialog: React.FC<ViewOrganizationMembersDialogProps> = ({open, onClose, organizationId}) => {
-const { data, isLoading, error } = useGetOrganizationMembersByOrganizationIdQuery(organizationId)
+const { data } = useGetOrganizationMembersByOrganizationIdQuery(organizationId)
 
 const members = data ?? []
 

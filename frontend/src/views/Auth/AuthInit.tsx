@@ -6,7 +6,7 @@ const AuthInit = () => {
   useEffect(() => {
     const getToken = async () => {
       const token = await getAccessTokenWithConsent()
-      console.log("Token with consent:", token)
+      return token
       // Optionally store it somewhere if needed
     }
 

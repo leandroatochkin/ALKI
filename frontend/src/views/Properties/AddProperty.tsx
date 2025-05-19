@@ -35,7 +35,7 @@ const AddProperty = () => {
           )
         const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
 
-        const { data, isLoading, isError, refetch } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
+        const { data, isLoading, isError, refetch } = useGetPropertiesByUserIdQuery((userData.permissions === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
         const [deleteProperty,{isLoading: isDeleting}] = useDeletePropertyMutation()
 
@@ -151,7 +151,7 @@ const AddProperty = () => {
         },
       }
 
-      if (userData.permissions[0] !== 'view') {
+      if (userData.permissions !== 'view') {
         baseColumns.push(modifyColumn)
       }
     
@@ -227,7 +227,7 @@ const AddProperty = () => {
    >
    <Typography variant="h4" gutterBottom>
         {
-          userData.permissions[0] === 'view'
+          userData.permissions === 'view'
           ?
           `Propiedades`
           :
@@ -256,7 +256,7 @@ const AddProperty = () => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection={userData.permissions[0] !== 'view'}
+            checkboxSelection={userData.permissions !== 'view'}
             disableMultipleRowSelection
             onRowSelectionModelChange={handleRowSelection}
             loading={
@@ -293,7 +293,7 @@ const AddProperty = () => {
       }}
       >   
           {
-            userData.permissions[0] !== 'view' &&
+            userData.permissions !== 'view' &&
             <>
             <Button
           variant="outlined"

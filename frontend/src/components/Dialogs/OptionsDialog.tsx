@@ -6,15 +6,13 @@ import {
     Box, 
     TextField, 
     FormLabel, 
-    Select, 
-    MenuItem,
     Button,
     Typography,
     Checkbox,
     FormControlLabel,
-    ButtonGroup,
     ToggleButton,
-    ToggleButtonGroup 
+    ToggleButtonGroup,
+    CircularProgress 
 } from '@mui/material'
 import { useForm, Controller } from 'react-hook-form'; 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -23,11 +21,11 @@ import 'dayjs/locale/es'
 import { spanishLocaleText } from '../../utils/dataLists';
 import { UserPreview } from '../../api/UsersSlice';
 import {  onlyNumbersRegex } from '../../utils/regexPatterns';
-import { useNavigate } from 'react-router-dom';
 import BedtimeIcon from '@mui/icons-material/Bedtime';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import { useAppSelector, useAppDispatch } from '../../api/store/hooks'
+import { useAppDispatch } from '../../api/store/hooks'
 import { setUserData } from '../../components/Dashboard/DashboardStore/DashboardStore'
+import { useUpdateUserDataMutation } from '../../api/UsersSlice';
 
 
 
@@ -37,15 +35,14 @@ interface OptionsDialogProps {
     onClose: () => void
 }
 
-const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
-     const userData: UserPreview = useAppSelector(
-        state => state.dashboard.userData,
-      )
+const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose, userData}) => {
+
+      const [updateUser, {isLoading}] = useUpdateUserDataMutation()
 
     const dispatch = useAppDispatch()
         
 
-    const navigate = useNavigate()
+
 
     const {
         register,
@@ -56,25 +53,45 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
         formState: {errors},
     } = useForm<UserPreview>({
         defaultValues: {
-            id: ''
+            id: userData.id
         }
         
     })
 
      useEffect(() => {
                     if (userData) {
-                      // Set basic fields
-                      setValue('monthlyRevenue', userData.monthlyRevenue)
+                      setValue('firstName', userData.firstName)
+                      setValue('lastName', userData.lastName)
+                      setValue('middleName', userData.middleName)
+                      setValue('email', userData.email)
+                      setValue('phoneNumber', userData.phoneNumber)
+                      setValue('countryCode', userData.countryCode)
+                      setValue('addressLine1', userData.addressLine1)
+                      setValue('addressLine2', userData.addressLine2)
+                      setValue('state', userData.state)
+                      setValue('city', userData.city)
+                      setValue('postalCode', userData.postalCode)
                       setValue('autoCalculateMRR', userData.autoCalculateMRR)
                       setValue('theme', userData.theme)
+                      setValue('monthlyRevenue', Number(userData.monthlyRevenue))
                     }
                   }, [userData, setValue])
 
 
 
-    const onSubmit = (data: UserPreview) => {
-        console.log(data)
+    const onSubmit = async (data: UserPreview) => {
+    try {
+        const transformedData = {
+            ...data,
+            monthlyRevenue: parseInt(data.monthlyRevenue as any, 10)
+        };
+        await updateUser(transformedData).unwrap();
+        alert(`Datos actulizados`);
+    } catch (e) {
+        alert(`Error al actualizar datos`);
+        console.log(e);
     }
+}
 
   return (
    <LocalizationProvider
@@ -95,7 +112,7 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
 
                         
                         {
-                            userData.permissions[0] === 'admin' &&
+                            userData.permissions === 'admin' &&
                             <>
                             {/*MMR*/}
                         <Box>
@@ -133,21 +150,27 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
                                 }}
                                 >
                                 
-                                <Controller
+                               <Controller
                                     name="autoCalculateMRR"
-                                    control={control} // <- from useForm()
+                                    control={control}
                                     render={({ field }) => (
                                         <FormControlLabel
                                         control={
                                             <Checkbox
                                             {...field}
                                             checked={field.value}
+                                            onChange={(e) => {
+                                                const val = e.target.checked;
+                                                field.onChange(val); 
+                                                dispatch(setUserData({ ...userData, autoCalculateMRR: val }));
+                                            }}
                                             />
                                         }
                                         label="auto-calcular"
                                         />
                                     )}
                                     />
+
                        
                                 </Box>
                             </Box>
@@ -176,7 +199,7 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
                         <ToggleButtonGroup
                         id='theme'
                         value={watch('theme')} 
-                        onChange={(e, val) => {
+                        onChange={(_e, val) => {
                             setValue('theme', val)
                             dispatch(setUserData({ ...userData, theme: val }));
                         }}
@@ -215,14 +238,18 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose}) => {
                             type='submit'
                             variant='outlined'
                             color='secondary'
+                            disabled={isLoading}
                             >
-                                guardar cambios
+                                {
+                                    isLoading ? <CircularProgress size={20}/> : 'Guardar cambios'
+                                }
                             </Button>
                             <Button
                             variant='outlined'
                             color='warning'
+                            disabled={isLoading}
                             onClick={() => {
-                                navigate('/')
+                                onClose()
                             }}
                             >
                                 Cancelar

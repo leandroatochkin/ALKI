@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import {
   Box,
   Button,
-  Card,
   CardContent,
   CardHeader,
   Container,
@@ -24,14 +23,11 @@ import {
 import { 
   CheckCircle, 
   Person as PersonIcon, 
-  Work as WorkIcon, 
   LocationOn as LocationIcon 
 } from "@mui/icons-material";
 import { UserPreview } from "../../api/UsersSlice";
 import { 
-    emailRegex, 
     nameRegex, 
-    passwordRegex,
     phoneRegex, 
     onlyNumbersRegex,
     addressRegex
@@ -80,8 +76,7 @@ const Onboarding = () => {
       const {  
           handleSubmit, 
           register, 
-          watch,
-          setError, 
+
           formState: { errors }, 
             } = useForm<UserPreview>({
                 defaultValues: {
@@ -94,7 +89,7 @@ const Onboarding = () => {
 
 
   // Handle step changes
-  const handleStepChange = (event: React.SyntheticEvent, newStep: number) => {
+  const handleStepChange = (_event: React.SyntheticEvent, newStep: number) => {
     setActiveStep(newStep);
     if (newStep === 0) setProgress(50);
     if (newStep === 1) setProgress(100);

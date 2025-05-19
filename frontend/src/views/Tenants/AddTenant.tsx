@@ -57,11 +57,10 @@ const AddTenant = () => {
       state => state.dashboard.userData 
     )
 
-    const idPermissionCheck = (userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? ''
+    const idPermissionCheck = (userData.permissions === 'admin' ? userData.id : userData.parentUserId) ?? ''
 
     const { data, isLoading, isError, refetch } = useGetTenantsByUserIdQuery(idPermissionCheck)
-    console.log(data)
-    useEffect(()=>console.log(tenants as any),[tenants, data])
+
 
     const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idPermissionCheck)
 
@@ -262,7 +261,7 @@ const AddTenant = () => {
               },
             }
 
-            if (userData.permissions[0] !== 'view') {
+            if (userData.permissions !== 'view') {
               baseColumns.push(modifyColumn)
             }
           
@@ -327,7 +326,7 @@ const AddTenant = () => {
 
   const AssignToPropertyDialog = () => {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
-  useEffect(() => {console.log(selectedProperty)},[selectedProperty])
+
 
 
   const handleAssignTenantToProperty = async () => {
@@ -422,7 +421,7 @@ const AddTenant = () => {
         >
           <Typography variant="h4" gutterBottom>
             {
-              userData.permissions[0] !== 'view'
+              userData.permissions !== 'view'
               ?
               `Agregar o modificar inquilinos`
               :
@@ -449,7 +448,7 @@ const AddTenant = () => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection={userData.permissions[0] !== 'view'}
+            checkboxSelection={userData.permissions !== 'view'}
             disableMultipleRowSelection
             onRowSelectionModelChange={handleRowSelection}
             sx={{
@@ -480,7 +479,7 @@ const AddTenant = () => {
                                 }}
                                 >
                                 {
-                                  userData.permissions[0] !== 'view' &&
+                                  userData.permissions !== 'view' &&
                                   <>
                                   <Button
                                   variant="outlined"

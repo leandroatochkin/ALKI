@@ -16,7 +16,6 @@ const domain = import.meta.env.VITE_AUTH0_DOMAIN
 const clientId = import.meta.env.VITE_AUTH0_CLIENT
 const feClient = import.meta.env.VITE_FE_CLIENT
 
-console.log("VITE_FE_CLIENT =", feClient);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { UserPreview } from "../../../api/UsersSlice"
-import { mockUser } from "../../../api/UsersSlice"
 
 interface DashboardState {
     //notifications: Notification[]
@@ -26,7 +25,7 @@ interface DashboardState {
       postalCode: '',
       autoCalculateMRR: false,
       theme: 'dark',
-      permissions: [],
+      permissions: '',
       isPremium: false,
       parentUserId: '', 
       password: ''

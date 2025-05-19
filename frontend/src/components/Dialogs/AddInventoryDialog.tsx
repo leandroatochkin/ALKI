@@ -88,7 +88,17 @@
               )}
               <FormLabel htmlFor='articulos'>Seleccione los artículos a añadir</FormLabel>
               <Box sx={{ display: "flex", mt: 2, gap: 2, alignItems: 'center' }}>
-  <TextField
+ <Box
+ sx={{
+  display: 'flex',
+  flexDirection: {
+    xs: 'column',
+    sm: 'row',
+  },
+  gap: 1
+ }}
+ >
+     <TextField
     fullWidth
     id='itemName'
     placeholder="Nombre del artículo"
@@ -102,7 +112,13 @@
       }))
     }}
   />
-  <TextField
+    <Box
+    sx={{
+      display: 'flex',
+      gap: 1
+    }}
+    >
+        <TextField
     type='number'
     id='itemQuantity'
     placeholder="Cantidad"
@@ -116,10 +132,27 @@
         name: prev?.name || '',
       }))
     }}
-    sx={{ width: 100 }}
+
   />
 
-  <Button
+  <TextField
+    type='number'
+    id='declaredPrice'
+    placeholder="Valor declarado"
+    value={currentNewItem?.declaredPrice ?? ''}
+    onChange={(e) => {
+      const itemQuantity = parseInt(e.target.value)
+      setCurrentNewItem((prev) => ({
+        ...prev,
+        quantity: itemQuantity,
+        id: prev?.id || prev?.name?.toLowerCase().replace(/\s/g, '-') || '',
+        name: prev?.name || '',
+      }))
+    }}
+
+  />
+    </Box>
+      <Button
   variant="contained"
   onClick={() => {
     if (!currentNewItem?.name) return;
@@ -140,10 +173,13 @@
       }))
     }
   }}
-  sx={{ minWidth: 40, height: 56 }}
+  sx={{ width: {xs: 230, sm: 40}, height: {xs: 40, sm: 55} }}
 >
   {newItems.items.find(item => item.name === currentNewItem?.name) ? '−' : '+'}
 </Button>
+
+ </Box>
+
 
               </Box>
 

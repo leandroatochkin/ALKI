@@ -128,8 +128,8 @@ console.log(organizationData)
             headerName: "ver/quitar miembros de la org.",
             width: 200,
             editable: false,
-            renderCell: (params: GridCellParams) => {
-                          const organizationId = params.row.organizationId
+            renderCell: () => {
+                  
                           return (
                             <Button
                               variant="outlined"

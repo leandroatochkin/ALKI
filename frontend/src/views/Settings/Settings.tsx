@@ -9,6 +9,7 @@ import {
   import { UserPreview } from '../../api/UsersSlice'
   import UpdateUserDataDialog from '../../components/Dialogs/UpdateUserDataDialog'
   import OptionsDialog from '../../components/Dialogs/OptionsDialog'
+  import AboutDialog from '../../components/Dialogs/AboutDialog'
   import { useAppSelector } from '../../api/store/hooks'
   import LockIcon from '@mui/icons-material/Lock';
 
@@ -18,6 +19,7 @@ const Settings = () => {
  const [user, setUser] = useState<UserPreview | null>(null)
  const [openModifyUserDataDialog, setOpenModifyUserDialog] = useState<boolean>(false)
  const [openOptionsDialog, setOpenOptionsDialog] = useState<boolean>(false)
+ const [openAboutDialog, setOpenAboutDialog] = useState<boolean>(false)
  const userData: UserPreview = useAppSelector(
     state => state.dashboard.userData,
   )
@@ -38,10 +40,16 @@ const Settings = () => {
     <>
     {openModifyUserDataDialog && user && <UpdateUserDataDialog userData={user} open={openModifyUserDataDialog} onClose={()=>setOpenModifyUserDialog(false)}/>}
     {openOptionsDialog && user && <OptionsDialog userData={user} open={openOptionsDialog} onClose={()=>setOpenOptionsDialog(false)}/>}
+    {openAboutDialog && user && <AboutDialog open={openAboutDialog} onClose={()=>setOpenAboutDialog(false)}/>}
     <Paper
     sx={{
         p: 2,
-        mt: 2
+        mt: 2,
+        width: {
+            sm: 500,
+            xs: 300,
+        },
+        mx: 'auto',
     }}
     >
     <Typography variant="h4" gutterBottom>
@@ -65,7 +73,7 @@ const Settings = () => {
                 opciones
             </Button>
             {
-                userData.permissions[0] === 'admin' &&
+                userData.permissions === 'admin' &&
                 <Button
                 variant='outlined'
                 color='primary'
@@ -80,6 +88,7 @@ const Settings = () => {
             <Button
             variant='outlined'
             color='primary'
+             onClick={()=>setOpenAboutDialog(true)}
             > 
                 sobre la app
             </Button>

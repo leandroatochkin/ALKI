@@ -7,6 +7,7 @@ export interface InventoryItem {
     name: string;
     quantity: number;
     inventoryId?: string; // Optional, if you want to link it to a specific inventory
+    declaredPrice?: number; // Optional, if you want to declare a price for the item
 }
 
 export interface Inventory {

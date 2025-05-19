@@ -44,7 +44,7 @@ const userData = useAppSelector(
 
 const navigate = useNavigate()
 
-const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions[0] === 'admin' ? userData.id : userData.parentUserId) ?? '')
+const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
 
 const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
@@ -238,7 +238,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
     >
       <Typography variant="h4" gutterBottom>
         {
-          userData.permissions[0] === 'view'
+          userData.permissions === 'view'
           ?
           `Inventarios`
           :
@@ -256,7 +256,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
     </Box>
     <FormLabel htmlFor='propiedades'>
     {
-          userData.permissions[0] === 'view'
+          userData.permissions === 'view'
           ?
           `Seleccione la propiedad`
           :
@@ -296,7 +296,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
             rowCount={rows.length}
             disableColumnFilter
             disableColumnSelector
-            checkboxSelection={userData.permissions[0] !== 'view'}
+            checkboxSelection={userData.permissions !== 'view'}
             onRowSelectionModelChange={handleRowSelection}
             sx={{
                 //opacity: isUnpaidNotesLoading || refreshLoading ? 0.7 : 1,
@@ -329,7 +329,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
     }}
     >  
        {
-        userData.permissions[0] !== 'view' &&
+        userData.permissions !== 'view' &&
         <>
        <Button
        onClick={()=>setOpenAddItemsToInventoryDialog(true)}

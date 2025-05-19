@@ -1,14 +1,11 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import { useForm } from 'react-hook-form'
-import { SignUpDTO } from '../../api/SignUpApiSlice'
 import {
     Box, 
     Button, 
     TextField, 
     Typography, 
-    FormControl, 
     FormLabel, 
-    Checkbox, 
     InputAdornment, 
     IconButton, Input, 
     Select, 
@@ -28,15 +25,15 @@ import {
 } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from '../../utils/dataLists';
 import { useNavigate } from 'react-router-dom';
-import { UserPreview, useOnboardUserMutation } from '../../api/UsersSlice';
-import { useAuth0 } from '@auth0/auth0-react';
+import { UserPreview } from '../../api/UsersSlice';
+
 
 const SignUp = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const [repeatEmail, setRepeatEmail] = useState<string>("")
     const [repeatPassword, setRepeatPassword] = useState<string>("")
 
-    const [signUp, {isLoading}] = useOnboardUserMutation()
+ 
 
     const {  
         handleSubmit, 
@@ -62,7 +59,7 @@ const SignUp = () => {
       
         if (hasError) return;
         const token = `await getAccessTokenWithConsent()`
-        const response = fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`,{
+        await fetch(`${import.meta.env.VITE_SERVER_HOST}/signup`,{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

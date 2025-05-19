@@ -35,7 +35,7 @@ export const generateInventoryPdfWithQRs = async (propertyId: string) => {
       const quantity = item.quantity ?? 1;
   
       for (let i = 0; i < quantity; i++) {
-        const qrText = `Property: ${propertyTitle}\nItem: ${item.name}\nID: ${item.id} - Unit ${i + 1}`;
+        const qrText = `Propiedad: ${propertyTitle}\nItem: ${item.name}\nID: ${item.id} - Unidad ${i + 1}\nValor: $${item.declaredPrice}`;
         const qrDataUrl = await QRCode.toDataURL(qrText, { width: qrSize });
         const qrImageBytes = qrDataUrl.split(',')[1];
         const qrImage = await pdfDoc.embedPng(Buffer.from(qrImageBytes, 'base64'));

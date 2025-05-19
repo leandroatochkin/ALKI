@@ -14,7 +14,7 @@ import {
     CircularProgress 
 } from '@mui/material'
 import { useForm } from 'react-hook-form'; 
-import { Payment, PaymentDTO } from '../../api/PaymentsApiSlice';
+import { PaymentDTO } from '../../api/PaymentsApiSlice';
 import { contractPaymentMethodList } from '../../utils/dataLists';
 import { onlyNumbersRegex } from '../../utils/regexPatterns';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -41,7 +41,7 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
        (state) => state.dashboard.userData
      );
    
-    console.log(currentMonth.format('MM-YY'))
+
 
     const [postPayment, {isLoading: isPaying}] = usePostPaymentsMutation()
 

@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { useAuth0 } from "@auth0/auth0-react";
 import { getToken } from "./store/token";
 
 
@@ -20,7 +19,7 @@ export interface UserPreview {
     postalCode: string
     autoCalculateMRR?: boolean
     theme: string
-    permissions: string[]
+    permissions: string
     isPremium: boolean
     parentUserId?: string 
     password?: string
@@ -54,7 +53,7 @@ export const userApiSlice = createApi({
     reducerPath: "userApiSlice",
     baseQuery: fetchBaseQuery({
       baseUrl: import.meta.env.VITE_SERVER_HOST,
-      prepareHeaders: async (headers, { getState }) => {
+      prepareHeaders: async (headers) => {
         try {
           // Dynamically import Auth0, outside hooks
           const token = getToken()
@@ -82,10 +81,18 @@ export const userApiSlice = createApi({
           method: "GET",
         }),
       }),
+      updateUserData: builder.mutation<void, UserPreview>({
+        query: (payload) => ({
+          url: `/update-user`,
+          method: "POST",
+          body: payload,
+        }),
+      })
     }),
   })
   
   export const {
     useOnboardUserMutation,
-    useGetUserDataQuery
+    useGetUserDataQuery,
+    useUpdateUserDataMutation,
   } = userApiSlice

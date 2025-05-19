@@ -38,7 +38,6 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
     (state) => state.dashboard.userData
   );
 
-  console.log(userData)
      const {  
             handleSubmit, 
             register, 

@@ -19,50 +19,6 @@ import { getTheme } from './utils/theme.ts'
 import { useAppSelector } from './api/store/hooks.ts'
 
 
-const mockTenant = {
-  tenantId: "tenant-001",
-  propietorId: "propietor-001",
-  firstName: "Lucas",
-  lastName: "Gómez",
-  email: "lucas.gomez@example.com",
-  phoneNumber: "541123456789",
-  observations: "Prefers email communication.",
-  contractStartDate: "2024-01-01",
-  contractEndDate: "2024-12-31",
-  contractStatus: "active",
-  contractId: "contract-001",
-  contractType: "residential",
-  contractValue: 120000,
-  contractCurrency: "ARS",
-  contractPaymentMethod: 0,
-  contractPaymentFrequency: "monthly",
-  payments: [
-    {
-      id: "pay-001",
-      tenantId: "tenant-001",
-      amount: 10000,
-      date: "2024-01-05",
-      method: 0,
-      period: "2024-01",
-      status: 0
-    },
-    {
-      id: "pay-002",
-      tenantId: "tenant-001",
-      amount: 10000,
-      date: "2024-02-05",
-      method: 0,
-      period: "2024-02",
-      status: 0
-    }
-  ],
-  pets: 1,
-  children: 0,
-  smoking: false
-}
-
-
-
 
 const router = createBrowserRouter([
   {
@@ -92,7 +48,7 @@ const router = createBrowserRouter([
     path: "/payments",
     element: (
       <Dashboard>
-        <TenantPayments tenant={mockTenant} />
+        <TenantPayments/>
       </Dashboard>
     ),
     errorElement: <NotFound />,

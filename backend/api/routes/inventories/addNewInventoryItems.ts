@@ -49,10 +49,10 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
 
     // Insert items
     for (const item of items) {
-      const { name, quantity } = item;
+      const { name, quantity, declaredPrice } = item;
       await db.query(
-        `INSERT INTO inventory_items (id, name, quantity, inventoryId) VALUES (?, ?, ?, ?)`,
-        [uuidv4(), name, quantity, inventoryId]
+        `INSERT INTO inventory_items (id, name, quantity, inventoryId, declaredPrice) VALUES (?, ?, ?, ?, ?)`,
+        [uuidv4(), name, quantity, inventoryId, declaredPrice || 0]
       );
     }
 

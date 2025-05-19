@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Box,
   List,
@@ -13,12 +13,8 @@ import {
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import { useNavigate } from "react-router-dom"
-
 import SettingsIcon from "@mui/icons-material/Settings"
 import LogoutIcon from "@mui/icons-material/Logout"
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
-//import "./sidebar.css"
-import AddCardIcon from "@mui/icons-material/AddCard"
 import HouseIcon from '@mui/icons-material/House';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -41,10 +37,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 // import Resources from "../resources/Resources"
 
 // Interface for props
-interface Props {
-  userData: UserPreview
-}
-
 interface UserSidebarAttributes {
   email: string
   name: string
@@ -66,7 +58,7 @@ function Sidebar() {
       state => state.dashboard.userData,
     )
   const sidebarItems = 
-    (userData?.permissions?.[0] === 'admin' || userData?.permissions?.[0] === 'edit')
+    (userData?.permissions === 'admin' || userData?.permissions === 'edit')
     ?
     [
     {
@@ -99,9 +91,6 @@ function Sidebar() {
     ]
 
 
-  const [menuItemsFiltered, setMenuItemsFiltered] = useState<
-    { [key: string]: any }[]
-  >([])
   const signOutHandler = () => {
     logout({ logoutParams: { returnTo: window.location.origin } })
   }
@@ -131,11 +120,6 @@ function Sidebar() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Filter menu items based on role
-//   useEffect(() => {
-//     const filteredItems = menuItems.filter((x: any) => x.role === role)
-//     setMenuItemsFiltered(filteredItems)
-//   }, [menuItems, role])
 
   // Toggle Drawer Open/Close
   const toggleDrawer = (open: boolean) => () => {
@@ -160,7 +144,7 @@ function Sidebar() {
           left: 10,
         }}
       >
-        <MenuIcon />
+        <MenuIcon sx={{color: '#e6fff8'}}/>
       </IconButton>
       <Drawer
         open={isDrawerOpen}
@@ -206,25 +190,28 @@ function Sidebar() {
         {userAttributes && (
           <Box
           sx={{
-            width: '90%',
-            m: 2,
-            p: 1,
-            borderRadius: 2,
-            background: 'lightgray'
+            width: '100%',
+            height: '10%',
+            background: `linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, #1976d2 70%, #90caf9 100%)`
           }}
+
+
           >
-             <div className="leading-4">
+             <Box
+             sx={{
+              pl: 1
+             }}
+             >
                 <Typography
                   variant="body2"
                   fontWeight={"bold"}
-                  fontFamily="AlbertSans"
                   color="black"
                 >
                   {userAttributes?.name}
                 </Typography>
 
                
-              </div>
+              </Box>
             <Box
             sx={{
               display: 'flex',
@@ -233,7 +220,7 @@ function Sidebar() {
             >
             <IconButton
               onClick={() => navigate(`/settings`)}
-              sx={{ color: "black" }}
+              sx={{ color: '#333' }}
             >
               <SettingsIcon />
             </IconButton>
@@ -241,7 +228,7 @@ function Sidebar() {
               className={`flex justify-between items-center overflow-hidden transition-all`}
             >
               <Tooltip title="Logout">
-                <IconButton onClick={signOutHandler} sx={{ color: "black" }}>
+                <IconButton onClick={signOutHandler} sx={{ color: '#333' }}>
                   <LogoutIcon />
                 </IconButton>
               </Tooltip>
