@@ -1,54 +1,110 @@
-# React + TypeScript + Vite
+📘 ALKI Documentation
+🧠 Overview
+ALKI is a modern, modular web application built with React, TypeScript, and Vite. It leverages MUI for styling and integrates various libraries to enhance functionality and user experience.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Features
+React & TypeScript: Ensures type safety and efficient component-based architecture.
 
-Currently, two official plugins are available:
+Vite: Provides fast development and optimized builds.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+MUI: Offers utility-first styling for rapid UI development.
 
-## Expanding the ESLint configuration
+React Router: Manages client-side routing seamlessly.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+React Hook Form: Simplifies form handling and validation.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Redux: Manages global state and application logic.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Redux Toolkit: Manages server state and data fetching.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+
+📁 Project Structure
+pgsql
+Copiar
+Editar
+ALKI/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── types/
+│   ├── utils/
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── .gitignore
+├── index.html
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
+🛠️ Installation
+Clone the repository:
+
+bash
+Copiar
+Editar
+git clone https://github.com/leandroatochkin/ALKI.git
+cd ALKI
+Install dependencies:
+
+bash
+Copiar
+Editar
+npm install
+Start the development server:
+
+bash
+Copiar
+Editar
+npm run dev
+Build for production:
+
+bash
+Copiar
+Editar
+npm run build
+Preview the production build:
+
+bash
+Copiar
+Editar
+npm run preview
+
+
+📦 Dependencies
+Key dependencies include:
+
+
+
+react-router-dom
+
+react-hook-form
+
+react-spinners
+
+MUI/material
+
+framer-motion
+
+
+For a complete list, refer to the package.json file.
+
+🔧 Configuration
+
+TypeScript: Configured with tsconfig.json.
+
+Vite: Build and development settings in vite.config.ts.
+
+📄 License
+Specify the license under which ALKI is distributed. For example:
+
+This project is licensed under the MIT License.
+
+🤝 Contributing
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.

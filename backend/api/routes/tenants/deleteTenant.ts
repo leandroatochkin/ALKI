@@ -9,7 +9,7 @@ import { checkJwt } from 'api/middleware/checkToken';
 
 const router = express.Router();
 
-router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
+router.delete('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
 
     const { tenantId, terminationReason } = req.body
 

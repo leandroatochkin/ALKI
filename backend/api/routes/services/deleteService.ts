@@ -11,33 +11,26 @@ const router = express.Router();
 
 router.delete('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
 
-    const  {inventoryId}  = req.query
+    const  {serviceId}  = req.query
 
-    if (!inventoryId) {
-        res.status(400).json({ message: 'inventoryId is required' });
+    if (!serviceId) {
+        res.status(400).json({ message: 'serviceId is required' });
         return 
     }
     
     try{
         await db.query(
-        `DELETE FROM inventory_items WHERE inventoryId = ?`,
+        `DELETE FROM services WHERE serviceId = ?`,
         [
-            inventoryId,
-        ]
-    )
-
-    await db.query(
-        `DELETE FROM inventories WHERE id = ?`,
-        [
-            inventoryId,
+            serviceId,
         ]
     )
     } catch(err){
-            console.error('inventory delete error:', err);
+            console.error('service delete error:', err);
             return next(new ServerError('Server error', err));
     }
     
-    res.status(200).json({ message: 'inventory deleted successfully' });
+    res.status(200).json({ message: 'service deleted successfully' });
 });
 
 export default router;

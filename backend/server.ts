@@ -31,6 +31,9 @@ import getOrganizationMembersByOrganizationId from './api/routes/organizations/g
 import updateOrganization from './api/routes/organizations/updateOrganization'
 import addOrganizationMembers from './api/routes/organizations/addOrganizationMembers'
 import updateUserData from './api/routes/userData/updateUser'
+import addServices from './api/routes/services/addServices'
+import getServicesByPropertyId from './api/routes/services/getServicesByPropertyId'
+import deleteService from './api/routes/services/deleteService'
 
 
 const app = express();
@@ -95,6 +98,9 @@ app.use('/delete-organization-member', deleteOrganizationMember)
 app.use('/update-organization', updateOrganization)
 app.use('/add-organization-members', addOrganizationMembers)
 app.use('/update-user', updateUserData)
+app.use('/delete-service', deleteService)
+app.use('/add-services', addServices)
+app.use('/get-services-by-property-id', getServicesByPropertyId)
 
 //app.use(centralizedErrorHandler);
 
