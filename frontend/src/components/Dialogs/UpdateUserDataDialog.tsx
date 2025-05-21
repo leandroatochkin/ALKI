@@ -20,6 +20,8 @@ import { UserPreview } from '../../api/UsersSlice';
 import { nameRegex, phoneRegex, addressRegex, onlyNumbersRegex } from '../../utils/regexPatterns';
 import { countryListAlpha2 } from '../../utils/dataLists';
 import { useUpdateUserDataMutation } from '../../api/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../api/ToastSlice';
 
 
 
@@ -33,6 +35,7 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
 
 
     const [updateUser, {isLoading}] = useUpdateUserDataMutation()
+    const dispatch = useDispatch()
 
 
     const {
@@ -72,9 +75,9 @@ const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, op
     const onSubmit = async (data: UserPreview) => {
         try{
             await updateUser(data).unwrap()
-            alert(`Datos actulizados`);
+            dispatch(showToast({message: 'Datos actualizados.', severity: 'success'}))
         } catch(e){
-            alert(`Error al actualizar datos`)
+             dispatch(showToast({message: 'Error al actualizar.', severity: 'error'}))
             console.log(e)
         }
     }

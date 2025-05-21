@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Box,
@@ -7,8 +7,6 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Snackbar,
-  Alert,
 } from "@mui/material"
 import Sidebar from "./Sidebar/Sidebar"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -17,6 +15,7 @@ import { useAppSelector, useAppDispatch } from "../../api/store/hooks"
 import { useGetUserDataQuery } from "../../api/UsersSlice"
 import { setUserData } from "./DashboardStore/DashboardStore"
 import { getTheme } from "../../utils/theme"
+import Toast from "../Toast/Toast"
 
 
 
@@ -43,9 +42,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
     skip: !userId, // ⛔ don't send the query if we don't have a userId yet
   })
 
-  const [error, _setError] = useState<string | null>(null)
-  const [successMessage, _setSuccessMessage] = useState<string | null>(null)
-  const [showSnackbar, setShowSnackbar] = useState(false)
+
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -56,9 +53,6 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
     }
   }, [data, isLoading])
   
-
-
-  const handleCloseSnackbar = () => setShowSnackbar(false)
 
   return (
     <Box
@@ -132,18 +126,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
           href="https://www.svgbackgrounds.com/set/free-svg-backgrounds-and-patterns/">Free SVG Backgrounds and Patterns by SVGBackgrounds.com</a>
         </Box>
       </Box>
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={error ? "error" : "success"}
-        >
-          {error || successMessage}
-        </Alert>
-      </Snackbar>
+     <Toast/>
     </Box>
   )
 }

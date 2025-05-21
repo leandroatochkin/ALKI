@@ -129,7 +129,25 @@ const AddProperty = () => {
             headerName: "ocupada",
             width: 150,
             editable: false,
-          }, 
+          },
+          {
+            field: "services",
+            headerName: "servicios",
+            width: 120,
+            editable: false,
+            renderCell: (params: GridCellParams) => {
+              return (
+                <Button
+                  color="primary"
+                  onClick={() => {
+                   navigate(`/services?propertyId=${params.row.propertyId}`)
+                  }}
+                >
+                  ver servicios
+                </Button>
+              )
+            },
+          } 
         ]
         const modifyColumn = 
       {

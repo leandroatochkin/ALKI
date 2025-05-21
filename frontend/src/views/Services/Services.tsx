@@ -12,24 +12,36 @@ import {
     DataGrid,
     GridColDef,
     GridOverlay,
+    GridRowSelectionModel
   } from "@mui/x-data-grid"
-import { useParams } from 'react-router-dom'
-import { ServiceDTO, useGetServicesByPropertyIdQuery } from '../../api/ServicesApiSlice'
-import { useGetPropertyByIdQuery } from '../../api/PropertiesApiSlice'
+import { ServiceDTO, useGetServicesByPropertyIdQuery, useDeleteServiceMutation } from '../../api/ServicesApiSlice'
   import ReplayIcon from '@mui/icons-material/Replay'
   import { customLocaleText } from '../../utils/locale'
-  import { useNavigate } from 'react-router-dom'
+  import { useNavigate, useLocation } from 'react-router-dom'
+  import AddServiceDialog from '../../components/Dialogs/AddServiceDialog'
+  import { useAppSelector } from '../../api/store/hooks'
+  import { UserPreview } from '../../api/UsersSlice'
 
 
 
 
 const Services = () => {
-const [services, setServices] = useState<ServiceDTO[] | []>([])    
+const [services, setServices] = useState<ServiceDTO[] | []>([])
+const [openAddServiceDialog, setOpenAddServiceDialog] = useState<boolean>(false)
+const [selectedService, setSelectedService] = useState<string | null>(null)   
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search) 
+           const userData: UserPreview = useAppSelector(
+              state => state.dashboard.userData,
+            )
 
-const { propertyId } = useParams<{ propertyId: string }>()
+  const propertyId = queryParams.get("propertyId")
+
+
 
 const {data, isLoading, error, refetch} = useGetServicesByPropertyIdQuery(propertyId ?? '')
-const {data: propertyData, isLoading: isLoadingProperty, error: errorProperty} = useGetPropertyByIdQuery(propertyId ?? '')
+const [deleteService, {isLoading: isDeleting}] = useDeleteServiceMutation()
+
 
 const navigate = useNavigate()
 
@@ -81,6 +93,34 @@ const navigate = useNavigate()
       )
 
       
+              const handleRowSelection = (selection: GridRowSelectionModel) => {
+                  const selectedData = selection.map(
+                    selectedRowId => rows[Number(selectedRowId)]
+                  )
+              
+                  const selectedServiceId = selectedData.flatMap(row =>
+                    row?.serviceId ? [row.serviceId] : [],
+                  )
+              
+                  setSelectedService(selectedServiceId[0] ?? null)
+                }
+
+            const handleDeleteService = async () => {
+                if (!selectedService) return;
+                try{
+                    if(confirm(`¿Está seguro que quiere eliminar el servicio seleccionado?`)){
+                        await deleteService(selectedService).unwrap()
+                           refetch()
+                        alert(`Servicio eliminado.`)
+                     
+                    }
+            } catch(e){
+                console.error(e)
+                alert(`Error al eliminar servicio.`)
+            }
+            }
+
+      
             const columns = useMemo<GridColDef<(typeof rows)[number]>[]>(
               () => [
                 {
@@ -102,8 +142,8 @@ const navigate = useNavigate()
                   editable: false,
                 },
                 {
-                  field: "method",
-                  headerName: "método de pago",
+                  field: "serviceDescription",
+                  headerName: "descripción",
                   width: 100,
                   editable: false,
                 },
@@ -117,7 +157,7 @@ const navigate = useNavigate()
                   serviceId: service.serviceId,
                   propertyId: service.propertyId,
                   serviceName: service.serviceName,
-                  serviceCost: service.serviceCost,
+                  serviceCost: `$${Number(service.serviceCost).toFixed(2)}`,
                   serviceResponsibility: service.serviceResponsibility,
                   serviceDescription: service.serviceDescription,
                 }))
@@ -126,6 +166,9 @@ const navigate = useNavigate()
 
   return (
     <>
+    {
+        openAddServiceDialog && <AddServiceDialog open={openAddServiceDialog} onClose={()=>setOpenAddServiceDialog(false)} propertyId={propertyId ?? ''} refetch={refetch}/>
+    }
     <Paper
     sx={{
         p: 2,
@@ -149,7 +192,7 @@ const navigate = useNavigate()
       }}
       >
         <Typography variant="h6" sx={{ padding: 2 }}>
-        Servicios de {propertyData?.title}
+        Servicios de la propiedad
         </Typography>
         <IconButton
         onClick={() => refetch()}
@@ -171,9 +214,11 @@ const navigate = useNavigate()
               pageSizeOptions={[10, 25, 50, 100]}
               paginationMode="client"
               rowCount={rows.length}
+              disableMultipleRowSelection
               disableColumnFilter
               disableColumnSelector
-              checkboxSelection
+              checkboxSelection={userData.permissions !== 'view'}
+              onRowSelectionModelChange={handleRowSelection}
               sx={{
                 //opacity: isUnpaidNotesLoading || refreshLoading ? 0.7 : 1,
                 opacity: 1,
@@ -196,10 +241,32 @@ const navigate = useNavigate()
                   xs: 'column',
                   md: 'row'
                 },
+                gap: 2,
                 justifyContent: "flex-end",
                 mt: 2
             }}
-            >
+            > 
+                {
+                    userData.permissions !== 'view' &&
+                <>
+                <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {setOpenAddServiceDialog(true)}}
+                disabled={isLoading || isDeleting}
+                >
+                    añadir servicio
+                </Button>
+                <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleDeleteService}
+                disabled={isLoading || isDeleting}
+                >
+                    eliminar servicio
+                </Button>
+                </>   
+                }
                 <Button
                 variant="outlined"
                 color="secondary"

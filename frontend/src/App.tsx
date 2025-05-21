@@ -11,7 +11,8 @@ import {
   Onboarding,
   PostLogin,
   Properties,
-  TenantPayments 
+  TenantPayments,
+  Services 
 } from './views/index'
 import Dashboard from './components/Dashboard/Dashboard.tsx'
 import { ThemeProvider, CssBaseline } from '@mui/material'
@@ -94,6 +95,15 @@ const router = createBrowserRouter([
     element: (
       <Dashboard>
         <Organizations />
+      </Dashboard>
+    ),
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/services",
+    element: (
+      <Dashboard>
+        <Services />
       </Dashboard>
     ),
     errorElement: <NotFound />,

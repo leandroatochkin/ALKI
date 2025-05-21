@@ -403,7 +403,7 @@ const AddTenant = () => {
   return (
     <>
     {observations && <ObservationsDialog />}
-    {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false} />}
+    {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false}/>}
     {tenantToModify && <AddTenantDialog open={!!tenantToModify} onClose={()=>setTenantToModify(null)} modify={true} tenant={tenantFiltered}/>}
     {openAssignToPropertyDialog && <AssignToPropertyDialog />}
     {openDeleteTenantDialog && <DeleteTenantDialog open={openDeleteTenantDialog} onClose={()=>setOpenDeleteTenantDialog(false)} tenantId={selectedTenant ?? ''} refetch={refetch}/>}
@@ -517,6 +517,7 @@ const AddTenant = () => {
                                 </Button>
                         </Box>
         </Paper>
+      
     </>
   )
 }

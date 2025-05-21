@@ -13,6 +13,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { 
     useDeleteTenantMutation,
  } from '../../api/TenantsApiSlice';
+ import { useDispatch } from 'react-redux';
+ import { showToast } from '../../api/ToastSlice';
+
+
 
 
 
@@ -28,6 +32,7 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({tenantId, open, 
     const [terminationReason, setTerminationReason] = React.useState<string>('')
 
 const [deleteTenant, {isLoading: isDeleting}] = useDeleteTenantMutation()
+const dispatch = useDispatch()
 
     const handleDeleteTenant = async () => {
         if(confirm('¿Está seguro de que desea dar de baja al inquilino?')){
@@ -37,13 +42,15 @@ const [deleteTenant, {isLoading: isDeleting}] = useDeleteTenantMutation()
                         tenantId: tenantId,
                         terminationReason: terminationReason,
                     }).unwrap()
+                    dispatch(showToast({message: 'Inquilino dado de baja', severity: 'success'}))
                     refetch()
                     onClose()
                     setTerminationReason('')
                 } 
                 
             } catch (error) {
-                console.error('Error adding tenant:', error)
+                dispatch(showToast({message: 'Error al dar de baja inquilino.', severity: 'error'}))
+                console.error('Error deleting tenant:', error)
             }
         }
     }

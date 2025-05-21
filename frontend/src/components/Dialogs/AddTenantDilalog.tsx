@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect } from 'react'
 import { 
     Dialog, 
     DialogTitle, 
@@ -36,6 +36,9 @@ import {
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../api/store/hooks';
 import { UserPreview } from '../../api/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../api/ToastSlice';
+
 
 
 
@@ -51,7 +54,7 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
     const userData: UserPreview = useAppSelector(
         state => state.dashboard.userData
     )
-
+    const dispatch = useDispatch()
      const {  
             handleSubmit, 
             register, 
@@ -89,29 +92,37 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
 
 
 
-    const [postTenant, {isLoading: isPosting, isSuccess: isPosted}] = usePostTenantMutation()
-    const [updateTenant, {isLoading: isUpdating, isSuccess: isUpdated}] = useUpdateTenantMutation()
+    const [postTenant, {isLoading: isPosting }] = usePostTenantMutation()
+    const [updateTenant, {isLoading: isUpdating }] = useUpdateTenantMutation()
+
+
+    
+
 
     const onSubmit = async (data: TenantDTO) => {
         try {
             if (modify && tenant) {
+              
                 await updateTenant({
                     ...tenant,
                     ...data,
-                }).unwrap()
+                })
+               dispatch(showToast({ message: 'Inquilino actualizado.', severity: 'success' }))
             } else {
-                await postTenant(data).unwrap()
+                
+                await postTenant(data)
+                dispatch(showToast({ message: 'Inquilino creado.', severity: 'success' }))
             }
-            if (isPosted || isUpdated) {
-                onClose()
-            }
+
         } catch (error) {
             console.error('Error adding tenant:', error)
+            dispatch(showToast({ message: 'Error al crear/modificar inquilino.', severity: 'error' }))
         }
     }
 
   return (
-     <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <>
+             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Dialog
     open={open}
     onClose={onClose}
@@ -442,6 +453,8 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
 
     </Dialog>
      </LocalizationProvider>
+     
+        </>
   )
 }
 

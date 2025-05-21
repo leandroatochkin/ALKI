@@ -18,6 +18,8 @@ import {
   import { useForm } from 'react-hook-form'
 import { emailRegex, nameRegex } from "../../utils/regexPatterns"
 import { useAddOrganizationMembersMutation } from "../../api/OrganizationsSlice"
+import { useDispatch } from "react-redux"
+import { showToast } from "../../api/ToastSlice"
 
   
   interface OrganizationProps {
@@ -33,6 +35,7 @@ const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose
     const userData = useAppSelector(
         state => state.dashboard.userData
     )
+    const dispatch = useDispatch()
 
   const {
           register,
@@ -66,9 +69,10 @@ const AddOrganizationMemberDialog: React.FC<OrganizationProps> = ({open, onClose
       if (confirm('¿Esta seguro que quiere agregar estos miembros?')) {
         try {
         await addMembers(members).unwrap()
+        dispatch(showToast({message: 'Miembro añadido.', severity: 'success'}))
         onClose()
       } catch (error) {
-        alert('Error al agregar miembros')
+        dispatch(showToast({message: 'Error al añadir miembro.', severity: 'error'}))
         console.error(error)
       }
       }

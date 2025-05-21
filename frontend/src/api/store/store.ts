@@ -10,6 +10,7 @@ import { tenantsApiSlice } from "../TenantsApiSlice";
 import { paymentsApiSlice } from "../PaymentsApiSlice";
 import { organizationsApiSlice } from "../OrganizationsSlice";
 import { userApiSlice } from "../UsersSlice";
+import { servicesApiSlice } from "../ServicesApiSlice";
 
 const persistConfig = {
   key: "root",
@@ -31,6 +32,7 @@ export const store = configureStore({
       paymentsApiSlice.middleware,
       organizationsApiSlice.middleware,
       userApiSlice.middleware,
+      servicesApiSlice.middleware
     ),
 });
 

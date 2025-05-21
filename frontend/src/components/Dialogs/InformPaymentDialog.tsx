@@ -27,6 +27,8 @@ import { paymentStatusMapper } from '../../utils/dataLists';
 import { usePostPaymentsMutation } from '../../api/PaymentsApiSlice';
 import { useAppSelector } from '../../api/store/hooks';
 import { UserPreview } from '../../api/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../api/ToastSlice';
 
 
 interface InformPaymentDialogProps {
@@ -41,7 +43,7 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
        (state) => state.dashboard.userData
      );
    
-
+     const dispatch = useDispatch()
 
     const [postPayment, {isLoading: isPaying}] = usePostPaymentsMutation()
 
@@ -65,7 +67,9 @@ const InformPaymentDialog: React.FC<InformPaymentDialogProps> = ({property, open
     const onSubmit = (data: PaymentDTO) => {
         try{
             postPayment(data).unwrap()
+            dispatch(showToast({message: 'Pago informado.', severity: 'success'}))
         } catch(e){
+            dispatch(showToast({message: 'Error al informar pago.', severity: 'error'}))
             console.log(e)
         }
     }

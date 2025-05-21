@@ -12,6 +12,8 @@
     } from '@mui/material'
     import { InventoryItem, NewItemsDTO } from '../../api/InventoriesApiSlice'
     import { usePostInventoryItemsMutation } from '../../api/InventoriesApiSlice'
+    import { useDispatch } from 'react-redux';
+    import { showToast } from '../../api/ToastSlice';
 
     interface AddItemsToInventoryDialogProps {
         open: boolean
@@ -32,13 +34,14 @@
 
     const [postInventoryItems, { isLoading }] = usePostInventoryItemsMutation()
      
-    
+    const dispatch = useDispatch()
 
 
     const handleAddInventory = () => {
         if (!newItems.items.length) return
         try{
           postInventoryItems(newItems).unwrap()
+          dispatch(showToast({message: 'Items añadidos.', severity: 'success'}))
           refetch()
           setNewItems({
             propertyId: '',
@@ -47,6 +50,7 @@
           setCurrentNewItem(null)
           onClose(false)
         } catch (error) {
+          dispatch(showToast({message: 'Error al añadir items.', severity: 'error'}))
           console.error('Error al añadir artículos al inventario', error)
         }
         

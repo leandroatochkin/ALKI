@@ -81,7 +81,7 @@ export const tenantsApiSlice = createApi({
       }),
       updateTenant: builder.mutation<void, TenantDTO>({
         query: payload => ({
-          url: `api/tenants`,
+          url: `/update-tenant`,
           method: "PUT",
           body: payload,
         }),

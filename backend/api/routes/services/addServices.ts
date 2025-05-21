@@ -19,9 +19,10 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
 
   try {
 
-      const serviceId = uuidv4()
+
   
      for(const service in services){
+        const serviceId = uuidv4()
         await db.query(
           `INSERT INTO services(
             serviceId,
@@ -29,8 +30,10 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
             serviceName,
             serviceCost,
             serviceResponsibility,
-            serviceDescription)
-            VALUES(?,?,?,?,?,?)`,
+            serviceDescription,
+            userId
+            )
+            VALUES(?,?,?,?,?,?,?)`,
             [
                 serviceId,
                 services[service].propertyId,
@@ -38,6 +41,7 @@ router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, ne
                 services[service].serviceCost,
                 services[service].serviceResponsibility,
                 services[service].serviceDescription,
+                services[service].userId
             ])
      }
       

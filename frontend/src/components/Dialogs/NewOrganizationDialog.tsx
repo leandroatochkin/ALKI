@@ -15,6 +15,8 @@ import {
     useCreateOrganizationMutation 
 } from "../../api/OrganizationsSlice"
   import { useAppSelector } from "../../api/store/hooks"
+  import { useDispatch } from "react-redux"
+  import { showToast } from "../../api/ToastSlice"
 
   
   interface OrganizationProps {
@@ -32,6 +34,7 @@ const NewOrganizationDialog: React.FC<OrganizationProps> = ({open, onClose, orga
     const userData = useAppSelector(
         state => state.dashboard.userData
     )
+    const dispatch = useDispatch()
   
     const [orgData, setOrgData] = useState<Organization>(
       organization || {
@@ -61,14 +64,23 @@ const NewOrganizationDialog: React.FC<OrganizationProps> = ({open, onClose, orga
   
   
     const handleSave = async () => {
-      if (isNew) {
+      try{
+        if (isNew) {
         await createOrganization(orgData)
+        dispatch(showToast({message: 'Organización creada.', severity: 'success'}))
         refetch()
+        onClose()
       } else {
         await updateOrganization(orgData)
+        dispatch(showToast({message: 'Organización actualizada.', severity: 'success'}))
         refetch()
+        onClose()
       }
-      onClose()
+      } catch(e){
+        dispatch(showToast({message: 'Error al guardar la organización.', severity: 'error'}))
+        console.log(e)
+      }
+      
     }
   
     return (

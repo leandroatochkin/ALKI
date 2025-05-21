@@ -22,6 +22,7 @@ import { mockUser } from "../../../api/UsersSlice"
 import { UserPreview } from "../../../api/UsersSlice"
 import { useAppSelector } from "../../../api/store/hooks"
 import { useAuth0 } from "@auth0/auth0-react";
+import UserCard from "../../Cards/UserCard"
 
 
 // import {
@@ -48,11 +49,7 @@ function Sidebar() {
   //const role = useAppSelector(state => state.dashboard.role)
   const navigate = useNavigate()
   const { logout } = useAuth0();
-  const [userAttributes, setUserAttributes] = useState<UserSidebarAttributes>({
-    email: "",
-    name: "",
-    userId: "",
-  })
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(window.innerWidth >= 768)
   const userData: UserPreview = useAppSelector(
       state => state.dashboard.userData,
@@ -95,22 +92,9 @@ function Sidebar() {
     logout({ logoutParams: { returnTo: window.location.origin } })
   }
 
-  const setAttributes = async () => {
-    if (mockUser) {
-      const payload: UserSidebarAttributes = {
-        email: mockUser.email,
-        name: `${mockUser.firstName} ${mockUser.lastName}`,
-        userId: mockUser.id,
-      }
-      setUserAttributes(payload)
-    }
-  }
 
-  useEffect(() => {
-    if (mockUser) {
-      setAttributes()
-    }
-  }, [mockUser])
+
+
   // Handle window resize to toggle drawer based on screen size
   useEffect(() => {
     const handleResize = () => {
@@ -187,54 +171,8 @@ function Sidebar() {
             </ListItem>
           ))}
         </List>
-        {userAttributes && (
-          <Box
-          sx={{
-            width: '100%',
-            height: '10%',
-            background: `linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, #1976d2 70%, #90caf9 100%)`
-          }}
-
-
-          >
-             <Box
-             sx={{
-              pl: 1
-             }}
-             >
-                <Typography
-                  variant="body2"
-                  fontWeight={"bold"}
-                  color="black"
-                >
-                  {userAttributes?.name}
-                </Typography>
-
-               
-              </Box>
-            <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}
-            >
-            <IconButton
-              onClick={() => navigate(`/settings`)}
-              sx={{ color: '#333' }}
-            >
-              <SettingsIcon />
-            </IconButton>
-            <div
-              className={`flex justify-between items-center overflow-hidden transition-all`}
-            >
-              <Tooltip title="Logout">
-                <IconButton onClick={signOutHandler} sx={{ color: '#333' }}>
-                  <LogoutIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
-            </Box>
-          </Box>
+        {userData && (
+          <UserCard name={`${userData.firstName} ${userData.lastName}`} email={userData.email} onSettingsClick={() => navigate(`/settings`)} onLogoutClick={signOutHandler} />
         )}
         </Box>
 

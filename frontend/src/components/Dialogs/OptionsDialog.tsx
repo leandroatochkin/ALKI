@@ -26,6 +26,8 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import { useAppDispatch } from '../../api/store/hooks'
 import { setUserData } from '../../components/Dashboard/DashboardStore/DashboardStore'
 import { useUpdateUserDataMutation } from '../../api/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../api/ToastSlice';
 
 
 
@@ -39,7 +41,9 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose, userData})
 
       const [updateUser, {isLoading}] = useUpdateUserDataMutation()
 
+
     const dispatch = useAppDispatch()
+    const dispatchToast = useDispatch()
         
 
 
@@ -86,9 +90,9 @@ const OptionsDialog: React.FC<OptionsDialogProps> = ({ open, onClose, userData})
             monthlyRevenue: parseInt(data.monthlyRevenue as any, 10)
         };
         await updateUser(transformedData).unwrap();
-        alert(`Datos actulizados`);
+        dispatchToast(showToast({message: 'Datos actualizados', severity: 'success'}))
     } catch (e) {
-        alert(`Error al actualizar datos`);
+        dispatchToast(showToast({message: 'Error al actualizar datos.', severity: 'error'}))
         console.log(e);
     }
 }

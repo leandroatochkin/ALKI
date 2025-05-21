@@ -1,6 +1,6 @@
 import React from 'react'
 import { PropertyDTO } from '../../api/PropertiesApiSlice'
-import { Dialog, DialogTitle, DialogContent, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Button, Tooltip } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { propertyTitleMapper } from '../../utils/functions'
 import { useNavigate } from 'react-router-dom';
@@ -60,12 +60,17 @@ const PropertyInfoDialog: React.FC<PropertyInfoDialogProps> = ({property, open, 
                         >
                         ver pagos
                         </Button>
+                        <Tooltip
+                        title='Próximamente'
+                        >
                         <Button
                         variant='contained'
                         color='warning'
+                
                         >
                         ver contrato
                         </Button>
+                        </Tooltip>
                      </Box>
                     </AccordionDetails>
                 </Accordion>

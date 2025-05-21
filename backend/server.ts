@@ -14,6 +14,7 @@ import updateProperty from './api/routes/properties/updateProperty'
 import getTenants from './api/routes/tenants/getTenants'
 import addTenant from './api/routes/tenants/addTenant'
 import getTenantById from './api/routes/tenants/getTenantById'
+import updateTenant from './api/routes/tenants/updateTenant'
 import deleteTenant from './api/routes/tenants/deleteTenant'
 import getInventories from './api/routes/inventories/getInventories'
 import deleteInventoryItems from './api/routes/inventories/deleteInventoryItems'
@@ -34,6 +35,7 @@ import updateUserData from './api/routes/userData/updateUser'
 import addServices from './api/routes/services/addServices'
 import getServicesByPropertyId from './api/routes/services/getServicesByPropertyId'
 import deleteService from './api/routes/services/deleteService'
+import getExpensesByUserId from './api/routes/services/getMonthlyExpensesByuserId'
 
 
 const app = express();
@@ -81,6 +83,7 @@ app.use('/update-property', updateProperty)
 app.use('/get-tenants', getTenants)
 app.use('/add-tenant', addTenant)
 app.use('/delete-tenant', deleteTenant)
+app.use('/update-tenant', updateTenant)
 app.use('/get-inventory', getInventories)
 app.use('/delete-inventory-items', deleteInventoryItems)
 app.use('/add-inventory-items', addNewInventoryItems)
@@ -101,6 +104,7 @@ app.use('/update-user', updateUserData)
 app.use('/delete-service', deleteService)
 app.use('/add-services', addServices)
 app.use('/get-services-by-property-id', getServicesByPropertyId)
+app.use('/get-expenses', getExpensesByUserId)
 
 //app.use(centralizedErrorHandler);
 

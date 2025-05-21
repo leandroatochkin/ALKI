@@ -7,6 +7,8 @@ import ForestIcon from '@mui/icons-material/Forest';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { UserInfo } from '../api/UsersSlice';
 
+
+
 export const propertyIconMapper = (propertyType: number) => {
     switch (propertyType) {
         case 0:

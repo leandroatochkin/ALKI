@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { getToken } from "./store/token";
 
 export interface ServiceDTO {
+    userId: string;
     serviceId: string;
     propertyId: string;
     serviceName: string;
@@ -47,6 +48,12 @@ export const servicesApiSlice = createApi({
             url: `/delete-service?serviceId=${serviceId}`,
             method: "DELETE",
         })
+      }),
+      getMonthlyExpensesByUserId: builder.query<string, string>({
+        query: userId => ({
+            url: `/get-expenses?userId=${userId}`,
+            method: "GET",
+        })
       })
     })
 })
@@ -54,5 +61,6 @@ export const servicesApiSlice = createApi({
 export const {
   useGetServicesByPropertyIdQuery,
   usePostServicesMutation,
-  useDeleteServiceMutation
+  useDeleteServiceMutation,
+  useGetMonthlyExpensesByUserIdQuery
  } = servicesApiSlice

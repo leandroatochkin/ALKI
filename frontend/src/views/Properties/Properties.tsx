@@ -6,9 +6,11 @@ import {
   CircularProgress, 
   Paper, 
   Typography,
-  Button 
+  Button, 
+  Divider
 } from '@mui/material'
 import { useGetPropertiesByUserIdQuery } from '../../api/PropertiesApiSlice'
+import { useGetMonthlyExpensesByUserIdQuery } from '../../api/ServicesApiSlice'
 import {LinearProgress} from '@mui/material'
 import { useAppSelector } from '../../api/store/hooks'
 import { UserPreview } from '../../api/UsersSlice'
@@ -24,7 +26,7 @@ const Properties = () => {
     (state) => state.dashboard.userData
   );
 
-  const userId = userData?.id;
+  const userId = userData?.permissions === 'admin' ? userData.id : userData?.parentUserId;
 
 
   const navigate = useNavigate()
@@ -33,6 +35,11 @@ const Properties = () => {
   const { data, isLoading, isError } = useGetPropertiesByUserIdQuery(
     userId ? userId : skipToken
   );
+
+  const {data: expenses} = useGetMonthlyExpensesByUserIdQuery(userId ? userId : skipToken)
+
+  const expensesData = expenses ? Number(Object.values(expenses)[0]).toFixed(2) : '0.00'
+
 
   const { currentMonthlyTotalRevenue, calculatedMRR } = useMemo(() => {
     const payments = properties
@@ -166,6 +173,20 @@ if (properties.length === 0 || isError) return <NoProperty/>
 
             </Typography>
             <LinearProgressWithLabel value={progress}/>
+            {
+              expenses && 
+              <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+              >
+                <Divider/>
+                <Typography>
+                 {`Gastos mensuales: $${expensesData}`}
+                </Typography>
+              </Box>
+            }
             </Paper>
 
             { 

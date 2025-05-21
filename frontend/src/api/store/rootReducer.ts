@@ -8,15 +8,19 @@ import { tenantsApiSlice } from "../TenantsApiSlice";
 import { paymentsApiSlice } from "../PaymentsApiSlice";
 import { organizationsApiSlice } from "../OrganizationsSlice";
 import { userApiSlice } from "../UsersSlice";
+import { servicesApiSlice } from "../ServicesApiSlice";
+import { toastSlice } from "../ToastSlice";
 
 const rootReducer = combineReducers({
-  dashboard: dashboardSlice.reducer, // 👈
+  dashboard: dashboardSlice.reducer,
+  toast: toastSlice.reducer, 
   [inventoriesApiSlice.reducerPath]: inventoriesApiSlice.reducer,
   [propertiesApiSlice.reducerPath]: propertiesApiSlice.reducer,
   [tenantsApiSlice.reducerPath]: tenantsApiSlice.reducer,
   [paymentsApiSlice.reducerPath]: paymentsApiSlice.reducer,
   [organizationsApiSlice.reducerPath]: organizationsApiSlice.reducer,
   [userApiSlice.reducerPath]: userApiSlice.reducer,
+  [servicesApiSlice.reducerPath]: servicesApiSlice.reducer, 
 });
 
 export default rootReducer;

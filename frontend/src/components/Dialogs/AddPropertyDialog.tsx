@@ -22,6 +22,8 @@ import {
 } from '../../api/PropertiesApiSlice';
 import { useAppSelector } from '../../api/store/hooks';
 import { UserPreview } from '../../api/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { showToast } from '../../api/ToastSlice';
 
 
 interface PropertyInfoDialogProps {
@@ -37,6 +39,7 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
   const userData: UserPreview | undefined = useAppSelector(
     (state) => state.dashboard.userData
   );
+  const dispatch = useDispatch()
 
      const {  
             handleSubmit, 
@@ -67,28 +70,26 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
 
 
     const onSubmit = async (data: PropertyDTO) => {
-        console.log(data)
         if(!modify){
             try {
-                // Call the API to add the property
-                 postProperty(data).unwrap()
-                // If successful, close the dialog and refresh the properties list
-                refetch()
-             
+                postProperty(data).unwrap()
+                dispatch(showToast({message: 'Propiedad añadida.', severity: 'success'}))
+                refetch()             
             } catch (error) {
                 console.error('Error adding property:', error)
+                dispatch(showToast({message: 'Error al añadir propiedad.', severity: 'error'}))
             } finally {
                 onClose()
             }
         } else {
             try {
-                // Call the API to add the property
                 updateProperty(data).unwrap()
-                // If successful, close the dialog and refresh the properties list
+                dispatch(showToast({message: 'Propiedad actualizada.', severity: 'success'}))
                 refetch()
              
             } catch (error) {
                 console.error('Error adding property:', error)
+                dispatch(showToast({message: 'Error al actualizar propiedad.', severity: 'error'}))
             } finally {
                 onClose()
             }
