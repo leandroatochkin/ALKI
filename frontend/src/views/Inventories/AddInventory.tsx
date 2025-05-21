@@ -47,7 +47,7 @@ const navigate = useNavigate()
 const {data: propertiesData, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery((userData.permissions === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
 
-const { data, isLoading, refetch: refetchItems } = useGetInventoryByPropertyQuery(selectedProperty)
+const { data, isLoading, refetch: refetchItems, isError} = useGetInventoryByPropertyQuery(selectedProperty)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
 
@@ -59,6 +59,7 @@ const propertiesMap = propertiesData?.reduce((acc, property) => {
 
 useEffect(()=>{
   if(propertiesData){
+    refetchItems()
     setList(propertiesMap)
   } else {
     console.error('No se encontraron propiedades')
@@ -68,7 +69,11 @@ useEffect(()=>{
 
 useEffect(() => {
     if (data) {
+        refetchItems()
         setInventory(data)
+        if(isError){
+          setInventory([])
+        }
     } else {
         console.error('No se encontró el inventario')
     }
@@ -149,8 +154,8 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
       ) 
   
 
-                const columns = useMemo<GridColDef<(typeof rows)[number]>[]>(
-                    () => [
+                const columns = 
+                    [
                       {
                         field: "itemName",
                         headerName: "Artículo",
@@ -163,10 +168,8 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
                         width: 120,
                         editable: false,
                       },
-                    ],
-                    [],
-                  )
-            
+                    ]
+              
                   const rows = (inventory ?? []).map((item: InventoryItem, index: number) => ({
                     id: index,
                     itemId: item.id,

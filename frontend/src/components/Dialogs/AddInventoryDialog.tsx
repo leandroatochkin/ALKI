@@ -9,11 +9,13 @@
         TextField,
         FormLabel,
         CircularProgress,
+        IconButton,
     } from '@mui/material'
     import { InventoryItem, NewItemsDTO } from '../../api/InventoriesApiSlice'
     import { usePostInventoryItemsMutation } from '../../api/InventoriesApiSlice'
     import { useDispatch } from 'react-redux';
     import { showToast } from '../../api/ToastSlice';
+    import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
     interface AddItemsToInventoryDialogProps {
         open: boolean
@@ -57,7 +59,12 @@
       }
   
   
-
+  const handleDeleteItem = (item: InventoryItem) => {
+    setNewItems(prev => ({
+         ...prev,
+         items: prev.items.filter(i => i.name !== item.name),
+       }))
+  }
   
       return(
           <Dialog
@@ -74,7 +81,7 @@
               {newItems.items.length > 0 && (
                   <Box sx={{ p: 2 }}>
                       <Typography variant="h6">Artículos añadidos:</Typography>
-                      {newItems.items.map((item) => (
+                      {newItems.items.map((item, index) => (
                           <Box
                           sx={{
                             display: "flex",
@@ -83,9 +90,16 @@
                             p: 1,
                             borderBottom: "1px solid #ccc",
                           }}
+                          key={index}
                           >
-                            <Typography key={item.id}>{item.name}</Typography>
-                            <Typography key={item.id}>{item.quantity}</Typography>
+                            <Typography>{item.name}</Typography>
+                            <Typography >{item.quantity}</Typography>
+                            <Typography>{`$${Number(item.declaredPrice).toFixed(2)}`}</Typography>
+                            <IconButton
+                            onClick={()=>handleDeleteItem(item)}
+                            >
+                              <DeleteForeverIcon />
+                            </IconButton>
                           </Box>
                       ))}
                   </Box>
@@ -145,12 +159,14 @@
     placeholder="Valor declarado"
     value={currentNewItem?.declaredPrice ?? ''}
     onChange={(e) => {
-      const itemQuantity = parseInt(e.target.value)
+      const itemPrice = parseInt(e.target.value)
       setCurrentNewItem((prev) => ({
         ...prev,
-        quantity: itemQuantity,
+        declaredPrice: itemPrice,
+        quantity: prev?.quantity || 1,
         id: prev?.id || prev?.name?.toLowerCase().replace(/\s/g, '-') || '',
         name: prev?.name || '',
+
       }))
     }}
 
@@ -161,25 +177,16 @@
   onClick={() => {
     if (!currentNewItem?.name) return;
 
-    const exists = newItems.items.find(item => item.name === currentNewItem.name)
 
-    if (exists) {
-      // Remove if already added
-      setNewItems(prev => ({
-        ...prev,
-        items: prev.items.filter(item => item.name !== currentNewItem.name),
-      }))
-    } else {
-      // Add new item, let backend handle the real ID later
       setNewItems(prev => ({
         ...prev,
         items: [...prev.items, currentNewItem],
       }))
-    }
+      setCurrentNewItem(null)
   }}
   sx={{ width: {xs: 230, sm: 40}, height: {xs: 40, sm: 55} }}
 >
-  {newItems.items.find(item => item.name === currentNewItem?.name) ? '−' : '+'}
+  +
 </Button>
 
  </Box>
