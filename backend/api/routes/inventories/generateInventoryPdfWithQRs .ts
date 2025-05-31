@@ -3,14 +3,20 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import os from 'os';
 
 export const generateInventoryPdfWithQRs = async (propertyId: string) => {
+
+
+  const db = getDb()
+
     const [propertyRows] = await db.query(
       'SELECT title FROM properties WHERE propId = ?', 
       [propertyId]
     ) as any[];
+
+
   
     const [items] = await db.query(`
       SELECT ii.id, ii.name, ii.quantity

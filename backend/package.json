@@ -5,12 +5,14 @@
     "main": "server.ts",
     "type": "module",
     "scripts": {
-        "dev": "npx tsx server.ts"
+        "build": "tsc && npx serverless package",
+        "deploy": "npx serverless deploy"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "aws-serverless-express": "^3.4.0",
         "cors": "^2.8.5",
         "dayjs": "^1.11.13",
         "dotenv": "^16.3.1",
@@ -27,10 +29,14 @@
         "winston": "^3.9.0"
     },
     "devDependencies": {
+        "@types/aws-lambda": "^8.10.149",
+        "@types/aws-serverless-express": "^3.3.10",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.1",
         "@types/node": "^22.14.1",
+        "esbuild": "^0.25.4",
         "nodemon": "^3.0.2",
+        "serverless-esbuild": "^1.55.0",
         "ts-node": "^10.9.2",
         "tsx": "^4.19.3",
         "typescript": "^5.8.3"

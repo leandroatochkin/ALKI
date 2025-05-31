@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request, NextFunction } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ServerError, ValidationError } from 'api/error_handling/errorModels';
 import { checkJwt } from 'api/middleware/checkToken';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +11,9 @@ import { error } from 'console';
 const router = express.Router();
 
 router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, next: NextFunction) => {
+
+  const db = getDb();
+
   const  members  = req.body;
   console.log(members)
   if ( !members) {

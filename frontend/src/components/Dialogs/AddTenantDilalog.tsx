@@ -54,6 +54,8 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
     const userData: UserPreview = useAppSelector(
         state => state.dashboard.userData
     )
+
+
     const dispatch = useDispatch()
      const {  
             handleSubmit, 
@@ -64,7 +66,7 @@ const AddTenantDialog: React.FC<TenantInfoDialogProps> = ({tenant, open, modify,
               } = useForm<TenantDTO>(
                 {
                     defaultValues: {
-                        propietorId: userData.permissions[0] === 'admin' ? userData?.id : userData?.parentUserId
+                        propietorId: userData.permissions === 'admin' ? userData?.id : userData?.parentUserId
                     }
                 }
               )

@@ -3,7 +3,7 @@ dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
 import { RowDataPacket } from 'mysql2';
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ServerError } from 'api/error_handling/errorModels';
 import { checkJwt } from 'api/middleware/checkToken';
 
@@ -13,6 +13,9 @@ const router = express.Router();
 
 
 router.get('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
+
+  const db = getDb();
+
   try {
     const { id } = req.query;
 

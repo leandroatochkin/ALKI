@@ -1,4 +1,4 @@
-import  {useState, useMemo, useEffect, useCallback} from 'react'
+import  {useState, useEffect, useCallback} from 'react'
 import {
     Paper,
     Typography,
@@ -13,7 +13,6 @@ import {
 } from '@mui/material'
 import {
     DataGrid,
-    GridColDef,
     GridOverlay,
     GridRowSelectionModel
   } from "@mui/x-data-grid"
@@ -30,6 +29,8 @@ import { useAppSelector } from '../../api/store/hooks'
 import { customLocaleText } from '../../utils/locale'
 import LockIcon from '@mui/icons-material/Lock';
 import ReplayIcon from '@mui/icons-material/Replay'
+import { useDispatch } from 'react-redux'
+import { showToast } from '../../api/ToastSlice'
 
 const AddInventory = () => {
 const [inventory, setInventory] = useState<InventoryItem[] | null>(null)
@@ -50,6 +51,7 @@ const {data: propertiesData, isLoading: isLoadingProperties } = useGetProperties
 const { data, isLoading, refetch: refetchItems, isError} = useGetInventoryByPropertyQuery(selectedProperty)
 const [deleteItems, {isLoading: isDeletingItems}] = useDeleteInventoryItemsMutation()
 const [deleteInventory, {isLoading: isDeletingInventory}] = useDeleteInventoryMutation()
+const dispatch = useDispatch()
 
 
 const propertiesMap = propertiesData?.reduce((acc, property) => {
@@ -63,6 +65,7 @@ useEffect(()=>{
     setList(propertiesMap)
   } else {
     console.error('No se encontraron propiedades')
+    dispatch(showToast({message: 'No se encontraron propiedades.', severity: 'error'}))
   }
 },[propertiesData, isLoadingProperties])
 
@@ -76,6 +79,7 @@ useEffect(() => {
         }
     } else {
         console.error('No se encontró el inventario')
+        dispatch(showToast({message: 'No se encontró el inventario.', severity: 'error'}))
     }
 },[data, selectedProperty])
 
@@ -96,7 +100,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
       },
       body: JSON.stringify({ propertyId }),
     });
-
+    dispatch(showToast({message: 'Solicitud exitosa.', severity: 'success'}))
     if (!response.ok) {
       throw new Error("Failed to fetch PDF");
     }
@@ -106,7 +110,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = `inventory-${propertyId}.pdf`;
+    a.download = `inventario-${propertyId}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -116,6 +120,7 @@ const handleDownloadQrsPDF = useCallback(async (propertyId: string) => {
     }, 1000);
   } catch (error) {
     console.error("Error exporting PDF:", error);
+    dispatch(showToast({message: 'Error al descargar plantilla.', severity: 'error'}))
   }
 }, []);
 

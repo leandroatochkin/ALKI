@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import {  ServerError } from 'api/error_handling/errorModels';
 import { checkJwt } from 'api/middleware/checkToken';
 
@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
 
     const  inventoryItems  = req.body
-
+    const db = getDb()
     console.log('inventoryItems', inventoryItems)
 
     for (const item of inventoryItems) {

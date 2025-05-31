@@ -299,6 +299,6 @@ export const paymentStatusMapper = {
 
 export const permissionsMap = {
     'admin': 'Administrador',
-    'user': 'Usuario',
-    'read-only': 'Solo lectura',
+    'edit': 'Usuario',
+    'view': 'Solo lectura',
 }

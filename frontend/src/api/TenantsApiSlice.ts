@@ -28,7 +28,7 @@ export interface TenantDTO {
     pets: number;
     children: number;
     smoking: boolean;
-    propertyId?: string;
+    assignedProperty?: string;
 }
 
 export interface AssignTenantDTO {
@@ -95,7 +95,7 @@ export const tenantsApiSlice = createApi({
       }),
       assignTenantToProperty: builder.mutation<void, AssignTenantDTO>({
         query: payload => ({
-          url: `api/tenants/assign-tenant-to-property`,
+          url: `/assign-tenant-to-property`,
           method: "POST",
           body: payload,
         }),

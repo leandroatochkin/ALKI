@@ -14,7 +14,7 @@ const Toast: React.FC = () => {
   };
 
   return (
-    <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+    <Snackbar open={open} autoHideDuration={4000} onClose={handleClose} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
       <Alert onClose={handleClose} severity={severity} variant="filled">
         {message}
       </Alert>

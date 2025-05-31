@@ -10,6 +10,7 @@ interface ViewOrganizationMembersDialogProps {
 }
 
 const ViewOrganizationMembersDialog: React.FC<ViewOrganizationMembersDialogProps> = ({open, onClose, organizationId}) => {
+  
 const { data } = useGetOrganizationMembersByOrganizationIdQuery(organizationId)
 
 const members = data ?? []

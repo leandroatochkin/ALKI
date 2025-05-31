@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { checkJwt } from 'api/middleware/checkToken';
 import { ServerError } from 'api/error_handling/errorModels';
 
@@ -8,6 +8,9 @@ const router = express.Router();
 
 // Define route handler
 router.get('/', checkJwt, async (req: Request, res: Response, next: NextFunction) => {
+
+  const db = getDb();
+
   const { id } = req.query;
   try {
     const [propertiesResult] = await db.query('SELECT * FROM properties WHERE userId = ?', [id]) as any[];

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request, NextFunction } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ServerError, ValidationError } from 'api/error_handling/errorModels';
 import { checkJwt } from 'api/middleware/checkToken';
 
@@ -10,6 +10,9 @@ import { checkJwt } from 'api/middleware/checkToken';
 const router = express.Router();
 
 router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, next: NextFunction) => {
+
+  const db = getDb()
+
   const { organizationId, name, description } = req.body;
 
   if (!organizationId || !name || !description) {

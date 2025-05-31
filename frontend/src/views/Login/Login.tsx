@@ -3,6 +3,7 @@ import {Box,  Typography,  CircularProgress} from "@mui/material"
 import Logo from "../../assets/Logo";
 import { useAuth0 } from "@auth0/auth0-react";
 import AnimatedButton from "./Button/Button";
+import { useEffect } from "react";
 
 
 export default function LoginPage() {
@@ -19,6 +20,19 @@ export default function LoginPage() {
     })
     
   }
+
+  useEffect(()=>{
+    fetch('https://vhvmtfflzg.execute-api.us-east-2.amazonaws.com/default/alki/test', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ foo: 'bar' }),
+})
+.then(res => res.json())
+.then(console.log)
+.catch(console.error);
+  },[])
 
  
   return (

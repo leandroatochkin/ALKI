@@ -43,11 +43,14 @@ const AddProperty = () => {
         
 
         useEffect(() => {
-          if (!isLoading && !isError && data) {
-              setProperties(data)
-          } 
+          if (Array.isArray(data)) {
+          setProperties(data);
+        } else {
+          setProperties([]); // fallback to empty array
+        }
       }, [data, isLoading, isError, refetch])
 
+      
     const navigate = useNavigate()
 
     const TableSkeleton = () => (// for later use

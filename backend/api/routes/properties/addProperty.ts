@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ServerError } from 'api/error_handling/errorModels';
 import { v4 as uuidv4 } from 'uuid';
 import { checkJwt } from 'api/middleware/checkToken';
@@ -10,6 +10,9 @@ import { checkJwt } from 'api/middleware/checkToken';
 const router = express.Router();
 
 router.post('/', checkJwt,async (req: Request & AuthResponse, res: Response, next) => {
+
+  const db = getDb()
+
   try {
     const { 
             userId,

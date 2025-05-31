@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express, { Response, Request } from 'express';
 import { AuthResponse } from "../../interfaces/user";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ServerError } from 'api/error_handling/errorModels';
 import { checkJwt } from "api/middleware/checkToken"
 import { Payment } from 'api/interfaces/payments';
@@ -12,6 +12,9 @@ import { TenantDTO } from 'api/interfaces/tenants';
 const router = express.Router();
 
 router.get('/', checkJwt, async (req, res, next) => {
+
+    const db = getDb();
+
     const { userId } = req.query
   
     try {

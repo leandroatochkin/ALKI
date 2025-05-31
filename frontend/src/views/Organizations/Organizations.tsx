@@ -44,8 +44,8 @@ const Organizations = () => {
 
 const {data: organizationData, isLoading: isLoadingOrganizations, isError: isErrorLoadingOrganizations, refetch} = useGetOrganizationsByUserIdQuery(userData.id)
 const [deleteOrganization, {isLoading: isDeleting}] = useDeleteOrganizationMutation()
-console.log(organizationData)
-    
+
+    useEffect(()=>console.log(selectedOrganization), [selectedOrganization])
         
         useEffect(() => {
           if (!organizationData) return // Don't do anything while loading
@@ -109,10 +109,12 @@ console.log(organizationData)
             editable: false,
             renderCell: (params: GridCellParams) => {
                           const organizationId = params.row.organizationId
+                         
                           return (
                             <Button
                               variant="outlined"
                               color="primary"
+                              disabled={organizationId !== selectedOrganization}
                               onClick={() => {
                                 setOpenAddMembersDialog(organizationId)
                               }}
@@ -128,12 +130,15 @@ console.log(organizationData)
             headerName: "ver/quitar miembros de la org.",
             width: 200,
             editable: false,
-            renderCell: () => {
-                  
+            renderCell: (params: GridCellParams) => {
+                          const organizationId = params.row.organizationId
+                          console.log(params.row)
+                          console.log(organizationId)
                           return (
                             <Button
                               variant="outlined"
                               color="primary"
+                              disabled={organizationId !== selectedOrganization}
                               onClick={() => {
                                 setOpenViewMembersDialog(true)
                               }}                 
@@ -148,7 +153,7 @@ console.log(organizationData)
       )
 
       const rows = (organizations ?? []).map((organization: Organization, index: number) => ({
-            id: index,
+            id: organization.organizationId,
             organizationId: organization.organizationId,
             name: organization.name,
             description: organization.description,
@@ -156,16 +161,16 @@ console.log(organizationData)
           }))
      
 
-        const handleRowSelection = (selection: GridRowSelectionModel) => {
+       const handleRowSelection = (selection: GridRowSelectionModel) => {
             const selectedData = selection.map(
               selectedRowId => rows[Number(selectedRowId)]
             )
         
-            const selectedPropertyId = selectedData.flatMap(row =>
+            const selectedOrganizationId = selectedData.flatMap(row =>
               row?.organizationId ? [row.organizationId] : [],
             )
         
-            setSelectedOrganization(selectedPropertyId[0] ?? null)
+            setSelectedOrganization(selectedOrganizationId[0] ?? null)
           }
 
           const handleDeleteOrganization = () => {

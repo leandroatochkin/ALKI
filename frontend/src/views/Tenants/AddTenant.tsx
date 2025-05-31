@@ -30,11 +30,12 @@ import {
   useGetTenantsByUserIdQuery, 
   useAssignTenantToPropertyMutation, 
 } from '../../api/TenantsApiSlice'
-import { useGetPropertiesByUserIdQuery, PropertyDTO } from '../../api/PropertiesApiSlice'
+import { useGetPropertiesByUserIdQuery, PropertyDTO, useGetPropertyByIdQuery } from '../../api/PropertiesApiSlice'
 import { useAppSelector } from '../../api/store/hooks'
 import dayjs from 'dayjs'
 import ReplayIcon from '@mui/icons-material/Replay';
 import { customLocaleText } from '../../utils/locale'
+import InfoIcon from '@mui/icons-material/Info';
 
 
 interface Observations {
@@ -53,6 +54,7 @@ const AddTenant = () => {
     const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
     const [openDeleteTenantDialog, setOpenDeleteTenantDialog] = useState<boolean>(false)
     const [openAssignToPropertyDialog, setOpenAssignToPropertyDialog] = useState<boolean>(false)
+    const [property, setProperty] = useState<string | null>(null)
     const userData = useAppSelector(
       state => state.dashboard.userData 
     )
@@ -68,11 +70,14 @@ const AddTenant = () => {
 
     const disabledCondition = isLoading || isLoadingProperties || isAssigning
 
-    const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, string> => {
+    const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, { title: string; occupied: boolean | undefined }> => {
       return properties.reduce((acc, prop) => {
-        acc[prop.id] = prop.title
+        acc[prop.propId] = {
+          title: prop.title,
+          occupied: prop.occupied,
+        }
         return acc
-      }, {} as Record<string, string>)
+      }, {} as Record<string, { title: string; occupied: boolean | undefined }>)
     }
 
     const mappedProps = mapPropertiesToIdTitle(properties ?? [])
@@ -186,10 +191,29 @@ const AddTenant = () => {
                 }
               },
               {
-                  field: "property",
+                  field: "assignedProperty",
                   headerName: "prop. asign.",
                   width: 120,
                   editable: false,
+                  renderCell: (params: GridCellParams) => {
+                           const property = params.row.assignedProperty;
+                  return (
+                    <Box>
+                      <IconButton
+                      onClick={
+                        () =>{
+                          setProperty(property)
+                        }
+                      }
+                      >
+                          <InfoIcon/>
+                      </IconButton>
+                      <Typography>
+                        {params.row.assignedProperty.slice(0, 10) + '...'}
+                      </Typography>
+                    </Box>
+                  )
+                }
                 },
               {
                   field: "observations",
@@ -281,7 +305,6 @@ const AddTenant = () => {
                   lastName: tenant.lastName,
                   email: tenant.email,
                   phoneNumber: tenant.phoneNumber,
-                  property: tenant.propertyId,
                   observations: tenant.observations,
                   contractStartDate: dayjs(tenant.contractStartDate).format('DD/MM/YY'),
                   contractEndDate: dayjs(tenant.contractEndDate).format('DD/MM/YY'),
@@ -296,6 +319,7 @@ const AddTenant = () => {
                   pets: tenant.pets,
                   children: tenant.children,
                   smoking: tenant.smoking ? "Sí" : "No",
+                  assignedProperty: tenant.assignedProperty
                 })),
               [tenants],
             )
@@ -311,15 +335,74 @@ const AddTenant = () => {
                 <Typography variant="body1">Observaciones: {observations?.observations}</Typography>
                 <Typography variant="body1">Niños: {observations?.children}</Typography> 
                 <Typography variant="body1">Mascotas: {observations?.pets}</Typography> 
-                <Typography variant="body1">Fumador: {observations?.smoking}</Typography>         
-            </DialogContent>
-            <Button
+                <Typography variant="body1">Fumador: {observations?.smoking}</Typography>
+                <Button
             onClick={() => setObservations(null)}
             variant='outlined'
             color='warning'
             >
                 cerrar
-            </Button>
+            </Button>         
+            </DialogContent>    
+        </Dialog>
+    )
+  }
+
+  const PropertyInfoDialog = () => {
+    const [propertyInfo, setPropertyInfo] = useState<PropertyDTO | null>(null)
+    useEffect(()=>{console.log(propertyInfo)},[propertyInfo])
+    const  {data: propertyInfoData, isLoading: propertyInfoIsLoading} = useGetPropertyByIdQuery(property ?? '')
+   
+   useEffect(()=>{
+    if(propertyInfoData){
+      setPropertyInfo(propertyInfoData[0])
+      }
+   },[propertyInfoData])
+
+    return(
+        <Dialog
+        open={property !== null}
+        onClose={() => setProperty(null)}
+        >
+            <DialogTitle>Info. Prop.</DialogTitle>
+            <DialogContent>
+                {
+                  propertyInfoIsLoading ?
+                  (
+                    <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flexDirection: 'column'
+                    }}
+                    >
+                      <CircularProgress size={30}/>
+                      <Typography>
+                        🔍 Cargando información de la propiedad...
+                      </Typography>
+                    </Box>
+                  )
+                  :
+                  (
+                <>
+                <Typography variant="body1">ID: {propertyInfo?.propId}</Typography>
+                <Typography variant="body1">Nombre: {propertyInfo?.title}</Typography>
+                <Typography variant="body1">Ubicación: {propertyInfo?.address}</Typography>
+                <Typography variant="body1">Ciudad: {propertyInfo?.city}</Typography>
+                <Typography variant="body1">State: {propertyInfo?.state}</Typography>
+                <Typography variant="body1">State: {propertyInfo?.country}</Typography> 
+                </>
+                  )
+                }
+                <Button
+            onClick={() => setProperty(null)}
+            variant='outlined'
+            color='warning'
+            >
+                cerrar
+            </Button>         
+            </DialogContent>    
         </Dialog>
     )
   }
@@ -327,7 +410,7 @@ const AddTenant = () => {
   const AssignToPropertyDialog = () => {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
 
-
+    
 
   const handleAssignTenantToProperty = async () => {
     if (selectedTenant && selectedProperty) {
@@ -342,7 +425,9 @@ const AddTenant = () => {
         console.error("No se seleccionó inquilino o propiedad")
     }
   }
-
+    useEffect(()=>{
+      setSelectedProperty(Object.keys(propertiesMap)[0])
+    },[])
     return(
         <Dialog
         open={openAssignToPropertyDialog}
@@ -359,9 +444,13 @@ const AddTenant = () => {
                 defaultValue={Object.keys(propertiesMap)[0]}
                 onChange={(e) => setSelectedProperty(e.target.value)}
                 >
-                {Object.entries(propertiesMap).map(([code, type]) => (
-                    <MenuItem key={code} value={code}> 
-                    {`${type}`}
+                {Object.entries(propertiesMap).map(([id, title]) => (
+                    <MenuItem 
+                    key={id} 
+                    value={id}
+                    disabled={title.occupied}
+                    > 
+                    {`${title.title} ${title.occupied ? `(ocupada)` : ''}`}
                     </MenuItem>
                 ))}
                 </Select>
@@ -402,6 +491,7 @@ const AddTenant = () => {
 
   return (
     <>
+    {property && <PropertyInfoDialog />}
     {observations && <ObservationsDialog />}
     {openDialog && <AddTenantDialog open={openDialog} onClose={()=>setOpenDialog(false)} modify={false}/>}
     {tenantToModify && <AddTenantDialog open={!!tenantToModify} onClose={()=>setTenantToModify(null)} modify={true} tenant={tenantFiltered}/>}

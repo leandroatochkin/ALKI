@@ -13,7 +13,7 @@ export interface Service {
 
 
 export interface PropertyDTO {
-    id: string;
+    propId: string;
     userId: string;
     title: string;
     description: string;
@@ -38,6 +38,7 @@ export const propertiesApiSlice = createApi({
               const token = getToken()
               if (token) {
                 headers.set("authorization", `Bearer ${token}`)
+                console.log(headers)
               }
             } catch (error) {
               console.error("Error fetching access token", error)
@@ -47,9 +48,9 @@ export const propertiesApiSlice = createApi({
           },
         }),
     endpoints: builder => ({
-      getPropertyById: builder.query<PropertyDTO, string>({
-        query: id => ({
-          url: `api/properties/get-property-by-id/${id}`,
+      getPropertyById: builder.query<PropertyDTO[], string>({
+        query: propertyId => ({
+          url: `/get-property-by-id?propertyId=${propertyId}`,
           method: "GET",
         }),
       }),

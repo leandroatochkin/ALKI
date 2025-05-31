@@ -43,7 +43,7 @@ const app = express();
 const frontendURL = process.env.FRONTEND_URL;
 
 const allowedOrigins = [
-  'http://localhost:5173',
+  frontendURL,
 ];
 
 app.use(cors({
@@ -71,6 +71,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'API is healthy' });
+  });
 
 // Load routes
 app.use('/signup', signupRoute)
@@ -108,6 +112,8 @@ app.use('/get-expenses', getExpensesByUserId)
 
 //app.use(centralizedErrorHandler);
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-});
+// app.listen(3000, () => {
+//   console.log('Server running on port 3000');
+// });
+
+export default app;

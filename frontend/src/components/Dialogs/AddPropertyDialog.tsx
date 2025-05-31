@@ -56,7 +56,7 @@ const AddPropertyDialog: React.FC<PropertyInfoDialogProps> = ({property, open, m
               useEffect(() => {
                 if (modify && property) {
                   // Set basic fields
-                  setValue('id', property.id)
+                  setValue('propId', property.propId)
                   setValue('title', property.title)
                   setValue('description', property.description)
                   setValue('address', property.address)

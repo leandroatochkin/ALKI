@@ -19,8 +19,11 @@ import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import { useNavigate } from 'react-router-dom'
 
 const Properties = () => {
-  const [properties, setProperties] = useState<PropertyDTO[]>([]);
+  const [properties, setProperties] = useState<PropertyDTO[] | null>(null);
   const [progress, setProgress] = useState<number>(0);
+
+  useEffect(()=>{console.log(properties)},[properties])
+
 
   const userData: UserPreview | undefined = useAppSelector(
     (state) => state.dashboard.userData
@@ -38,22 +41,35 @@ const Properties = () => {
 
   const {data: expenses} = useGetMonthlyExpensesByUserIdQuery(userId ? userId : skipToken)
 
+useEffect(() => {
+  if (Array.isArray(data)) {
+    setProperties(data);
+  } else {
+    setProperties([]); // fallback to empty array
+  }
+}, [data]);
+
   const expensesData = expenses ? Number(Object.values(expenses)[0]).toFixed(2) : '0.00'
 
+const { currentMonthlyTotalRevenue, calculatedMRR } = useMemo(() => {
+  if (!Array.isArray(properties)) {
+    return { currentMonthlyTotalRevenue: 0, calculatedMRR: 0 };
+  }
 
-  const { currentMonthlyTotalRevenue, calculatedMRR } = useMemo(() => {
-    const payments = properties
-      .flatMap((property) => property.tenantData?.payments ?? [])
-      .map((payment) => Number(payment?.amount) || 0);
-  
-    const contractValues = properties
-      .map((property) => Number(property.tenantData?.contractValue) || 0);
-  
-    const currentMonthlyTotalRevenue = payments.reduce((sum, val) => sum + val, 0);
-    const calculatedMRR = contractValues.reduce((sum, val) => sum + val, 0);
-  
-    return { currentMonthlyTotalRevenue, calculatedMRR };
-  }, [properties]);
+  const payments = properties
+    .flatMap((property) => property?.tenantData?.payments ?? [])
+    .map((payment) => Number(payment?.amount) || 0);
+
+  const contractValues = properties
+    .map((property) => Number(property.tenantData?.contractValue) || 0);
+
+  const currentMonthlyTotalRevenue = payments.reduce((sum, val) => sum + val, 0);
+  const calculatedMRR = contractValues.reduce((sum, val) => sum + val, 0);
+
+  return { currentMonthlyTotalRevenue, calculatedMRR };
+}, [properties]);
+
+
   
   
   const getRevenueProgress = () => {
@@ -70,11 +86,7 @@ const Properties = () => {
   };
 
 
-  useEffect(() => {
-    if (data) {
-      setProperties(data);
-    }
-  }, [data]);
+  
   useEffect(()=>{
     const revenueProgress = getRevenueProgress()
     setProgress(revenueProgress)
@@ -135,7 +147,7 @@ const NoProperty = () => {
 
 if (!userData?.id) return <Box sx={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress size={50}/></Box>;
 if (isLoading) return <Box sx={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress size={50}/></Box>;
-if (properties.length === 0 || isError) return <NoProperty/>
+if (properties?.length === 0 || isError) return <NoProperty/>
                                 
 
   return (
@@ -192,7 +204,7 @@ if (properties.length === 0 || isError) return <NoProperty/>
             { 
             !isLoading
             ?
-            properties.map((property) => (
+            properties?.map((property) => (
             <PropertyCard key={property.id} property={property} />
             ))
             :

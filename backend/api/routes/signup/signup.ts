@@ -4,7 +4,7 @@ import express, { Response } from 'express';
 import { AuthResponse } from "../../interfaces/user";
 import { expressjwt } from "express-jwt";
 import jwksRsa from "jwks-rsa";
-import { db } from 'api/db/db';
+import { getDb } from 'api/db/db';
 import { ValidationError, ServerError } from 'api/error_handling/errorModels';
 import { 
   emailRegex, 
@@ -36,6 +36,8 @@ import { Request } from 'express';
 
 router.post('/', checkJwt, async (req: Request & AuthResponse, res: Response, next) => {
   try {
+
+    const db = getDb();
     const { id, email } = req.body;
 
     // Validate email format
