@@ -21,9 +21,14 @@ const checkJwt = expressjwt({
 });
 const router = express.Router();
 router.post('/', checkJwt, async (req, res, next) => {
+    const { id, email } = req.body;
+
+    if(!id || !email){
+        return res.status(400).json({error: 'Missing fields'})
+    }
+
     try {
         const db = getDb();
-        const { id, email } = req.body;
         // Validate email format
         if (!emailRegex.test(email)) {
             return next(new ValidationError('Invalid email format.', ''));
@@ -37,7 +42,7 @@ router.post('/', checkJwt, async (req, res, next) => {
             return;
         }
         // Insert new user
-        await db.query(`INSERT INTO users(id, email, is_new) VALUES(?,?,?)`, [id, email, true]);
+        await db.query(`INSERT INTO users(id, email, isNew) VALUES(?,?,?)`, [id, email, true]);
         res.status(201).json({ message: 'User created successfully', isNewUser: true });
         return;
     }

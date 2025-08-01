@@ -32,7 +32,7 @@ interface UpdateUserDataDialogProps {
 }
 
 const UpdateUserDataDialog: React.FC<UpdateUserDataDialogProps> = ({userData, open, onClose}) => {
-
+console.log(userData)
 
     const [updateUser, {isLoading}] = useUpdateUserDataMutation()
     const dispatch = useDispatch()

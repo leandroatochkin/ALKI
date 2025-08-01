@@ -36,7 +36,7 @@ import getServicesByPropertyId from './api/routes/services/getServicesByProperty
 import deleteService from './api/routes/services/deleteService.js';
 import getExpensesByUserId from './api/routes/services/getMonthlyExpensesByuserId.js';
 const app = express();
-const frontendURL = process.env.FRONTEND_URL;
+const frontendURL = process.env.FRONTEND_URL_A;
 const allowedOrigins = [
     frontendURL,
 ];
@@ -101,7 +101,7 @@ app.use('/add-services', addServices);
 app.use('/get-services-by-property-id', getServicesByPropertyId);
 app.use('/get-expenses', getExpensesByUserId);
 //app.use(centralizedErrorHandler);
-// app.listen(3000, () => {
-//   console.log('Server running on port 3000');
-// });
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
 export default app;

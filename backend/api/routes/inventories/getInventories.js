@@ -6,8 +6,14 @@ import { ServerError } from '../../error_handling/errorModels.js';
 const router = express.Router();
 // Define route handler
 router.get('/', checkJwt, async (req, res, next) => {
-    const db = getDb();
     const { propertyId } = req.query;
+
+    if(!propertyId){
+        res.status(400).json({error: 'Missing fields'})
+        return
+    }
+
+    const db = getDb();
     try {
         const [inventoryResult] = await db.query('SELECT * FROM inventories WHERE propertyId = ?', [propertyId]);
         if (!Array.isArray(inventoryResult) || inventoryResult.length === 0) {

@@ -55,7 +55,7 @@ const dispatch = useDispatch()
 
 
 const propertiesMap = propertiesData?.reduce((acc, property) => {
-  acc[property.id] = property.title
+  acc[property.propId] = property.title
   return acc
 }, {} as Record<string, string>)
 

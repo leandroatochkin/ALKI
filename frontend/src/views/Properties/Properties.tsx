@@ -49,7 +49,8 @@ useEffect(() => {
   }
 }, [data]);
 
-  const expensesData = expenses ? Number(Object.values(expenses)[0]).toFixed(2) : '0.00'
+  const expensesData = Array.isArray(expenses) ? Number(Object.values(expenses)[0]).toFixed(2) : 0
+
 
 const { currentMonthlyTotalRevenue, calculatedMRR } = useMemo(() => {
   if (!Array.isArray(properties)) {
@@ -205,7 +206,7 @@ if (properties?.length === 0 || isError) return <NoProperty/>
             !isLoading
             ?
             properties?.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard key={property.propId} property={property} />
             ))
             :
             (

@@ -152,7 +152,7 @@ const [deleteOrganization, {isLoading: isDeleting}] = useDeleteOrganizationMutat
         [],
       )
 
-      const rows = (organizations ?? []).map((organization: Organization, index: number) => ({
+      const rows = (organizations ?? []).map((organization: Organization) => ({
             id: organization.organizationId,
             organizationId: organization.organizationId,
             name: organization.name,

@@ -7,8 +7,14 @@ import { ServerError } from '../../error_handling/errorModels.js';
 const router = express.Router();
 router.post('/', checkJwt, async (req, res, next) => {
     const inventoryItems = req.body;
+
+    if(!inventoryItems){
+       res.status(400).json({error: 'Missing data'})
+       return 
+    }
+
     const db = getDb();
-    console.log('inventoryItems', inventoryItems);
+
     for (const item of inventoryItems) {
         const id = item;
         console.log('id', id);

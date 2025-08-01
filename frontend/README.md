@@ -216,7 +216,7 @@ CREATE TABLE payments (
 ORGANIZATIONS
 ```
 CREATE TABLE organizations (
-    organizationId VARCHAR(36) DEFAULT NULL,
+    organizationId VARCHAR(36) NOT NULL PRIMARY KEY,
     userId VARCHAR(36) DEFAULT NULL,
     description VARCHAR(255) DEFAULT NULL,
     name VARCHAR(100) DEFAULT NULL
@@ -226,7 +226,7 @@ CREATE TABLE organizations (
 ORGANIZATION MEMBERS
 ```
 CREATE TABLE organization_members (
-    memberId VARCHAR(36) DEFAULT NULL,
+    memberId VARCHAR(36) NOT NULL PRIMARY KEY,
     organizationId VARCHAR(36) DEFAULT NULL,
     creatorId VARCHAR(36) DEFAULT NULL,
     name VARCHAR(36) DEFAULT NULL,

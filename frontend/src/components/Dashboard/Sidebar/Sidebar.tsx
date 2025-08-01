@@ -4,8 +4,6 @@ import {
   List,
   ListItem,
   IconButton,
-  Typography,
-  Tooltip,
   Drawer,
   ListItemButton,
   ListItemIcon,
@@ -13,12 +11,9 @@ import {
 } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import { useNavigate } from "react-router-dom"
-import SettingsIcon from "@mui/icons-material/Settings"
-import LogoutIcon from "@mui/icons-material/Logout"
 import HouseIcon from '@mui/icons-material/House';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import { mockUser } from "../../../api/UsersSlice"
 import { UserPreview } from "../../../api/UsersSlice"
 import { useAppSelector } from "../../../api/store/hooks"
 import { useAuth0 } from "@auth0/auth0-react";
@@ -38,11 +33,7 @@ import UserCard from "../../Cards/UserCard"
 // import Resources from "../resources/Resources"
 
 // Interface for props
-interface UserSidebarAttributes {
-  email: string
-  name: string
-  userId: string
-}
+
 
 function Sidebar() {
   //const menuItems = useAppSelector(state => state.dashboard.menuItems)

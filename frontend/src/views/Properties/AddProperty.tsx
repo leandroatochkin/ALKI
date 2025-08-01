@@ -33,8 +33,8 @@ const AddProperty = () => {
          const userData: UserPreview = useAppSelector(
             state => state.dashboard.userData,
           )
-        const propertyFiltered = properties.filter((property) => property.id === propertyToModify)[0] ?? null
-
+        const propertyFiltered = properties.filter((property) => property.propId === propertyToModify)[0] ?? null
+         
         const { data, isLoading, isError, refetch } = useGetPropertiesByUserIdQuery((userData.permissions === 'admin' ? userData.id : userData.parentUserId) ?? '')
 
         const [deleteProperty,{isLoading: isDeleting}] = useDeletePropertyMutation()
@@ -188,7 +188,7 @@ const AddProperty = () => {
         () =>
           (properties ?? []).map((property: PropertyDTO, index: number) => ({
             id: index,
-            propertyId: property.id,
+            propertyId: property.propId,
             title: property.title,
             address: property.address,
             city: property.city,

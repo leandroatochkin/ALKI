@@ -4,13 +4,17 @@ import express from 'express';
 import getDb from '../../db/db.js';
 import { ServerError } from '../../error_handling/errorModels.js';
 
+
 const router = express.Router();
 router.post('/', async (req, res, next) => {
     const db = getDb();
-    try {
-        const { id, firstName, lastName, middleName, phoneNumber, countryCode, addressLine1, addressLine2, state, city, postalCode } = req.body;
-        // Validate email format
-        // Check if email exists (using promise-based pool)
+    const { id, firstName, lastName, middleName, phoneNumber, countryCode, addressLine1, addressLine2, state, city, postalCode } = req.body;
+
+    if(!id || !firstName || !lastName || !phoneNumber || !countryCode || !addressLine1 || !state || !city || !postalCode) {
+        return res.status(400).json({error: 'Missing fields'})
+    }
+
+    try {        
         const [existingUsers] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
         // If id exists
         if (Array.isArray(existingUsers) && existingUsers.length === 0) {
@@ -20,7 +24,7 @@ router.post('/', async (req, res, next) => {
             return;
         }
         // Insert new user data
-        await db.query(`UPDATE users 
+       await db.query(`UPDATE users 
        SET first_name = ?, last_name = ?, middle_name = ?, phone_number = ?, country_code = ?, address_line1 = ?, address_line2 = ?, state = ?, city = ?, postal_code = ?, is_new = 0 
        WHERE id = ?`, [
             firstName,
