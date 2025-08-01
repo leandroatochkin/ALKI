@@ -35,6 +35,10 @@ import addServices from './api/routes/services/addServices.js';
 import getServicesByPropertyId from './api/routes/services/getServicesByPropertyId.js';
 import deleteService from './api/routes/services/deleteService.js';
 import getExpensesByUserId from './api/routes/services/getMonthlyExpensesByuserId.js';
+import sendTenantInvite from './api/routes/sendInvitation/sendTenantInvitation.js';
+import assignTenantToPropertyRoute from './api/routes/tenants/assignTenantToProperty.js'
+
+
 const app = express();
 const frontendURL = process.env.FRONTEND_URL_A;
 const allowedOrigins = [
@@ -68,6 +72,8 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'API is healthy' });
 });
 // Load routes
+
+
 app.use('/signup', signupRoute);
 app.use('/newuser', newUserRoute);
 app.use('/user', getUserData);
@@ -100,8 +106,11 @@ app.use('/delete-service', deleteService);
 app.use('/add-services', addServices);
 app.use('/get-services-by-property-id', getServicesByPropertyId);
 app.use('/get-expenses', getExpensesByUserId);
+app.use('/send-invitation', sendTenantInvite)
+app.use('/assign-tenant-to-property', assignTenantToPropertyRoute)
+
 //app.use(centralizedErrorHandler);
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
-export default app;
+

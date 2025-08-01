@@ -206,7 +206,7 @@ if (properties?.length === 0 || isError) return <NoProperty/>
             !isLoading
             ?
             properties?.map((property) => (
-            <PropertyCard key={property.propId} property={property} />
+            <PropertyCard key={property.id} property={property} />
             ))
             :
             (

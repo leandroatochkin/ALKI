@@ -41,6 +41,12 @@ export interface TenantTermination {
     terminationReason: string;
 }
 
+export interface TenantInvitation {
+  id: string
+  tenantId: string
+  tenantEmail: string
+}
+
 export const tenantsApiSlice = createApi({
     reducerPath: "tenantsApiSlice",
       baseQuery: fetchBaseQuery({
@@ -100,6 +106,13 @@ export const tenantsApiSlice = createApi({
           body: payload,
         }),
       }),
+      sendTenantInvitation: builder.mutation<void, TenantInvitation>({
+        query: payload => ({
+          url: `/send-invitation`,
+          method: "POST",
+          body: payload,
+        }),
+      }),
     })
 })
 
@@ -110,4 +123,5 @@ export const {
     useUpdateTenantMutation,
     useDeleteTenantMutation,
     useAssignTenantToPropertyMutation,
+    useSendTenantInvitationMutation
  } = tenantsApiSlice

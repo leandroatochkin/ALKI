@@ -17,7 +17,7 @@ router.post('/', checkJwt, async (req, res, next) => {
     try {
         // Insert new user
         await db.query(`
-            UPDATE tenants SET propertyAssigned = ? WHERE tenantId = ?
+            UPDATE tenants SET propertyId = ? WHERE tenantId = ?
             `, [
             propertyId,
             tenantId

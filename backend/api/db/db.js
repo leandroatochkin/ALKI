@@ -12,12 +12,6 @@ const caPath = isProduction
   : path.join(process.cwd(), 'secrets/ca.pem');
 
 const getDb = () => {
-    console.log({
-  DB_HOST: process.env.DB_HOST,
-  DB_PORT: process.env.DB_PORT,
-  DB_USER: process.env.DB_USER,
-  DB_NAME: process.env.DB_NAME,
-});
     if (!pool) {
         pool = mysql.createPool({
             host: process.env.DB_HOST, // RDS endpoint (e.g., mydb.xxxxxx.rds.amazonaws.com)

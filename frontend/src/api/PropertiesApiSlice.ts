@@ -13,7 +13,7 @@ export interface Service {
 
 
 export interface PropertyDTO {
-    propId: string;
+    id: string;
     userId: string;
     title: string;
     description: string;

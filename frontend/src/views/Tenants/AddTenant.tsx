@@ -22,7 +22,7 @@ import {
     GridOverlay,
   } from "@mui/x-data-grid"
   import { useNavigate } from 'react-router-dom'
-import { TenantDTO } from '../../api/TenantsApiSlice'
+import { TenantDTO, useSendTenantInvitationMutation } from '../../api/TenantsApiSlice'
 import { paymentMethodMapper } from '../../utils/functions'
 import AddTenantDialog from '../../components/Dialogs/AddTenantDilalog'
 import DeleteTenantDialog from '../../components/Dialogs/DeleteTenantDialog'
@@ -67,19 +67,20 @@ const AddTenant = () => {
     const { data: properties, isLoading: isLoadingProperties } = useGetPropertiesByUserIdQuery(idPermissionCheck)
 
     const [assignTenantToProperty, {isLoading: isAssigning}] = useAssignTenantToPropertyMutation()
+    const [sendInvitation, {isLoading: isSendingInvitation}] = useSendTenantInvitationMutation()
 
     const disabledCondition = isLoading || isLoadingProperties || isAssigning
-
+    
     const mapPropertiesToIdTitle = (properties: PropertyDTO[]): Record<string, { title: string; occupied: boolean | undefined }> => {
       return properties.reduce((acc, prop) => {
-        acc[prop.propId] = {
+        acc[prop.id] = {
           title: prop.title,
           occupied: prop.occupied,
         }
         return acc
       }, {} as Record<string, { title: string; occupied: boolean | undefined }>)
     }
-
+    console.log(properties)
     const mappedProps = mapPropertiesToIdTitle(properties ?? [])
     const propertiesMap =  mappedProps 
    
@@ -104,7 +105,14 @@ const AddTenant = () => {
       } 
     }, [data, isLoading, isError, refetch]);
     
-    
+    const handleSendInvitation = (tenantId: string, tenantEmail: string) => {
+        const payload = {
+          id: userData.id,
+          tenantId: tenantId,
+          tenantEmail: tenantEmail
+        }
+        sendInvitation(payload)
+    }
   
 
     const tenantFiltered = tenants.filter((tenant) => tenant.tenantId === tenantToModify)[0] ?? null
@@ -196,7 +204,7 @@ const AddTenant = () => {
                   width: 120,
                   editable: false,
                   renderCell: (params: GridCellParams) => {
-                           const property = params.row.assignedProperty;
+                           const property = params.row.assignedProperty || '';
                   return (
                     <Box>
                       <IconButton
@@ -209,7 +217,7 @@ const AddTenant = () => {
                           <InfoIcon/>
                       </IconButton>
                       <Typography>
-                        {params.row.assignedProperty.slice(0, 10) + '...'}
+                        {params.row.assignedProperty?.slice(0, 10) + '...'}
                       </Typography>
                     </Box>
                   )
@@ -262,7 +270,25 @@ const AddTenant = () => {
                 headerName: "frecuencia de pago",
                 width: 150,
                 editable: false,
-              },                
+              },
+              {
+                  field: "invitation",
+                  headerName: "invitaciones",
+                  width: 120,
+                  editable: false,
+                  renderCell: (params: GridCellParams) => {
+                    return (
+                      <Button
+                        color="primary"
+                        onClick={() => {
+                           handleSendInvitation(params.row.tenantId, params.row.email)
+                        }}
+                      >
+                        mandar invitación
+                      </Button>
+                    )
+                  },
+                },                
             ]
 
             const modifyColumn =
@@ -386,7 +412,7 @@ const AddTenant = () => {
                   :
                   (
                 <>
-                <Typography variant="body1">ID: {propertyInfo?.propId}</Typography>
+                <Typography variant="body1">ID: {propertyInfo?.id}</Typography>
                 <Typography variant="body1">Nombre: {propertyInfo?.title}</Typography>
                 <Typography variant="body1">Ubicación: {propertyInfo?.address}</Typography>
                 <Typography variant="body1">Ciudad: {propertyInfo?.city}</Typography>
@@ -410,7 +436,7 @@ const AddTenant = () => {
   const AssignToPropertyDialog = () => {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null)
 
-    
+    console.log(selectedProperty)
 
   const handleAssignTenantToProperty = async () => {
     if (selectedTenant && selectedProperty) {
@@ -426,8 +452,11 @@ const AddTenant = () => {
     }
   }
     useEffect(()=>{
+
       setSelectedProperty(Object.keys(propertiesMap)[0])
+      console.log(propertiesMap)
     },[])
+
     return(
         <Dialog
         open={openAssignToPropertyDialog}
